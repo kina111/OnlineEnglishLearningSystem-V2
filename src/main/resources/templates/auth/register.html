@@ -12,6 +12,7 @@
         <h1>Create Account</h1>
         <p>Join us today and get started</p>
     </div>
+    <div th:if="${error}" th:text="${error}" class="alert error"></div>
 
     <form th:action="@{/register}" th:object="${user}" method="post" id="registerForm">
         <div class="form-group">
@@ -22,14 +23,14 @@
         </div>
 
         <div class="form-group">
-            <label">Email</label>
+            <label>Email</label>
             <input th:field="*{email}" type="email" class="input-field"
                    th:classappend="${#fields.hasErrors('email')} ? 'error'"/>
             <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
         </div>
 
         <div class="form-group">
-            <label">Password</label>
+            <label>Password</label>
             <input th:field="*{password}" type="password" class="input-field"
                    th:classappend="${#fields.hasErrors('password')} ? 'error'"/>
             <span class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
