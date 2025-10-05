@@ -1,0 +1,88 @@
+<header th:fragment="header" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <nav class="navbar">
+        <a href="#" class="logo">OELS</a>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Trang chủ</a></li>
+            <li><a href="#">Khóa học</a></li>
+            <li><a href="#">Bài viết</a></li>
+        </ul>
+        <div class="user-menu" sec:authorize="isAuthenticated()">
+            <div class="user-icon" id="userIcon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="/viewProfile" class="dropdown-item">
+                    <i class="fas fa-user"></i>
+                    Thông tin cá nhân
+                </a>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-book"></i>
+                    Khóa học của tôi
+                </a>
+                <a th:href="@{/changePassword}" class="dropdown-item">
+                    <i class="fas fa-key"></i>
+                    Thay đổi mật khẩu
+                </a>
+                <div class="dropdown-divider"></div>
+                <!-- Logout bằng form POST -->
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="dropdown-item logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Nếu chưa đăng nhập -->
+        <div class="auth-links" sec:authorize="isAnonymous()">
+            <a th:href="@{/register}" class="auth-btn">Đăng ký</a>
+            <a th:href="@{/login}" class="auth-btn">Đăng nhập</a>
+        </div>
+    </nav>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <script>
+        //HEADER
+        document.addEventListener('DOMContentLoaded', function() {
+            const userIcon = document.getElementById('userIcon');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            document.body.appendChild(overlay);
+
+            userIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+                overlay.classList.toggle('show');
+            });
+
+            overlay.addEventListener('click', function() {
+                dropdownMenu.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+
+            // Close dropdown when clicking on dropdown items
+            dropdownMenu.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    dropdownMenu.classList.remove('show');
+                    overlay.classList.remove('show');
+
+                    // Here you would handle the navigation
+                    const href = e.target.getAttribute('href');
+                    if (href && href !== '#') {
+                        // window.location.href = href;
+                        alert(`Navigating to: ${e.target.textContent.trim()}`);
+                    }
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    dropdownMenu.classList.remove('show');
+                    overlay.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</header>
