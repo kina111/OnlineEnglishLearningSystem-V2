@@ -30,6 +30,12 @@ public class AuthController {
         this.tokenService = tokenService;
         this.emailService = emailService;
     }
+
+    // ---------------- HOME ----------------
+    @GetMapping("/")
+    public String home() {
+        return "home";
+    }
     // ---------------- REGISTER ----------------
 
     @GetMapping("/register")
@@ -71,8 +77,10 @@ public class AuthController {
             Token token = tokenService.checkValidToken(tokenValue);
             token.setConfirmed_at(LocalDateTime.now());
             tokenService.save(token);
+
             User user = token.getUser();
             user.setEnabled(true);
+            userService.save(user);
 
             redirectAttributes.addFlashAttribute("message",
                     "Your account has been confirmed. You can now login!");
@@ -80,5 +88,13 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/login";
+    }
+
+    // ---------------- LOGIN ----------------
+
+    @GetMapping("/login")
+    public String showLoginForm(Model model) {
+        model.addAttribute("user", new User());
+        return "auth/login";
     }
 }

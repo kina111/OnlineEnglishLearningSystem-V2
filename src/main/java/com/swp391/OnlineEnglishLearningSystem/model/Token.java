@@ -27,7 +27,7 @@ public class Token {
     @Column(name = "confirmed_at")
     private LocalDateTime confirmed_at;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
     public Token() {
