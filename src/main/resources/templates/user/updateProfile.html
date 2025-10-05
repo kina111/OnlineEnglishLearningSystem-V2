@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa thông tin tài khoản</title>
+    <link rel="stylesheet" th:href="@{/css/userProfile.css}">
+</head>
+<body>
+<div th:replace="~{components/header :: header}"></div>
+<div class="container">
+    <p th:text="${error}" class="alert error"></p>
+    <form th:action="@{/updateProfile}" th:object="${updatedUserDTO}" method="post" id="profileForm" enctype="multipart/form-data">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img th:src="${currentUser.avatar != null} ? '/images/avatars/' + ${currentUser.avatar} : '/images/avatars/default-avatar.png'" alt="Avatar">
+                         alt="Avatar">
+                    <div class="avatar-upload">Thay đổi ảnh</div>
+                    <input type="file" id="avatarInput" name="avatarFile" accept="image/*" style="display: none;">
+                </div>
+                <div class="profile-meta">
+                    <div class="meta-field">
+                        <label>Tên tài khoản:</label>
+                        <input type="text" th:value="${currentUser.fullName}" readonly>
+                    </div>
+                    <div class="meta-field">
+                        <label>Ngày tạo:</label>
+                        <input type="text" th:value="${#temporals.format(currentUser.createdAt, 'yyyy-MM-dd HH:mm')}" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-info">
+                <div class="info-row">
+                    <div class="info-field">
+                        <label>Họ và tên <span style="color: var(--error-color)">*</span></label>
+                        <input type="text" th:field="*{fullName}" th:placeholder="${currentUser.fullName}">
+                        <div class="error-message" id="fullNameError">Vui lòng nhập họ và tên</div>
+                    </div>
+                    <div class="info-field">
+                        <label>Email đăng kí:</label>
+                        <input type="text" th:value="${currentUser.email}" readonly>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-field">
+                        <label>Ngày sinh <span style="color: var(--error-color)">*</span></label>
+                        <input type="date" th:field="*{dob}" th:placeholder="${currentUser.dob}">
+                        <div class="error-message" id="dobError">Vui lòng chọn ngày sinh</div>
+                    </div>
+                    <div class="info-field">
+                        <label>Giới tính <span style="color: var(--error-color)">*</span></label>
+                        <select th:field="*{gender}">
+                            <option value="">Chọn giới tính</option>
+                            <option value="MALE">Nam</option>
+                            <option value="FEMALE">Nữ</option>
+                            <option value="OTHER">Khác</option>
+                        </select>
+                        <div class="error-message" id="genderError">Vui lòng chọn giới tính</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-field">
+                        <label>Số điện thoại <span style="color: var(--error-color)">*</span></label>
+                        <input type="text" th:field="*{mobile}" th:placeholder="${currentUser.mobile}">
+                        <div class="error-message" id="phoneError">Vui lòng nhập số điện thoại hợp lệ</div>
+                    </div>
+                    <div class="info-field full-width">
+                        <label>Địa chỉ</label>
+                        <input type="text" th:field="*{address}" th:placeholder="${currentUser.address}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='/viewProfile'">Hủy bỏ</button>
+                <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:replace="~{components/footer :: footer}"></div>
+
+<script>
+    // Xử lý upload ảnh đại diện
+    document.querySelector('.avatar-upload').addEventListener('click', function() {
+        document.getElementById('avatarInput').click();
+    });
+
+    document.getElementById('avatarInput').addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('.profile-avatar img').src = e.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    // Xử lý validate form
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Validate họ và tên
+        const fullName = document.querySelector('input[th\\:field="*{fullName}"]').value.trim();
+        if (!fullName) {
+            document.querySelector('#fullNameError').parentElement.classList.add('has-error');
+            isValid = false;
+        } else {
+            document.querySelector('#fullNameError').parentElement.classList.remove('has-error');
+        }
+
+        // Validate ngày sinh
+        const dob = document.querySelector('input[th\\:field="*{dob}"]').value;
+        if (!dob) {
+            document.querySelector('#dobError').parentElement.classList.add('has-error');
+            isValid = false;
+        } else {
+            document.querySelector('#dobError').parentElement.classList.remove('has-error');
+        }
+
+        // Validate giới tính
+        const gender = document.querySelector('select[th\\:field="*{gender}"]').value;
+        if (!gender) {
+            document.querySelector('#genderError').parentElement.classList.add('has-error');
+            isValid = false;
+        } else {
+            document.querySelector('#genderError').parentElement.classList.remove('has-error');
+        }
+
+        // Validate số điện thoại
+        const phone = document.querySelector('input[th\\:field="*{phoneNumber}"]').value.trim();
+        const phoneRegex = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
+        if (!phone || !phoneRegex.test(phone)) {
+            document.querySelector('#phoneError').parentElement.classList.add('has-error');
+            isValid = false;
+        } else {
+            document.querySelector('#phoneError').parentElement.classList.remove('has-error');
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Vui lòng kiểm tra lại thông tin đã nhập!');
+        }
+    });
+
+    // Xóa lỗi khi người dùng bắt đầu nhập
+    const inputs = document.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.parentElement.classList.remove('has-error');
+        });
+    });
+</script>
+</body>
+</html>
