@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +26,9 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private SessionService sessionService;
+
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
@@ -68,7 +72,6 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         if (session == null) {
             return;
         }
-        User currentUser = userService.findByEmailAndEnabledTrue(authentication.getName());
-        session.setAttribute("currentUser", currentUser);
+        sessionService.storeUserInSession(request, authentication);
     }
 }

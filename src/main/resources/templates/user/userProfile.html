@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin tài khoản</title>
+    <link rel="stylesheet" th:href="@{/css/userProfile.css}">
+</head>
+<body>
+<div th:replace="~{components/header :: header}"></div>
+<div class="container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <img th:src="@{/images/user.png}" alt="Avatar">
+
+            </div>
+            <div class="profile-meta">
+                <div class="meta-field">
+                    <label>Tên tài khoản:</label>
+                    <input type="text" th:value="${user.fullName}" readonly>
+                </div>
+                <div class="meta-field">
+                    <label>Ngày tạo:</label>
+                    <input type="text" th:value="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-info">
+            <div class="info-row">
+                <div class="info-field">
+                    <label>Email đăng kí:</label>
+                    <input type="text" th:value="${user.email}" readonly>
+                </div>
+                <div class="info-field">
+                    <label>Mật khẩu:</label>
+                    <input type="password" value="••••••••" readonly>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-field">
+                    <label>Ngày sinh:</label>
+                    <input type="text" th:value="${user.dob}" readonly>
+                </div>
+                <div class="info-field">
+                    <label>Giới tính:</label>
+                    <input type="text" th:value="${user.gender}" readonly>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-field">
+                    <label>Số điện thoại:</label>
+                    <input type="text" th:value="${user.mobile}" readonly>
+                </div>
+                <div class="info-field full-width">
+                    <label>Địa chỉ:</label>
+                    <input type="text" th:value="${user.address}" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/updateProfile"><button class="btn btn-secondary">Chỉnh sửa thông tin</button></a>
+            <a href="/"><button class="btn btn-primary">Quay trở về</button></a>
+        </div>
+    </div>
+</div>
+<div th:replace="~{components/footer :: footer}"></div>
+</body>
+</html>
