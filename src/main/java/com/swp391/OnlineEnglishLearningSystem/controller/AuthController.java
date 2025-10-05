@@ -97,4 +97,62 @@ public class AuthController {
         model.addAttribute("user", new User());
         return "auth/login";
     }
+
+    // ---------------- FORGOT PASSWORD ----------------
+    @GetMapping("/forgotPassword")
+    public String showForgotPasswordForm() {
+        return "auth/forgotPassword";
+    }
+
+    @PostMapping("/forgotPassword")
+    public String processForgotPasswordForm(@RequestParam("email") String email,
+                                            RedirectAttributes redirectAttributes) {
+        userService.findByEmailAndEnabledTrue(email).ifPresentOrElse(user -> {
+            Token token = tokenService.create(user);
+            tokenService.save(token);
+            emailService.sendTokenEmail(user.getEmail(), token.getToken(), EmailService.EmailType.FORGOT_PASSWORD);
+            redirectAttributes.addFlashAttribute("message",
+                    "Please check your email for resetting your password!");
+        }, () -> redirectAttributes.addFlashAttribute("error",
+                "Email is not registered or not activated!"));
+        return "redirect:/forgotPassword";
+    }
+
+// ---------------- RESET PASSWORD ----------------
+
+    @GetMapping("/resetPassword")
+    public String showResetForm(@RequestParam("token") String token, Model model) {
+        model.addAttribute("token", token);
+        return "auth/resetPassword";
+    }
+
+    @PostMapping("/resetPassword")
+    public String processReset(@RequestParam("token") String tokenValue,
+                               @RequestParam("password") String password,
+                               @RequestParam("confirmedPassword") String confirmedPassword,
+                               RedirectAttributes redirectAttributes,
+                               Model model) {
+        try {
+            if (!password.equals(confirmedPassword)) {
+                throw new IllegalArgumentException("Passwords do not match!");
+            }
+            Token token = tokenService.checkValidToken(tokenValue);
+            token.setConfirmed_at(LocalDateTime.now());
+            tokenService.save(token);
+
+            User user = token.getUser();
+            userService.updatePassword(user, password);
+
+            tokenService.delete(token);
+            userService.save(user);
+
+            redirectAttributes.addFlashAttribute("message",
+                    "Password updated successfully. Please login with your new password.");
+            return "redirect:/login";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("token", tokenValue);
+            return "auth/resetPassword";
+        }
+    }
 }
