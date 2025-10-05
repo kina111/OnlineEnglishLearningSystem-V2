@@ -14,6 +14,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final CustomUserDetailsService userService;
+
+    public SecurityConfig(CustomUserDetailsService userService) {
+        this.userService = userService;
+    }
+
     @Bean
     public AuthenticationSuccessHandler myAuthenticationSuccessHandler() {
         return new MySimpleUrlAuthenticationSuccessHandler();
@@ -37,6 +43,12 @@ public class SecurityConfig {
                         .successHandler(myAuthenticationSuccessHandler())// true = luôn luôn redirect về /home
                         .failureUrl("/login?error=true")
                         .permitAll()
+                )
+                .rememberMe(remember -> remember
+                        .rememberMeParameter("remember-me")
+                        .tokenValiditySeconds(1 * 24 * 60 * 60) // 1 day
+                        .key("uniqueAndSecretKeyForRememberMe")
+                        .userDetailsService(userService) // UserService phải implement UserDetailsService
                 )
                 .csrf(csrf -> csrf.disable()); // Tắt CSRF cho POST requests
 
