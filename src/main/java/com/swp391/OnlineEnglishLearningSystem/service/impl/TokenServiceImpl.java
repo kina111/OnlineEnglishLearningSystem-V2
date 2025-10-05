@@ -46,4 +46,9 @@ public class TokenServiceImpl implements TokenService {
         }
         return token;
     }
+
+    @Override
+    public void delete(Token token) {
+        this.tokenRepository.delete(token);
+    }
 }

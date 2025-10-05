@@ -10,4 +10,6 @@ public interface TokenService {
     void save(Token newToken);
 
     Token checkValidToken(String token);
+
+    void delete(Token token);
 }
