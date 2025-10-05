@@ -30,6 +30,12 @@ public class AuthController {
         this.tokenService = tokenService;
         this.emailService = emailService;
     }
+
+    // ---------------- HOME ----------------
+    @GetMapping("/")
+    public String home() {
+        return "home";
+    }
     // ---------------- REGISTER ----------------
 
     @GetMapping("/register")
