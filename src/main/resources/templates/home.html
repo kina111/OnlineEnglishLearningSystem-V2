@@ -1,10 +1,625 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OELS - Online English Learning System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --secondary-color: #4ecdc4;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #fff;
+            --bg-light: #f8f9fa;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+        }
+
+        /* Header */
+
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        /* Hero Slider */
+        .hero-slider {
+            position: relative;
+            height: 500px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 3rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+        }
+
+        .slide-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .slide-content p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .slide-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .slide-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .slider-nav {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .slider-dot.active {
+            background: white;
+        }
+
+        /* Featured Sections */
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .view-all {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .view-all:hover {
+            color: var(--primary-hover);
+        }
+
+        /* Courses Grid */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .course-card {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .course-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .course-tagline {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Posts Grid */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .post-card {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .post-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .post-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .post-content {
+            padding: 1.5rem;
+        }
+
+        .post-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .post-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 3rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .latest-posts {
+            list-style: none;
+        }
+
+        .latest-post {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .latest-post:hover {
+            background: var(--bg-light);
+            margin: 0 -1rem;
+            padding: 1rem;
+        }
+
+        .latest-post:last-child {
+            border-bottom: none;
+        }
+
+        .post-small-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .post-small-content {
+            flex: 1;
+        }
+
+        .post-small-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+
+        .post-small-date {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        .contact-info {
+            list-style: none;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            color: var(--text-light);
+        }
+
+        .contact-item i {
+            width: 20px;
+            color: var(--primary-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+
+    </style>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
 </head>
 <body>
-    Hello World!
+<!-- Header -->
+<div th:replace="~{components/header :: header}"></div>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Hero Slider -->
+    <div class="hero-slider">
+        <div class="slide active">
+            <div class="slide-content">
+                <h2>Học Tiếng Anh Hiệu Quả</h2>
+                <p>Khám phá phương pháp học tập hiện đại với OELS</p>
+                <button class="slide-btn">Bắt đầu ngay</button>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Khóa Học Chất Lượng Cao</h2>
+                <p>Đội ngũ giảng viên giàu kinh nghiệm và phương pháp giảng dạy tiên tiến</p>
+                <button class="slide-btn">Xem khóa học</button>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Cộng Đồng Học Tập</h2>
+                <p>Kết nối và học hỏi cùng hàng ngàn học viên khác</p>
+                <button class="slide-btn">Tham gia ngay</button>
+            </div>
+        </div>
+        <div class="slider-nav">
+            <div class="slider-dot active"></div>
+            <div class="slider-dot"></div>
+            <div class="slider-dot"></div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Featured Courses -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Khóa Học Nổi Bật</h2>
+                    <a href="#" class="view-all">Xem tất cả</a>
+                </div>
+                <div class="courses-grid">
+                    <!-- Course 1 -->
+                    <div class="course-card">
+                        <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Tiếng Anh Giao Tiếp" class="course-thumbnail">
+                        <div class="course-content">
+                            <h3 class="course-title">Tiếng Anh Giao Tiếp Cơ Bản</h3>
+                            <p class="course-tagline">Làm chủ kỹ năng giao tiếp hàng ngày chỉ sau 3 tháng</p>
+                            <div class="course-meta">
+                                <span>24 bài học</span>
+                                <span>★ 4.8 (1.2k)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course 2 -->
+                    <div class="course-card">
+                        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Luyện Thi IELTS" class="course-thumbnail">
+                        <div class="course-content">
+                            <h3 class="course-title">Luyện Thi IELTS Chuyên Sâu</h3>
+                            <p class="course-tagline">Chinh phục band điểm 7.0+ với lộ trình tối ưu</p>
+                            <div class="course-meta">
+                                <span>36 bài học</span>
+                                <span>★ 4.9 (856)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course 3 -->
+                    <div class="course-card">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Tiếng Anh Thương Mại" class="course-thumbnail">
+                        <div class="course-content">
+                            <h3 class="course-title">Tiếng Anh Thương Mại</h3>
+                            <p class="course-tagline">Thành thạo ngôn ngữ trong môi trường công sở</p>
+                            <div class="course-meta">
+                                <span>28 bài học</span>
+                                <span>★ 4.7 (643)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hot Posts -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Bài Viết Mới Nhất</h2>
+                    <a href="#" class="view-all">Xem tất cả</a>
+                </div>
+                <div class="posts-grid">
+                    <!-- Post 1 -->
+                    <div class="post-card">
+                        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="5 Mẹo Học Từ Vựng" class="post-thumbnail">
+                        <div class="post-content">
+                            <h3 class="post-title">5 Mẹo Học Từ Vựng Tiếng Anh Hiệu Quả</h3>
+                            <p class="post-date">30/09/2024</p>
+                        </div>
+                    </div>
+
+                    <!-- Post 2 -->
+                    <div class="post-card">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Luyện Nghe Tiếng Anh" class="post-thumbnail">
+                        <div class="post-content">
+                            <h3 class="post-title">Phương Pháp Luyện Nghe Tiếng Anh Cho Người Mới Bắt Đầu</h3>
+                            <p class="post-date">28/09/2024</p>
+                        </div>
+                    </div>
+
+                    <!-- Post 3 -->
+                    <div class="post-card">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Chuẩn Bị Phỏng Vấn" class="post-thumbnail">
+                        <div class="post-content">
+                            <h3 class="post-title">Chuẩn Bị Gì Cho Buổi Phỏng Vấn Tiếng Anh?</h3>
+                            <p class="post-date">25/09/2024</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Latest Posts -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Bài Viết Gần Đây</h3>
+                <ul class="latest-posts">
+                    <li class="latest-post">
+                        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Mẹo học từ vựng" class="post-small-thumb">
+                        <div class="post-small-content">
+                            <h4 class="post-small-title">5 Mẹo Học Từ Vựng Hiệu Quả</h4>
+                            <p class="post-small-date">30/09/2024</p>
+                        </div>
+                    </li>
+                    <li class="latest-post">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Luyện nghe" class="post-small-thumb">
+                        <div class="post-small-content">
+                            <h4 class="post-small-title">Luyện Nghe Cho Người Mới Bắt Đầu</h4>
+                            <p class="post-small-date">28/09/2024</p>
+                        </div>
+                    </li>
+                    <li class="latest-post">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Phỏng vấn" class="post-small-thumb">
+                        <div class="post-small-content">
+                            <h4 class="post-small-title">Chuẩn Bị Phỏng Vấn Tiếng Anh</h4>
+                            <p class="post-small-date">25/09/2024</p>
+                        </div>
+                    </li>
+                    <li class="latest-post">
+                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Ngữ pháp" class="post-small-thumb">
+                        <div class="post-small-content">
+                            <h4 class="post-small-title">Cải Thiện Ngữ Pháp Trong 30 Ngày</h4>
+                            <p class="post-small-date">22/09/2024</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Liên Hệ</h3>
+                <ul class="contact-info">
+                    <li class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>contact@oels.edu.vn</span>
+                    </li>
+                    <li class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+84 123 456 789</span>
+                    </li>
+                    <li class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Hà Nội, Việt Nam</span>
+                    </li>
+                </ul>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{components/footer :: footer}"></div>
+
+<script>
+    // Slider functionality
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.slider-dot');
+
+    function showSlide(n) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        currentSlide = (n + slides.length) % slides.length;
+
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+    }
+
+    // Auto slide
+    setInterval(() => {
+        showSlide(currentSlide + 1);
+    }, 5000);
+
+    // Dot click events
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            showSlide(index);
+        });
+    });
+
+    // Card click events (redirect functionality)
+    document.querySelectorAll('.course-card, .post-card, .latest-post').forEach(card => {
+        card.addEventListener('click', function() {
+            // In real implementation, you would redirect to the actual page
+            alert('Redirecting to details page...');
+            // window.location.href = '/course-details'; // Example
+        });
+    });
+
+    // Slide buttons click events
+    document.querySelectorAll('.slide-btn').forEach((btn, index) => {
+        btn.addEventListener('click', function() {
+            // Different actions for different slides
+            const actions = [
+                '/register',
+                '/courses',
+                '/community'
+            ];
+            // window.location.href = actions[index]; // Example
+            alert(`Redirecting to: ${actions[index]}`);
+        });
+    });
+</script>
 </body>
 </html>

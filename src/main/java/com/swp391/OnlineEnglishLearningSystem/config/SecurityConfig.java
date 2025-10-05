@@ -1,6 +1,7 @@
 package com.swp391.OnlineEnglishLearningSystem.config;
 
 import com.swp391.OnlineEnglishLearningSystem.service.CustomUserDetailsService;
+import com.swp391.OnlineEnglishLearningSystem.service.MySimpleUrlAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,15 +9,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    private final CustomUserDetailsService customUserDetailsService;
-
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
-        this.customUserDetailsService = customUserDetailsService;
+    @Bean
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler() {
+        return new MySimpleUrlAuthenticationSuccessHandler();
     }
 
     @Bean
@@ -33,7 +33,8 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")   // chỗ này phải đúng action form
-                        .defaultSuccessUrl("/", true) // true = luôn luôn redirect về /home
+                        .defaultSuccessUrl("/", true)
+                        .successHandler(myAuthenticationSuccessHandler())// true = luôn luôn redirect về /home
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )

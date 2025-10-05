@@ -13,7 +13,9 @@ public interface UserService {
 
     User buildNewUser(@Valid UserDTO userDTO);
 
-    Optional<User> findByEmailAndEnabledTrue(String email);
+    User findByEmailAndEnabledTrue(String email);
 
     void updatePassword(User user, String password);
+
+    boolean isOldPasswordCorrect(User currentUser, String oldPassword);
 }

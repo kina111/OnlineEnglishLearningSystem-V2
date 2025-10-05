@@ -6,6 +6,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.UserDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.EmailService;
 import com.swp391.OnlineEnglishLearningSystem.service.TokenService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Controller
@@ -107,14 +109,18 @@ public class AuthController {
     @PostMapping("/forgotPassword")
     public String processForgotPasswordForm(@RequestParam("email") String email,
                                             RedirectAttributes redirectAttributes) {
-        userService.findByEmailAndEnabledTrue(email).ifPresentOrElse(user -> {
+        try{
+            User user = userService.findByEmailAndEnabledTrue(email);
             Token token = tokenService.create(user);
             tokenService.save(token);
             emailService.sendTokenEmail(user.getEmail(), token.getToken(), EmailService.EmailType.FORGOT_PASSWORD);
             redirectAttributes.addFlashAttribute("message",
                     "Please check your email for resetting your password!");
-        }, () -> redirectAttributes.addFlashAttribute("error",
-                "Email is not registered or not activated!"));
+
+        }catch (Exception e){
+            redirectAttributes.addFlashAttribute("error",
+                    "Email is not registered or not activated!");
+        }
         return "redirect:/forgotPassword";
     }
 
@@ -153,6 +159,39 @@ public class AuthController {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("token", tokenValue);
             return "auth/resetPassword";
+        }
+    }
+
+    //---------------------------- CHANGE PASSWORD -----------------------------
+    @GetMapping("/changePassword")
+    public String showChangePasswordForm(Model model) {
+        return "auth/changePassword";
+    }
+
+    @PostMapping("/changePassword")
+    public String processChangePasswordForm(@RequestParam("oldPassword") String oldPassword,
+                                            @RequestParam("newPassword") String newPassword,
+                                            @RequestParam("confirmedPassword") String confirmedPassword,
+                                            RedirectAttributes redirectAttributes,
+                                            HttpSession session,
+                                            Model model) {
+        try {
+            if (!newPassword.equals(confirmedPassword)) {
+                throw new IllegalArgumentException("Passwords do not match!");
+            }
+            User currentUser = (User) session.getAttribute("currentUser");
+            if (!userService.isOldPasswordCorrect(currentUser, oldPassword)){
+                throw new IllegalArgumentException("Old password is incorrect!");
+            };
+            userService.updatePassword(currentUser, newPassword);
+            userService.save(currentUser);
+
+            redirectAttributes.addFlashAttribute("message",
+                    "Password updated successfully. Please login with your new password.");
+            return "redirect:/login";
+        }catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/changePassword";
         }
     }
 }
