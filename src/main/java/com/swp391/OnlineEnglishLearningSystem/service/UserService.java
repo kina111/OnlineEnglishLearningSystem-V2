@@ -4,6 +4,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.UserDTO;
 import jakarta.validation.Valid;
 
+import java.util.Optional;
+//
 public interface UserService {
     void ensureEmailNotExists(String email);
 
