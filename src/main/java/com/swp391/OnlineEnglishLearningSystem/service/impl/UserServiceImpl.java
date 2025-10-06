@@ -62,4 +62,9 @@ public class UserServiceImpl implements UserService {
     public boolean isOldPasswordCorrect(User currentUser, String oldPassword) {
         return passwordEncoder.matches(oldPassword, currentUser.getPassword());
     }
+
+    @Override
+    public User getById(Long userId) {
+        return this.userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
 }
