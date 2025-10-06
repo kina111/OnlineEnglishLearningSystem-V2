@@ -44,12 +44,6 @@ public class SecurityConfig {
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
-                .rememberMe(remember -> remember
-                        .rememberMeParameter("remember-me")
-                        .tokenValiditySeconds(1 * 24 * 60 * 60) // 1 day
-                        .key("uniqueAndSecretKeyForRememberMe")
-                        .userDetailsService(userService) // UserService phải implement UserDetailsService
-                )
                 .csrf(csrf -> csrf.disable()); // Tắt CSRF cho POST requests
 
         return http.build();
