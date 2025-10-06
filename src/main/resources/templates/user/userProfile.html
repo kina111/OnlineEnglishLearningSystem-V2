@@ -8,64 +8,61 @@
 </head>
 <body>
 <div th:replace="~{components/header :: header}"></div>
+
 <div class="container">
     <div class="profile-card">
+        <!-- Avatar + Tên -->
         <div class="profile-header">
             <div class="profile-avatar">
-                <img th:src="@{/images/user.png}" alt="Avatar">
-
+                <img th:src="@{'/uploads/' + ${user.avatar}}" alt="Avatar">
             </div>
             <div class="profile-meta">
-                <div class="meta-field">
-                    <label>Tên tài khoản:</label>
-                    <input type="text" th:value="${user.fullName}" readonly>
-                </div>
-                <div class="meta-field">
-                    <label>Ngày tạo:</label>
-                    <input type="text" th:value="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}" readonly>
-                </div>
+                <h2 th:text="${user.fullName}">Tên tài khoản</h2>
+                <p>
+                    Ngày tạo:
+                    <span th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </p>
             </div>
         </div>
 
+        <!-- Thông tin chi tiết -->
         <div class="profile-info">
-            <div class="info-row">
-                <div class="info-field">
-                    <label>Email đăng kí:</label>
-                    <input type="text" th:value="${user.email}" readonly>
+            <dl>
+                <div class="info-row">
+                    <dt>Email đăng kí:</dt>
+                    <dd th:text="${user.email}"></dd>
                 </div>
-                <div class="info-field">
-                    <label>Mật khẩu:</label>
-                    <input type="password" value="••••••••" readonly>
+                <div class="info-row">
+                    <dt>Mật khẩu:</dt>
+                    <dd>••••••••</dd>
                 </div>
-            </div>
-            <div class="info-row">
-                <div class="info-field">
-                    <label>Ngày sinh:</label>
-                    <input type="text" th:value="${user.dob}" readonly>
+                <div class="info-row">
+                    <dt>Ngày sinh(yyyy-MM-dd):</dt>
+                    <dd th:text="${#temporals.format(user.dob, 'yyyy-MM-dd')}"></dd>
                 </div>
-                <div class="info-field">
-                    <label>Giới tính:</label>
-                    <input type="text" th:value="${user.gender}" readonly>
+                <div class="info-row">
+                    <dt>Giới tính:</dt>
+                    <dd th:text="${user.gender}"></dd>
                 </div>
-            </div>
-            <div class="info-row">
-                <div class="info-field">
-                    <label>Số điện thoại:</label>
-                    <input type="text" th:value="${user.mobile}" readonly>
+                <div class="info-row">
+                    <dt>Số điện thoại:</dt>
+                    <dd th:text="${user.mobile}"></dd>
                 </div>
-                <div class="info-field full-width">
-                    <label>Địa chỉ:</label>
-                    <input type="text" th:value="${user.address}" readonly>
+                <div class="info-row">
+                    <dt>Địa chỉ:</dt>
+                    <dd th:text="${user.address}"></dd>
                 </div>
-            </div>
+            </dl>
         </div>
 
+        <!-- Action -->
         <div class="action-buttons">
-            <a href="/updateProfile"><button class="btn btn-secondary">Chỉnh sửa thông tin</button></a>
-            <a href="/"><button class="btn btn-primary">Quay trở về</button></a>
+            <a href="/updateProfile" class="btn btn-secondary">Chỉnh sửa thông tin</a>
+            <a href="/" class="btn btn-primary">Quay trở về</a>
         </div>
     </div>
 </div>
+
 <div th:replace="~{components/footer :: footer}"></div>
 </body>
 </html>

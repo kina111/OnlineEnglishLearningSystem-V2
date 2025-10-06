@@ -8,49 +8,55 @@
 </head>
 <body>
 <div th:replace="~{components/header :: header}"></div>
+
 <div class="container">
     <p th:text="${error}" class="alert error"></p>
-    <form th:action="@{/updateProfile}" th:object="${updatedUserDTO}" method="post" id="profileForm" enctype="multipart/form-data">
+
+    <form th:action="@{/updateProfile}" th:object="${updatedUser}" method="post" id="profileForm" enctype="multipart/form-data">
         <div class="profile-card">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{password}">
+            <!-- Avatar -->
             <div class="profile-header">
                 <div class="profile-avatar">
-                    <img th:src="${currentUser.avatar != null} ? '/images/avatars/' + ${currentUser.avatar} : '/images/avatars/default-avatar.png'" alt="Avatar">
-                         alt="Avatar">
+                    <img th:src="@{'/uploads/' + ${updatedUser.avatar}}" alt="Avatar">
                     <div class="avatar-upload">Thay đổi ảnh</div>
-                    <input type="file" id="avatarInput" name="avatarFile" accept="image/*" style="display: none;">
+                    <input type="file" id="avatarInput" name="avatarFile" accept="image/*" hidden>
                 </div>
                 <div class="profile-meta">
                     <div class="meta-field">
                         <label>Tên tài khoản:</label>
-                        <input type="text" th:value="${currentUser.fullName}" readonly>
+                        <input type="text" th:value="${updatedUser.fullName}" readonly>
                     </div>
                     <div class="meta-field">
                         <label>Ngày tạo:</label>
-                        <input type="text" th:value="${#temporals.format(currentUser.createdAt, 'yyyy-MM-dd HH:mm')}" readonly>
+                        <input type="text" th:value="${#temporals.format(updatedUser.createdAt, 'yyyy-MM-dd HH:mm')}" readonly>
                     </div>
                 </div>
             </div>
 
+            <!-- Profile info -->
             <div class="profile-info">
                 <div class="info-row">
                     <div class="info-field">
-                        <label>Họ và tên <span style="color: var(--error-color)">*</span></label>
-                        <input type="text" th:field="*{fullName}" th:placeholder="${currentUser.fullName}">
+                        <label>Họ và tên <span class="required">*</span></label>
+                        <input type="text" th:field="*{fullName}">
                         <div class="error-message" id="fullNameError">Vui lòng nhập họ và tên</div>
                     </div>
                     <div class="info-field">
                         <label>Email đăng kí:</label>
-                        <input type="text" th:value="${currentUser.email}" readonly>
+                        <input type="text" th:field="*{email}" readonly>
                     </div>
                 </div>
+
                 <div class="info-row">
                     <div class="info-field">
-                        <label>Ngày sinh <span style="color: var(--error-color)">*</span></label>
-                        <input type="date" th:field="*{dob}" th:placeholder="${currentUser.dob}">
+                        <label>Ngày sinh <span class="required">*</span></label>
+                        <input type="date" th:field="*{dob}">
                         <div class="error-message" id="dobError">Vui lòng chọn ngày sinh</div>
                     </div>
                     <div class="info-field">
-                        <label>Giới tính <span style="color: var(--error-color)">*</span></label>
+                        <label>Giới tính <span class="required">*</span></label>
                         <select th:field="*{gender}">
                             <option value="">Chọn giới tính</option>
                             <option value="MALE">Nam</option>
@@ -60,19 +66,21 @@
                         <div class="error-message" id="genderError">Vui lòng chọn giới tính</div>
                     </div>
                 </div>
+
                 <div class="info-row">
                     <div class="info-field">
-                        <label>Số điện thoại <span style="color: var(--error-color)">*</span></label>
-                        <input type="text" th:field="*{mobile}" th:placeholder="${currentUser.mobile}">
+                        <label>Số điện thoại <span class="required">*</span></label>
+                        <input type="text" th:field="*{mobile}" placeholder="03xxxxxxxxx">
                         <div class="error-message" id="phoneError">Vui lòng nhập số điện thoại hợp lệ</div>
                     </div>
                     <div class="info-field full-width">
                         <label>Địa chỉ</label>
-                        <input type="text" th:field="*{address}" th:placeholder="${currentUser.address}">
+                        <input type="text" th:field="*{address}">
                     </div>
                 </div>
             </div>
 
+            <!-- Actions -->
             <div class="action-buttons">
                 <button type="button" class="btn btn-secondary" onclick="window.location.href='/viewProfile'">Hủy bỏ</button>
                 <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
@@ -80,64 +88,41 @@
         </div>
     </form>
 </div>
+
 <div th:replace="~{components/footer :: footer}"></div>
 
 <script>
-    // Xử lý upload ảnh đại diện
-    document.querySelector('.avatar-upload').addEventListener('click', function() {
+    // Preview avatar
+    document.querySelector('.avatar-upload').addEventListener('click', () => {
         document.getElementById('avatarInput').click();
     });
-
-    document.getElementById('avatarInput').addEventListener('change', function(e) {
-        if (e.target.files && e.target.files[0]) {
+    document.getElementById('avatarInput').addEventListener('change', e => {
+        if (e.target.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                document.querySelector('.profile-avatar img').src = e.target.result;
-            }
+            reader.onload = ev => document.querySelector('.profile-avatar img').src = ev.target.result;
             reader.readAsDataURL(e.target.files[0]);
         }
     });
 
-    // Xử lý validate form
-    document.getElementById('profileForm').addEventListener('submit', function(e) {
+    // Validate form
+    const form = document.getElementById('profileForm');
+    form.addEventListener('submit', e => {
         let isValid = true;
 
-        // Validate họ và tên
-        const fullName = document.querySelector('input[th\\:field="*{fullName}"]').value.trim();
-        if (!fullName) {
-            document.querySelector('#fullNameError').parentElement.classList.add('has-error');
-            isValid = false;
-        } else {
-            document.querySelector('#fullNameError').parentElement.classList.remove('has-error');
-        }
+        const rules = [
+            {field: '*{fullName}', errorId: 'fullNameError', check: v => v.trim() !== ''},
+            {field: '*{dob}', errorId: 'dobError', check: v => v !== ''},
+            {field: '*{gender}', errorId: 'genderError', check: v => v !== ''},
+            {field: '*{mobile}', errorId: 'phoneError', check: v => /(03|05|07|08|09|01[2689])[0-9]{8}$/.test(v)}
+        ];
 
-        // Validate ngày sinh
-        const dob = document.querySelector('input[th\\:field="*{dob}"]').value;
-        if (!dob) {
-            document.querySelector('#dobError').parentElement.classList.add('has-error');
-            isValid = false;
-        } else {
-            document.querySelector('#dobError').parentElement.classList.remove('has-error');
-        }
-
-        // Validate giới tính
-        const gender = document.querySelector('select[th\\:field="*{gender}"]').value;
-        if (!gender) {
-            document.querySelector('#genderError').parentElement.classList.add('has-error');
-            isValid = false;
-        } else {
-            document.querySelector('#genderError').parentElement.classList.remove('has-error');
-        }
-
-        // Validate số điện thoại
-        const phone = document.querySelector('input[th\\:field="*{phoneNumber}"]').value.trim();
-        const phoneRegex = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
-        if (!phone || !phoneRegex.test(phone)) {
-            document.querySelector('#phoneError').parentElement.classList.add('has-error');
-            isValid = false;
-        } else {
-            document.querySelector('#phoneError').parentElement.classList.remove('has-error');
-        }
+        rules.forEach(rule => {
+            const input = form.querySelector(`[th\\:field="${rule.field}"]`);
+            const value = input.value;
+            const hasError = !rule.check(value);
+            input.parentElement.classList.toggle('has-error', hasError);
+            if (hasError) isValid = false;
+        });
 
         if (!isValid) {
             e.preventDefault();
@@ -145,12 +130,9 @@
         }
     });
 
-    // Xóa lỗi khi người dùng bắt đầu nhập
-    const inputs = document.querySelectorAll('input, select');
-    inputs.forEach(input => {
-        input.addEventListener('input', function() {
-            this.parentElement.classList.remove('has-error');
-        });
+    // Remove error on input
+    form.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', () => el.parentElement.classList.remove('has-error'));
     });
 </script>
 </body>
