@@ -173,13 +173,13 @@ public class AuthController {
                                             @RequestParam("newPassword") String newPassword,
                                             @RequestParam("confirmedPassword") String confirmedPassword,
                                             RedirectAttributes redirectAttributes,
-                                            HttpSession session,
+                                            Principal principal,
                                             Model model) {
         try {
             if (!newPassword.equals(confirmedPassword)) {
                 throw new IllegalArgumentException("Passwords do not match!");
             }
-            User currentUser = (User) session.getAttribute("currentUser");
+            User currentUser = userService.findByEmailAndEnabledTrue(principal.getName());
             if (!userService.isOldPasswordCorrect(currentUser, oldPassword)){
                 throw new IllegalArgumentException("Old password is incorrect!");
             };

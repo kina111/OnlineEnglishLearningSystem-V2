@@ -29,7 +29,7 @@ public class SessionService {
             // Load user từ database và lưu vào session
             User user = userService.findByEmailAndEnabledTrue(email);
             if (user != null) {
-                session.setAttribute("currentUser", user);
+                session.setAttribute("currentUserId", user.getId());
                 System.out.println("✅ User stored in session: " + user.getEmail() +
                         " (Auth type: " + getAuthenticationType(authentication) + ")");
             }
