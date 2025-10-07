@@ -57,7 +57,7 @@ public class User extends BaseEntity implements UserDetails {
 
     private boolean enabled;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private UserRole role;
 

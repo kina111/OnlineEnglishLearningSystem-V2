@@ -6,9 +6,16 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.UserDTO;
 import com.swp391.OnlineEnglishLearningSystem.repository.RoleRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.UserRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
+import com.swp391.OnlineEnglishLearningSystem.service.specification.UserSpecs;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -67,4 +74,42 @@ public class UserServiceImpl implements UserService {
     public User getById(Long userId) {
         return this.userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
+
+    @Override
+    public List<User> getAllUsers() {
+        return this.userRepository.findAll();
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<User> findPaginated(Pageable pageable) {
+        List<User> users = userRepository.findAll();
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        List<User> list;
+        if (users.size() < startItem) {
+            list = Collections.emptyList();
+        }else{
+            int toIndex = Math.min(startItem + pageSize, users.size());
+            list = users.subList(startItem, toIndex);
+        }
+        return new PageImpl<>(list, pageable, users.size());
+    }
+
+    public Page<User> getUsersWithSpecs(Pageable pageable, String gender, String role, Boolean enabled, String search) {
+        Specification<User> spec = UserSpecs.withFilters(search, gender, role, enabled);
+        return userRepository.findAll(spec, pageable);
+    }
+
+
 }
