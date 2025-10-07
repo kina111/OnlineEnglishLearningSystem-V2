@@ -18,6 +18,7 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
+    @Async
     public void sendEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
@@ -35,6 +36,21 @@ public class EmailService {
         sendEmail(to, subject, text);
     }
 
+    public String buildEmailContent(String password) {
+        String url = "http://localhost:8080/login";
+        return String.format("""
+                Hello!
+
+                The admin has created a new account for you. Please login with the following password:
+                %s
+                Please log in via the link below:
+                %s
+
+                This link will expire in 24 hours.
+
+                If you did not request this, please ignore this email.
+                """, password, url);
+    }
     private String buildEmailContent(String token, EmailType type) {
         String url = switch (type) {
             case REGISTER -> "http://localhost:8080/confirmToken?token=" + token;
