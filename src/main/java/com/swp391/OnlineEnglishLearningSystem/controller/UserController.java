@@ -34,7 +34,7 @@ public class UserController {
                               Principal principal,
                               RedirectAttributes redirectAttributes) {
         try{
-            User currentUser = userService.findByEmailAndEnabledTrue(principal.getName());
+            User currentUser = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
             model.addAttribute("user", currentUser);
             return "user/userProfile";
         }catch (Exception e){
@@ -48,7 +48,7 @@ public class UserController {
                                  Model model,
                                  RedirectAttributes redirectAttributes) {
         try {
-            User user = userService.findByEmailAndEnabledTrue(principal.getName());
+            User user = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
             if (user == null) {
                 redirectAttributes.addFlashAttribute("error", "Please login first");
                 return "redirect:/login";
@@ -74,7 +74,7 @@ public class UserController {
             return "user/updateProfile";
         }
         try{
-            User user = userService.findByEmailAndEnabledTrue(principal.getName());
+            User user = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
 
             user.setFullName(updatedUser.getFullName());
             user.setDob(updatedUser.getDob());

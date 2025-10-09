@@ -55,9 +55,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByEmailAndEnabledTrue(String email) {
-        Optional<User> user = userRepository.findByEmailAndEnabledTrue(email);
-        return user.orElse(null);
+    public Optional<User> findByEmailAndEnabledTrue(String email) {
+        return userRepository.findByEmailAndEnabledTrue(email);
     }
 
     @Override
