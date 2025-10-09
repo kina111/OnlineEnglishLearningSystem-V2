@@ -126,7 +126,7 @@ public class AdminController {
             userService.ensureEmailNotExists(user.getEmail());
 
             if (avatarFile != null && !avatarFile.isEmpty()) {
-                String avatarFileName = uploadService.uploadImage(avatarFile);
+                String avatarFileName = uploadService.uploadImage(avatarFile, "avatars");
                 user.setAvatar(avatarFileName);
             }
             String plainPassword = user.getPassword();

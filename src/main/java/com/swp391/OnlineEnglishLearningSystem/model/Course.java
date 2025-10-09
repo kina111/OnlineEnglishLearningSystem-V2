@@ -4,6 +4,9 @@ package com.swp391.OnlineEnglishLearningSystem.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "courses")
 public class Course extends BaseEntity{
@@ -27,6 +30,11 @@ public class Course extends BaseEntity{
     @NotBlank(message = "Course name is required")
     @Size(min = 5, max = 100, message = "Course name must be between 5-100 characters")
     private String name;
+
+    @Column(name = "short_description",nullable = false, columnDefinition = "NVARCHAR(255)")
+    @NotBlank(message = "Short description is required")
+    @Size(min = 10, max = 200, message = "Short description must be between 10-200 characters")
+    private String shortDescription;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
     @NotBlank(message = "Description is required")
@@ -56,6 +64,13 @@ public class Course extends BaseEntity{
     @JoinColumn(name = "category_id")
     private CourseCategory category;
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Chapter> chapters = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id")
+    private User author;
+
     // Constructors - ĐÃ ĐƯỢC TỐI ƯU
     public Course() {
         this.status = CourseStatus.DRAFT;
@@ -77,6 +92,20 @@ public class Course extends BaseEntity{
         this.discount = discount;
         this.featured = featured;
         this.status = status != null ? status : CourseStatus.DRAFT;
+    }
+
+    public Course(String name, String shortDescription, String description, String prerequisite, String thumbnail, Double price, Double discount, boolean featured, CourseStatus status, int totalLesson, CourseCategory category) {
+        this.name = name;
+        this.shortDescription = shortDescription;
+        this.description = description;
+        this.prerequisite = prerequisite;
+        this.thumbnail = thumbnail;
+        this.price = price;
+        this.discount = discount;
+        this.featured = featured;
+        this.status = status;
+        this.totalLesson = totalLesson;
+        this.category = category;
     }
 
     // Thêm constructor tiện ích
@@ -167,5 +196,35 @@ public class Course extends BaseEntity{
         this.totalLesson = totalLesson;
     }
 
+    public CourseCategory getCategory() {
+        return category;
+    }
 
+    public void setCategory(CourseCategory category) {
+        this.category = category;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+    public List<Chapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<Chapter> chapters) {
+        this.chapters = chapters;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
 }

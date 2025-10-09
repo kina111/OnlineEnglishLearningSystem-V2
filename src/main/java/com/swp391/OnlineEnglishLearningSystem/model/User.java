@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -63,6 +64,9 @@ public class User extends BaseEntity implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private UserRole role;
+
+    @OneToMany(mappedBy = "author")
+    private List<Course> courses = new ArrayList<>();
 
     public User() {
     }
@@ -176,9 +180,17 @@ public class User extends BaseEntity implements UserDetails {
         this.fullName = fullName;
     }
 
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
         return List.of(authority);
     }
 

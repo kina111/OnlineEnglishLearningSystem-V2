@@ -15,9 +15,13 @@
                     <i class="fas fa-user"></i>
                     Thông tin cá nhân
                 </a>
-                <a href="#" class="dropdown-item">
+                <a href="#" class="dropdown-item" sec:authorize="hasRole('ROLE_USER')">
                     <i class="fas fa-book"></i>
                     Khóa học của tôi
+                </a>
+                <a href="/courses/create" class="dropdown-item" sec:authorize="hasRole('ROLE_EXPERT')">
+                    <i class="fas fa-book"></i>
+                    Tạo khóa học mới
                 </a>
                 <a th:href="@{/changePassword}" class="dropdown-item">
                     <i class="fas fa-key"></i>

@@ -1,12 +1,11 @@
-package com.swp391.OnlineEnglishLearningSystem.service;
+package com.swp391.OnlineEnglishLearningSystem.config;
 
 import com.swp391.OnlineEnglishLearningSystem.model.User;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
+import com.swp391.OnlineEnglishLearningSystem.service.SessionService;
+import com.swp391.OnlineEnglishLearningSystem.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -53,6 +52,8 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
 
         Map<String, String> roleTargetUrlMap = new HashMap<>();
         roleTargetUrlMap.put("ROLE_USER", "/");
+        roleTargetUrlMap.put("ROLE_EXPERT", "/");
+        roleTargetUrlMap.put("ROLE_MARKETING", "/");
         roleTargetUrlMap.put("ROLE_ADMIN", "/admin");
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

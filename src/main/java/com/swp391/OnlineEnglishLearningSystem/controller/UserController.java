@@ -49,11 +49,6 @@ public class UserController {
                                  RedirectAttributes redirectAttributes) {
         try {
             User user = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
-            if (user == null) {
-                redirectAttributes.addFlashAttribute("error", "Please login first");
-                return "redirect:/login";
-            }
-
             model.addAttribute("updatedUser", user);
             return "user/updateProfile";
 
@@ -84,7 +79,7 @@ public class UserController {
 
             if (avatarFile != null && !avatarFile.isEmpty()){
                 // Upload avatar mới
-                String avatarFileName = uploadService.uploadImage(avatarFile);
+                String avatarFileName = uploadService.uploadImage(avatarFile, "avatars");
                 user.setAvatar(avatarFileName);
             }
 
