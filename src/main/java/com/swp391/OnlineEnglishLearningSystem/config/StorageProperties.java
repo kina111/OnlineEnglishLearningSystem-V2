@@ -5,8 +5,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("storage")
 public class StorageProperties {
     private String location = "uploads";
-    private long maxFileSize = 5 * 1024 * 1024; // 5MB default
+    private long maxFileSize = 5 * 1024 * 1024;
+    private long maxVideoFileSize = 500 * 1024 * 1024;// 500MB default
     private String[] allowedExtensions = {"jpg", "jpeg", "png", "gif", "pdf", "doc", "docx"};
+    private String[] allowedVideoExtensions = {"mp4", "avi", "mkv", "mov", "webm"};
     private boolean autoCreateDir = true;
 
     // Getters and Setters
@@ -21,4 +23,20 @@ public class StorageProperties {
 
     public boolean isAutoCreateDir() { return autoCreateDir; }
     public void setAutoCreateDir(boolean autoCreateDir) { this.autoCreateDir = autoCreateDir; }
+
+    public long getMaxVideoFileSize() {
+        return maxVideoFileSize;
+    }
+
+    public void setMaxVideoFileSize(long maxVideoFileSize) {
+        this.maxVideoFileSize = maxVideoFileSize;
+    }
+
+    public String[] getAllowedVideoExtensions() {
+        return allowedVideoExtensions;
+    }
+
+    public void setAllowedVideoExtensions(String[] allowedVideoExtensions) {
+        this.allowedVideoExtensions = allowedVideoExtensions;
+    }
 }

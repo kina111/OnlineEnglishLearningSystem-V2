@@ -1,7 +1,5 @@
 package com.swp391.OnlineEnglishLearningSystem.config;
 
-import com.swp391.OnlineEnglishLearningSystem.service.CustomUserDetailsService;
-import com.swp391.OnlineEnglishLearningSystem.service.MySimpleUrlAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
