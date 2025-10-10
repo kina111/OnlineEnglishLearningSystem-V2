@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${course.name}">Tên Khóa Học</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        body { background-color: #f8f9fa; }
+        .course-hero { background-color: #2d2f31; color: white; padding: 3rem 0; }
+        .course-hero h1 { font-size: 2.5rem; font-weight: bold; }
+        .course-hero .breadcrumb a { color: #c0c4fc; text-decoration: none; }
+        .course-hero .breadcrumb a:hover { text-decoration: underline; }
+        .course-sidebar-card { position: sticky; top: 20px; }
+        .original-price { text-decoration: line-through; color: #6c757d; font-size: 1rem; margin-left: 0.5rem; }
+        .current-price { font-size: 2rem; font-weight: bold; }
+        .course-includes ul { list-style: none; padding-left: 0; }
+        .course-includes li { display: flex; align-items: center; margin-bottom: 0.5rem; }
+        .course-includes i { width: 20px; margin-right: 10px; color: #6c757d; }
+        .content-box { border: 1px solid #ddd; padding: 1.5rem; margin-bottom: 2rem; }
+        .content-box h3 { margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; }
+        .accordion-button:not(.collapsed) { color: #0d6efd; background-color: #e7f1ff; }
+        .lesson-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; }
+        .lesson-info { display: flex; align-items: center; gap: 1rem; }
+        .lesson-duration { font-size: 0.9em; color: #6c757d; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{components/header :: header}"></div>
+
+<div class="course-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" th:text="${course.category.name}">Category</a></li>
+            </ol>
+        </nav>
+        <h1 th:text="${course.name}">Course Name</h1>
+        <p class="lead" th:utext="${course.shortDescription}">Short description...</p>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-warning text-dark me-2">Bán chạy nhất</span>
+            <span class="text-warning me-1">4.7</span> <i class="fas fa-star text-warning"></i>
+            <a href="#" class="ms-2 link-light">(1,234 đánh giá)</a>
+        </div>
+        <p class="mb-0">Tạo bởi <a href="#" class="link-light" th:text="${course.author.fullName}">Author Name</a></p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row gx-5">
+        <div class="col-lg-8">
+            <div id="course-content" class="mb-4" th:data-course-id="${course.id}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h3>Nội dung khóa học</h3>
+                    <button id="add-chapter-btn" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Thêm chương
+                    </button>
+                </div>
+
+                <div class="accordion" id="chaptersAccordion">
+                    <div class="accordion-item" th:each="chapter : ${course.chapters}" th:id="'chapter-item-' + ${chapter.id}">
+                        <h2 class="accordion-header" th:id="'heading-' + ${chapter.id}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse-' + ${chapter.id}" aria-expanded="false" th:aria-controls="'collapse-' + ${chapter.id}">
+                                <span class="fw-bold" th:text="'Chương ' + ${chapter.orderNumber} + ': ' + ${chapter.title}">Chương 1: Giới thiệu</span>
+                            </button>
+                        </h2>
+                        <div th:id="'collapse-' + ${chapter.id}" class="accordion-collapse collapse" th:aria-labelledby="'heading-' + ${chapter.id}" data-bs-parent="#chaptersAccordion">
+                            <div class="accordion-body">
+                                <p class="fst-italic text-muted" th:text="${chapter.shortDescription}"></p>
+                                <hr>
+                                <!--<div th:if="${!#lists.isEmpty(chapter.lessons)}">
+                                    <div class="lesson-item" th:each="lesson : ${chapter.lessons}">
+                                        <div class="lesson-info">
+                                            <i class="far fa-play-circle text-primary"></i>
+                                            <a href="#" class="text-decoration-none text-dark" th:text="${lesson.title}">Tên bài học</a>
+                                        </div>
+                                        <span class="lesson-duration" th:text="${lesson.duration} + ' phút'">10 phút</span>
+                                    </div>
+                                </div>
+                                <p class="text-muted" th:if="${#lists.isEmpty(chapter.lessons)}">Chưa có bài học nào trong chương này.</p>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-box">
+                <h3>Mô tả</h3>
+                <div th:utext="${course.description}"></div>
+            </div>
+            <div class="content-box">
+                <h3>Yêu cầu</h3>
+                <div th:utext="${course.prerequisite}"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card course-sidebar-card shadow-sm">
+                <img th:src="@{'/uploads/' + ${course.thumbnail}}" class="card-img-top" alt="Course Thumbnail">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="current-price" th:text="${#numbers.formatCurrency(course.price * (1 - course.discount / 100.0))}"></span>
+                        <span class="original-price" th:text="${#numbers.formatCurrency(course.price)}"></span>
+                    </div>
+                    <p class="text-danger" th:text="${course.discount} + '% giảm giá'"></p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-danger btn-lg">Thêm vào giỏ hàng</button>
+                        <button class="btn btn-outline-dark btn-lg">Mua ngay</button>
+                    </div>
+                    <hr>
+                    <div class="course-includes">
+                        <h5>Khóa học này bao gồm:</h5>
+                        <ul>
+                            <li><i class="fas fa-file-alt"></i>10 bài viết</li>
+                            <li><i class="fas fa-download"></i>5 tài nguyên có thể tải xuống</li>
+                            <li><i class="fas fa-infinity"></i>Truy cập trọn đời</li>
+                            <li><i class="fas fa-certificate"></i>Chứng chỉ hoàn thành</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{components/footer :: footer}"></div>
+
+<div class="modal fade" id="addChapterModal" tabindex="-1" aria-labelledby="addChapterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addChapterModalLabel">Tạo chương mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addChapterForm" novalidate>
+                    <div class="mb-3">
+                        <label for="chapterName" class="form-label">Tên chương (Name)</label>
+                        <input type="text" class="form-control" id="chapterName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="chapterShortDescription" class="form-label">Mô tả ngắn</label>
+                        <textarea class="form-control" id="chapterShortDescription" name="shortDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" form="addChapterForm" class="btn btn-primary">Lưu lại</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- PHẦN KHAI BÁO BIẾN ĐÃ HOÀN THIỆN ---
+        const addChapterBtn = document.getElementById('add-chapter-btn');
+        const addChapterModalEl = document.getElementById('addChapterModal');
+        const addChapterModal = new bootstrap.Modal(addChapterModalEl);
+        const addChapterForm = document.getElementById('addChapterForm');
+        const courseContentDiv = document.getElementById('course-content');
+        const courseId = courseContentDiv.dataset.courseId;
+
+        // --- SỰ KIỆN MỞ MODAL ---
+        addChapterBtn.addEventListener('click', function () {
+            addChapterForm.reset(); // Xóa dữ liệu cũ trong form
+            addChapterModal.show();
+        });
+
+        // --- SỰ KIỆN SUBMIT FORM ---
+        addChapterForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const nameInput = document.getElementById('chapterName');
+            const shortDescriptionInput = document.getElementById('chapterShortDescription');
+            const name = nameInput.value.trim();
+            const shortDescription = shortDescriptionInput.value.trim();
+
+            if (!name) {
+                alert('Vui lòng nhập tên chương.');
+                nameInput.focus();
+                return;
+            }
+
+            const requestData = {
+                name: name,
+                shortDescription: shortDescription
+            };
+
+            try {
+                const response = await fetch(`/api/chapters/course/${courseId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Tên chương học ít nhất 5 kí tự và mô tả ngắn ít nhất 10 kí tự!');
+                }
+
+                const newChapter = await response.json();
+                appendNewChapterToDOM(newChapter);
+
+                addChapterModal.hide();
+            } catch (error) {
+                console.error('Lỗi:', error);
+                alert(error.message);
+            }
+        });
+
+        // HÀM TẠO HTML VÀ THÊM VÀO TRANG
+        function appendNewChapterToDOM(chapter) {
+            const accordionContainer = document.getElementById('chaptersAccordion');
+            const chapterNumber = chapter.orderNumber;
+
+            const newChapterHTML = `
+            <div class="accordion-item" id="chapter-item-${chapter.id}">
+                <h2 class="accordion-header" id="heading-${chapter.id}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${chapter.id}" aria-expanded="false" aria-controls="collapse-${chapter.id}">
+                        <span class="fw-bold">Chương ${chapterNumber}: ${chapter.name}</span>
+                    </button>
+                </h2>
+                <div id="collapse-${chapter.id}" class="accordion-collapse collapse" aria-labelledby="heading-${chapter.id}" data-bs-parent="#chaptersAccordion">
+                    <div class="accordion-body">
+                        <p class="fst-italic text-muted">${chapter.shortDescription || ''}</p>
+                        <hr>
+                        <p class="text-muted">Chưa có bài học nào trong chương này.</p>
+                    </div>
+                </div>
+            </div>
+            `;
+            accordionContainer.insertAdjacentHTML('beforeend', newChapterHTML);
+        }
+    });
+</script>
+
+</body>
+</html>

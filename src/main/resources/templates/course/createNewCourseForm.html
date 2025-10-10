@@ -55,9 +55,18 @@
                             </select>
                         </div>
 
+                        <!-- Mô tả ngắn (CKEditor) -->
+                        <div class="mb-3"></div>
+                        <div class="mb-3">
+                            <label for="shortDescription" class="form-label fw-bold">Mô tả ngắn</label>
+                            <!-- Textarea này sẽ được CKEditor chuyển đổi -->
+                            <textarea id="shortDescription" th:field="*{shortDescription}"></textarea>
+                            <span th:if="${#fields.hasErrors('shortDescription')}" th:errors="*{shortDescription}" class="text-danger"></span>
+                        </div>
+
                         <!-- Mô tả chi tiết (CKEditor) -->
                         <div class="mb-3">
-                            <label for="description" class="form-label fw-bold">Mô tả</label>
+                            <label for="description" class="form-label fw-bold">Mô tả chi tiết</label>
                             <!-- Textarea này sẽ được CKEditor chuyển đổi -->
                             <textarea id="description" th:field="*{description}"></textarea>
                             <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></span>
@@ -81,7 +90,7 @@
                     <div class="card-header fw-bold">Ảnh đại diện (Thumbnail)</div>
                     <div class="card-body text-center">
                         <img src="https://placehold.co/600x400/EFEFEF/AAAAAA?text=Preview" alt="Preview" class="preview-img" id="thumbnail-preview">
-                        <input type="file" class="form-control form-control-sm" th:field="*{thumbnailFile}" accept="image/*" onchange="previewImage()">
+                        <input type="file" class="form-control form-control-sm" th:field="*{thumbnailFile}" accept="image/*" onchange="previewImage(event)">
                         <span th:if="${#fields.hasErrors('thumbnailFile')}" th:errors="*{thumbnailFile}" class="text-danger"></span>
                     </div>
                 </div>
@@ -127,6 +136,11 @@
 
 <!-- Script khởi tạo CKEditor 5 -->
 <script>
+    ClassicEditor
+        .create( document.querySelector( '#shortDescription' ) )
+        .catch( error => {
+            console.error( 'Lỗi khi khởi tạo CKEditor cho shortDescription:', error );
+        } );
     ClassicEditor
         .create( document.querySelector( '#description' ) )
         .catch( error => {
