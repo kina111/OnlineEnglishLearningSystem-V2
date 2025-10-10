@@ -11,7 +11,7 @@ public class Chapter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(100)")
     @NotBlank(message = "Chapter name is required")
     @Size(min = 5, max = 100, message = "Chapter name must be between 5-100 characters")
     private String name;
@@ -22,8 +22,7 @@ public class Chapter {
     private String shortDescription;
 
     @Column(nullable = false, name = "order_number")
-    @NotBlank(message = "Order number is required")
-    private Long orderNum;
+    private int orderNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
@@ -33,17 +32,17 @@ public class Chapter {
         super();
     }
 
-    public Chapter(String name, String shortDescription, Long orderNum) {
+    public Chapter(String name, String shortDescription, int orderNumber) {
         super();
         this.name = name;
         this.shortDescription = shortDescription;
-        this.orderNum = orderNum;
+        this.orderNumber = orderNumber;
     }
 
-    public Chapter(String name, String shortDescription, Long orderNum, Course course) {
+    public Chapter(String name, String shortDescription, int orderNumber, Course course) {
         this.name = name;
         this.shortDescription = shortDescription;
-        this.orderNum = orderNum;
+        this.orderNumber = orderNumber;
         this.course = course;
     }
 
@@ -71,12 +70,12 @@ public class Chapter {
         this.shortDescription = shortDescription;
     }
 
-    public Long getOrderNum() {
-        return orderNum;
+    public int getOrderNumber() {
+        return orderNumber;
     }
 
-    public void setOrderNum(Long orderNum) {
-        this.orderNum = orderNum;
+    public void setOrderNumber(int orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public Course getCourse() {
