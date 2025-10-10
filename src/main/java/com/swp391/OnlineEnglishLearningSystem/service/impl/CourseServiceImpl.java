@@ -4,6 +4,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.repository.CourseCategoryRepository;
+import com.swp391.OnlineEnglishLearningSystem.repository.CourseRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +12,11 @@ import org.springframework.stereotype.Service;
 public class CourseServiceImpl implements CourseService {
 
     private CourseCategoryRepository courseCategoryRepository;
+    private final CourseRepository courseRepository;
 
-    public CourseServiceImpl(CourseCategoryRepository courseCategoryRepository) {
+    public CourseServiceImpl(CourseCategoryRepository courseCategoryRepository, CourseRepository courseRepository) {
         this.courseCategoryRepository = courseCategoryRepository;
+        this.courseRepository = courseRepository;
     }
 
     @Override
@@ -21,6 +24,7 @@ public class CourseServiceImpl implements CourseService {
         Course course = new Course();
         course.setName(courseDTO.getName());
         course.setCategory(courseCategoryRepository.getReferenceById(courseDTO.getCategoryId()));
+        course.setShortDescription(courseDTO.getShortDescription());
         course.setDescription(courseDTO.getDescription());
         course.setPrerequisite(courseDTO.getPrerequisite());
         course.setPrice(courseDTO.getPrice());
@@ -33,6 +37,6 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void save(Course newCourse) {
-
+        this.courseRepository.save(newCourse);
     }
 }

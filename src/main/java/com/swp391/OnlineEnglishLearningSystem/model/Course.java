@@ -33,12 +33,12 @@ public class Course extends BaseEntity{
 
     @Column(name = "short_description",nullable = false, columnDefinition = "NVARCHAR(255)")
     @NotBlank(message = "Short description is required")
-    @Size(min = 10, max = 200, message = "Short description must be between 10-200 characters")
+    @Size(min = 10, message = "Short description must be between 10-200 characters")
     private String shortDescription;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
     @NotBlank(message = "Description is required")
-    @Size(min = 10, max = 1000, message = "Description must be between 10-1000 characters")
+    @Size(min = 10, message = "Description must be between 10-1000 characters")
     private String description;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
@@ -52,6 +52,7 @@ public class Course extends BaseEntity{
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private Double price;
 
+    @NotNull(message = "Discount is required")
     @DecimalMin(value = "0.0", message = "Discount cannot be negative")
     @DecimalMax(value = "100.0", message = "Discount cannot exceed 100%")
     private Double discount;

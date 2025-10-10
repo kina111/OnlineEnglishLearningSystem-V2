@@ -7,6 +7,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseCategoryService;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
 import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
+import com.swp391.OnlineEnglishLearningSystem.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -27,11 +29,13 @@ public class CourseController {
     private final CourseCategoryService courseCategoryService;
     private final UploadService uploadService;
     private final CourseService courseService;
+    private final UserService userService;
 
-    public CourseController(CourseCategoryService courseCategoryService, UploadService uploadService, CourseService courseService) {
+    public CourseController(CourseCategoryService courseCategoryService, UploadService uploadService, CourseService courseService, UserService userService) {
         this.courseCategoryService = courseCategoryService;
         this.uploadService = uploadService;
         this.courseService = courseService;
+        this.userService = userService;
     }
 
     // ===================== CREATE COURSE ========================
@@ -48,7 +52,7 @@ public class CourseController {
     public String createCourse(@Valid @ModelAttribute("courseDTO") CourseDTO courseDTO,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes,
-                             Model model) {
+                             Model model, Principal principal) {
         if (bindingResult.hasErrors()) {
             List<CourseCategory> courseCategories = courseCategoryService.findAll();
             model.addAttribute("courseCategories", courseCategories);
@@ -60,10 +64,11 @@ public class CourseController {
                 String thumbnailFileName = uploadService.uploadImage(courseDTO.getThumbnailFile(), "courses/thumbnails");
                 newCourse.setThumbnail(thumbnailFileName);
             }
+            newCourse.setAuthor(userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow());
             courseService.save(newCourse);
 
             model.addAttribute("course", newCourse);
-            return "courses/update";
+            return "course/update";
         }catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/courses/create";
