@@ -2,7 +2,6 @@ package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
-import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseCategoryService;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
@@ -15,8 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -45,7 +42,7 @@ public class CourseController {
 
         model.addAttribute("courseCategories", courseCategories);
         model.addAttribute("courseDTO", new CourseDTO());
-        return "course/formToCreate";
+        return "course/createNewCourseForm";
     }
 
     @PostMapping("/create")
@@ -56,7 +53,7 @@ public class CourseController {
         if (bindingResult.hasErrors()) {
             List<CourseCategory> courseCategories = courseCategoryService.findAll();
             model.addAttribute("courseCategories", courseCategories);
-            return "course/formToCreate";
+            return "course/createNewCourseForm";
         }
         try{
             Course newCourse = courseService.buildNewCourse(courseDTO);
@@ -68,7 +65,7 @@ public class CourseController {
             courseService.save(newCourse);
 
             model.addAttribute("course", newCourse);
-            return "course/update";
+            return "course/viewAndUpdateChapter";
         }catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/courses/create";
