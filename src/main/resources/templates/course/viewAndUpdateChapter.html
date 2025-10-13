@@ -7,53 +7,54 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <!-- CKEditor -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
     <style>
-        body { background-color: #f8f9fa; }
         .course-hero { background-color: #2d2f31; color: white; padding: 3rem 0; }
-        .course-hero h1 { font-size: 2.5rem; font-weight: bold; }
-        .course-hero .breadcrumb a { color: #c0c4fc; text-decoration: none; }
-        .course-hero .breadcrumb a:hover { text-decoration: underline; }
         .course-sidebar-card { position: sticky; top: 20px; }
-        .original-price { text-decoration: line-through; color: #6c757d; font-size: 1rem; margin-left: 0.5rem; }
-        .current-price { font-size: 2rem; font-weight: bold; }
-        .course-includes ul { list-style: none; padding-left: 0; }
-        .course-includes li { display: flex; align-items: center; margin-bottom: 0.5rem; }
-        .course-includes i { width: 20px; margin-right: 10px; color: #6c757d; }
+        .original-price { text-decoration: line-through; color: #6c757d; }
         .content-box { border: 1px solid #ddd; padding: 1.5rem; margin-bottom: 2rem; }
-        .content-box h3 { margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; }
-        .accordion-button:not(.collapsed) { color: #0d6efd; background-color: #e7f1ff; }
         .lesson-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; }
-        .lesson-info { display: flex; align-items: center; gap: 1rem; }
-        .lesson-duration { font-size: 0.9em; color: #6c757d; }
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-upload-area:hover {
+            background-color: #e9ecef;
+            border-color: #6c757d;
+        }
+        .file-upload-area.dragover {
+            background-color: #d1ecf1;
+            border-color: #17a2b8;
+        }
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .ck-editor__editable {
+            min-height: 200px;
+        }
     </style>
 </head>
 <body>
 
 <div th:replace="~{components/header :: header}"></div>
 
-<div class="course-hero">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#" th:text="${course.category.name}">Category</a></li>
-            </ol>
-        </nav>
-        <h1 th:text="${course.name}">Course Name</h1>
-        <p class="lead" th:utext="${course.shortDescription}">Short description...</p>
-        <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-warning text-dark me-2">Bán chạy nhất</span>
-            <span class="text-warning me-1">4.7</span> <i class="fas fa-star text-warning"></i>
-            <a href="#" class="ms-2 link-light">(1,234 đánh giá)</a>
-        </div>
-        <p class="mb-0">Tạo bởi <a href="#" class="link-light" th:text="${course.author.fullName}">Author Name</a></p>
-    </div>
-</div>
-
+<!-- Hero Section & Main Content (giữ nguyên phần HTML của bạn) -->
+<!-- Main Content -->
 <div class="container my-5">
     <div class="row gx-5">
+        <!-- Left Column - Course Content -->
         <div class="col-lg-8">
+            <!-- Chapters Section -->
             <div id="course-content" class="mb-4" th:data-course-id="${course.id}">
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3>Nội dung khóa học</h3>
                     <button id="add-chapter-btn" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus"></i> Thêm chương
@@ -61,63 +62,109 @@
                 </div>
 
                 <div class="accordion" id="chaptersAccordion">
-                    <div class="accordion-item" th:each="chapter : ${course.chapters}" th:id="'chapter-item-' + ${chapter.id}">
-                        <h2 class="accordion-header" th:id="'heading-' + ${chapter.id}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse-' + ${chapter.id}" aria-expanded="false" th:aria-controls="'collapse-' + ${chapter.id}">
-                                <span class="fw-bold" th:text="'Chương ' + ${chapter.orderNumber} + ': ' + ${chapter.title}">Chương 1: Giới thiệu</span>
+                    <div class="accordion-item" th:each="chapter : ${course.chapters}">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    th:data-bs-target="'#collapse-' + ${chapter.id}"
+                                    th:aria-controls="'collapse-' + ${chapter.id}">
+                                <span class="fw-bold" th:text="'Chương ' + ${chapter.orderNumber} + ': ' + ${chapter.name}"></span>
                             </button>
                         </h2>
-                        <div th:id="'collapse-' + ${chapter.id}" class="accordion-collapse collapse" th:aria-labelledby="'heading-' + ${chapter.id}" data-bs-parent="#chaptersAccordion">
+                        <div th:id="'collapse-' + ${chapter.id}" class="accordion-collapse collapse"
+                             th:attr="data-bs-parent='#chaptersAccordion'">
                             <div class="accordion-body">
                                 <p class="fst-italic text-muted" th:text="${chapter.shortDescription}"></p>
                                 <hr>
-                                <!--<div th:if="${!#lists.isEmpty(chapter.lessons)}">
-                                    <div class="lesson-item" th:each="lesson : ${chapter.lessons}">
-                                        <div class="lesson-info">
-                                            <i class="far fa-play-circle text-primary"></i>
-                                            <a href="#" class="text-decoration-none text-dark" th:text="${lesson.title}">Tên bài học</a>
-                                        </div>
-                                        <span class="lesson-duration" th:text="${lesson.duration} + ' phút'">10 phút</span>
-                                    </div>
+                                <div class="mt-3 d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-outline-primary btn-sm btn-add-lesson"
+                                            th:data-chapter-id="${chapter.id}"
+                                            data-lesson-type="LECTURE">
+                                        <i class="fas fa-video"></i> Thêm Bài giảng
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm btn-add-lesson"
+                                            th:data-chapter-id="${chapter.id}"
+                                            data-lesson-type="QUIZ">
+                                        <i class="fas fa-question-circle"></i> Thêm Quiz
+                                    </button>
                                 </div>
-                                <p class="text-muted" th:if="${#lists.isEmpty(chapter.lessons)}">Chưa có bài học nào trong chương này.</p>-->
+
+                                <!-- Lessons List -->
+                                <div class="lesson-list-container mt-3">
+                                    <div th:if="${!#lists.isEmpty(chapter.lessons)}">
+                                        <div class="lesson-item d-flex justify-content-between align-items-center"
+                                             th:each="lesson : ${chapter.lessons}"
+                                             th:id="'lesson-item-' + ${lesson.id}">
+
+                                            <div class="lesson-info d-flex align-items-center">
+                                                <th:block th:switch="${lesson.lessonType.name()}">
+                                                    <i th:case="'LECTURE'" class="far fa-play-circle text-primary me-2"></i>
+                                                    <i th:case="'QUIZ'" class="far fa-question-circle text-success me-2"></i>
+                                                </th:block>
+
+                                                <a th:href="@{/courses/{courseId}/lessons/{lessonId}/edit(courseId=${course.id}, lessonId=${lesson.id})}"
+                                                   class="text-decoration-none text-dark"
+                                                   th:text="${lesson.title}">
+                                                    Tên bài học
+                                                </a>
+                                            </div>
+
+                                            <div class="lesson-actions">
+                                                <a th:if="${lesson.lessonType.name() == 'QUIZ'}"
+                                                   th:href="@{/quizzes/{id}/questions(id=${lesson.id})}"
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="fas fa-tasks"></i> Quản lý câu hỏi
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-muted text-center p-3" th:if="${#lists.isEmpty(chapter.lessons)}">
+                                        Chưa có bài học nào trong chương này.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Description & Requirements -->
             <div class="content-box">
                 <h3>Mô tả</h3>
                 <div th:utext="${course.description}"></div>
             </div>
+
             <div class="content-box">
                 <h3>Yêu cầu</h3>
                 <div th:utext="${course.prerequisite}"></div>
             </div>
         </div>
 
+        <!-- Right Column - Sidebar -->
         <div class="col-lg-4">
             <div class="card course-sidebar-card shadow-sm">
                 <img th:src="@{'/uploads/' + ${course.thumbnail}}" class="card-img-top" alt="Course Thumbnail">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-2">
-                        <span class="current-price" th:text="${#numbers.formatCurrency(course.price * (1 - course.discount / 100.0))}"></span>
+                        <span class="h4 text-danger me-2"
+                              th:text="${#numbers.formatCurrency(course.price * (1 - course.discount / 100.0))}"></span>
                         <span class="original-price" th:text="${#numbers.formatCurrency(course.price)}"></span>
                     </div>
-                    <p class="text-danger" th:text="${course.discount} + '% giảm giá'"></p>
-                    <div class="d-grid gap-2">
+                    <p class="text-danger" th:if="${course.discount > 0}"
+                       th:text="${course.discount} + '% giảm giá'"></p>
+
+                    <div class="d-grid gap-2 mb-3">
                         <button class="btn btn-danger btn-lg">Thêm vào giỏ hàng</button>
                         <button class="btn btn-outline-dark btn-lg">Mua ngay</button>
                     </div>
-                    <hr>
+
                     <div class="course-includes">
                         <h5>Khóa học này bao gồm:</h5>
-                        <ul>
-                            <li><i class="fas fa-file-alt"></i>10 bài viết</li>
-                            <li><i class="fas fa-download"></i>5 tài nguyên có thể tải xuống</li>
-                            <li><i class="fas fa-infinity"></i>Truy cập trọn đời</li>
-                            <li><i class="fas fa-certificate"></i>Chứng chỉ hoàn thành</li>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-file-alt text-muted me-2"></i>10 bài viết</li>
+                            <li><i class="fas fa-download text-muted me-2"></i>5 tài nguyên tải xuống</li>
+                            <li><i class="fas fa-infinity text-muted me-2"></i>Truy cập trọn đời</li>
+                            <li><i class="fas fa-certificate text-muted me-2"></i>Chứng chỉ hoàn thành</li>
                         </ul>
                     </div>
                 </div>
@@ -125,31 +172,107 @@
         </div>
     </div>
 </div>
+<!-- ... -->
 
-<div th:replace="~{components/footer :: footer}"></div>
-
-<div class="modal fade" id="addChapterModal" tabindex="-1" aria-labelledby="addChapterModalLabel" aria-hidden="true">
+<!-- Add Chapter Modal -->
+<div class="modal fade" id="addChapterModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addChapterModalLabel">Tạo chương mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Tạo chương mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="addChapterForm" novalidate>
+                <form id="addChapterForm">
                     <div class="mb-3">
-                        <label for="chapterName" class="form-label">Tên chương (Name)</label>
-                        <input type="text" class="form-control" id="chapterName" name="name" required>
+                        <label class="form-label">Tên chương</label>
+                        <input type="text" class="form-control" id="chapterName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="chapterShortDescription" class="form-label">Mô tả ngắn</label>
-                        <textarea class="form-control" id="chapterShortDescription" name="shortDescription" rows="3"></textarea>
+                        <label class="form-label" for="chapterShortDescription">Mô tả ngắn</label>
+                        <textarea class="form-control" id="chapterShortDescription" rows="3"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="submit" form="addChapterForm" class="btn btn-primary">Lưu lại</button>
+                <button type="button" class="btn btn-primary" id="saveChapterBtn">Lưu lại</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Lesson Modal -->
+<div class="modal fade" id="addLessonModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLessonModalTitle">Thêm bài học mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addLessonForm">
+                    <input type="hidden" id="chapterIdForLesson">
+                    <input type="hidden" id="lessonTypeForLesson">
+
+                    <div class="mb-3">
+                        <label for="lessonTitle" class="form-label">Tên bài học</label>
+                        <input type="text" class="form-control" id="lessonTitle" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lessonOrderNumber" class="form-label">Thứ tự bài học</label>
+                        <input type="number" class="form-control" id="lessonOrderNumber" min="1" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Loại bài giảng</label>
+                        <div class="form-control bg-light" id="lessonTypeDisplay"></div>
+                    </div>
+
+                    <!-- Fields for LECTURE -->
+                    <div id="lectureFields">
+                        <div class="mb-3">
+                            <label for="estimatedTime" class="form-label">Thời lượng dự kiến (phút)</label>
+                            <input type="number" class="form-control" id="estimatedTime" min="1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tải lên video</label>
+                            <div class="file-upload-area" id="videoUploadArea">
+                                <div class="file-upload-placeholder">
+                                    <i class="fas fa-cloud-upload-alt fs-1 text-muted"></i>
+                                    <p class="mt-2">Kéo thả video vào đây hoặc nhấp để chọn</p>
+                                    <small class="text-muted">Hỗ trợ: MP4, AVI, MOV (tối đa 500MB)</small>
+                                </div>
+                                <input type="file" id="videoFile" accept="video/*" style="display: none;">
+                            </div>
+                            <div class="file-info" id="videoFileInfo"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="htmlContent" class="form-label">Nội dung HTML</label>
+                            <textarea class="form-control" id="htmlContent"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Fields for QUIZ -->
+                    <div id="quizFields" style="display: none;">
+                        <div class="mb-3">
+                            <label for="passRate" class="form-label">Tỷ lệ đạt (%)</label>
+                            <input type="number" class="form-control" id="passRate" min="1" max="100">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="timeLimitInMinutes" class="form-label">Thời gian làm bài (phút)</label>
+                            <input type="number" class="form-control" id="timeLimitInMinutes" min="1">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" id="saveLessonBtn" class="btn btn-primary">Lưu lại</button>
             </div>
         </div>
     </div>
@@ -157,86 +280,288 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // --- PHẦN KHAI BÁO BIẾN ĐÃ HOÀN THIỆN ---
-        const addChapterBtn = document.getElementById('add-chapter-btn');
-        const addChapterModalEl = document.getElementById('addChapterModal');
-        const addChapterModal = new bootstrap.Modal(addChapterModalEl);
-        const addChapterForm = document.getElementById('addChapterForm');
-        const courseContentDiv = document.getElementById('course-content');
-        const courseId = courseContentDiv.dataset.courseId;
+    let editor;
 
-        // --- SỰ KIỆN MỞ MODAL ---
-        addChapterBtn.addEventListener('click', function () {
-            addChapterForm.reset(); // Xóa dữ liệu cũ trong form
-            addChapterModal.show();
-        });
+    document.addEventListener('DOMContentLoaded', function() {
+        //khởi tạo modal
+        const chapterModal = new bootstrap.Modal('#addChapterModal');
+        const lessonModal = new bootstrap.Modal('#addLessonModal');
+        const courseId = document.getElementById('course-content').dataset.courseId;
 
-        // --- SỰ KIỆN SUBMIT FORM ---
-        addChapterForm.addEventListener('submit', async function (event) {
-            event.preventDefault();
+        // Chapter events
+        document.getElementById('add-chapter-btn').onclick = () => chapterModal.show();
+        document.getElementById('saveChapterBtn').onclick = saveChapter;
 
-            const nameInput = document.getElementById('chapterName');
-            const shortDescriptionInput = document.getElementById('chapterShortDescription');
-            const name = nameInput.value.trim();
-            const shortDescription = shortDescriptionInput.value.trim();
+        // Lesson events
+        document.getElementById('saveLessonBtn').onclick = saveLesson;
+        document.getElementById('chaptersAccordion').onclick = (e) => {
+            const btn = e.target.closest('.btn-add-lesson');
+            if (btn) openAddLessonModal(btn.dataset.chapterId, btn.dataset.lessonType);
+        };
 
-            if (!name) {
-                alert('Vui lòng nhập tên chương.');
-                nameInput.focus();
-                return;
-            }
+        // Video upload handling
+        setupVideoUpload();
+    });
+    //---- xử lí video upload ----
+    function setupVideoUpload() {
+        const videoUploadArea = document.getElementById('videoUploadArea');
+        const videoFileInput = document.getElementById('videoFile');
+        const videoFileInfo = document.getElementById('videoFileInfo');
 
-            const requestData = {
-                name: name,
-                shortDescription: shortDescription
-            };
+        videoUploadArea.addEventListener('click', () => videoFileInput.click());
 
-            try {
-                const response = await fetch(`/api/chapters/course/${courseId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestData)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Tên chương học ít nhất 5 kí tự và mô tả ngắn ít nhất 10 kí tự!');
-                }
-
-                const newChapter = await response.json();
-                appendNewChapterToDOM(newChapter);
-
-                addChapterModal.hide();
-            } catch (error) {
-                console.error('Lỗi:', error);
-                alert(error.message);
+        videoFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                displayFileInfo(this.files[0]);
             }
         });
 
-        // HÀM TẠO HTML VÀ THÊM VÀO TRANG
-        function appendNewChapterToDOM(chapter) {
-            const accordionContainer = document.getElementById('chaptersAccordion');
-            const chapterNumber = chapter.orderNumber;
+        // Drag and drop
+        videoUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault(); //mặc định trình duyệt không cho thả file vào vùng bất kì
+            videoUploadArea.classList.add('dragover');
+        });
 
-            const newChapterHTML = `
-            <div class="accordion-item" id="chapter-item-${chapter.id}">
-                <h2 class="accordion-header" id="heading-${chapter.id}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${chapter.id}" aria-expanded="false" aria-controls="collapse-${chapter.id}">
-                        <span class="fw-bold">Chương ${chapterNumber}: ${chapter.name}</span>
-                    </button>
-                </h2>
-                <div id="collapse-${chapter.id}" class="accordion-collapse collapse" aria-labelledby="heading-${chapter.id}" data-bs-parent="#chaptersAccordion">
-                    <div class="accordion-body">
-                        <p class="fst-italic text-muted">${chapter.shortDescription || ''}</p>
-                        <hr>
-                        <p class="text-muted">Chưa có bài học nào trong chương này.</p>
+        videoUploadArea.addEventListener('dragleave', () => {
+            videoUploadArea.classList.remove('dragover');
+        });
+
+        videoUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            videoUploadArea.classList.remove('dragover');
+
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                videoFileInput.files = e.dataTransfer.files;
+                displayFileInfo(file);
+            }
+        });
+    }
+
+    function displayFileInfo(file) {
+        const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+        const videoFileInfo = document.getElementById('videoFileInfo');
+        videoFileInfo.innerHTML = `
+            <strong>${file.name}</strong> (${fileSize} MB)
+            <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="removeVideoBtn">Xóa</button>
+        `;
+
+        document.getElementById('removeVideoBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('videoFile').value = '';
+            videoFileInfo.innerHTML = '';
+        });
+    }
+
+    //---- xử lí thêm chapter ----
+    async function saveChapter() {
+        const name = document.getElementById('chapterName').value.trim();
+        const desc = document.getElementById('chapterShortDescription').value.trim();
+        const courseId = document.getElementById('course-content').dataset.courseId;
+
+        if (!name) return alert('Vui lòng nhập tên chương.');
+
+        try {
+            const res = await fetch(`/api/chapters/course/${courseId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, shortDescription: desc })
+            });
+            if (!res.ok) throw new Error('Tạo chương thất bại!');
+            appendNewChapter(await res.json());
+            bootstrap.Modal.getInstance('#addChapterModal').hide();
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    function appendNewChapter(chapter) {
+        const accordion = document.getElementById('chaptersAccordion');
+        const html = `
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse-${chapter.id}">
+                    <span class="fw-bold">Chương ${chapter.orderNumber}: ${chapter.name}</span>
+                </button>
+            </h2>
+            <div id="collapse-${chapter.id}" class="accordion-collapse collapse" data-bs-parent="#chaptersAccordion">
+                <div class="accordion-body">
+                    <p class="fst-italic text-muted">${chapter.shortDescription || ''}</p>
+                    <hr>
+                    <div class="mt-3 d-flex justify-content-end gap-2">
+                        <button class="btn btn-outline-primary btn-sm btn-add-lesson"
+                                data-chapter-id="${chapter.id}" data-lesson-type="LECTURE">
+                            <i class="fas fa-video"></i> Thêm Bài giảng
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm btn-add-lesson"
+                                data-chapter-id="${chapter.id}" data-lesson-type="QUIZ">
+                            <i class="fas fa-question-circle"></i> Thêm Quiz
+                        </button>
+                    </div>
+                    <div class="lesson-list-container mt-3">
+                        <p class="text-muted text-center">Chưa có bài học nào trong chương này.</p>
                     </div>
                 </div>
             </div>
-            `;
-            accordionContainer.insertAdjacentHTML('beforeend', newChapterHTML);
+        </div>`;
+        accordion.insertAdjacentHTML('beforeend', html);
+    }
+
+    //xử lí thêm lesson: lecture và quiz
+    function openAddLessonModal(chapterId, lessonType) {
+        document.getElementById('addLessonForm').reset();
+        document.getElementById('chapterIdForLesson').value = chapterId;
+        document.getElementById('lessonTypeForLesson').value = lessonType;
+
+        const modalTitle = document.getElementById('addLessonModalTitle');
+        const typeDisplay = document.getElementById('lessonTypeDisplay');
+        const lectureFields = document.getElementById('lectureFields');
+        const quizFields = document.getElementById('quizFields');
+
+        const chapterElement = document.getElementById(`collapse-${chapterId}`);
+        const currentLessonCount = chapterElement ? chapterElement.querySelectorAll('.lesson-item').length : 0;
+        document.getElementById('lessonOrderNumber').value = currentLessonCount + 1;
+
+        if (lessonType === 'LECTURE') {
+            modalTitle.textContent = 'Tạo Bài giảng mới';
+            typeDisplay.textContent = 'LECTURE';
+            lectureFields.style.display = 'block';
+            quizFields.style.display = 'none';
+
+            // Initialize CKEditor chỉ cho LECTURE
+            if (editor) {
+                editor.destroy();
+            }
+            ClassicEditor
+                .create(document.querySelector('#htmlContent'))
+                .then(newEditor => {
+                    editor = newEditor;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        } else {
+            modalTitle.textContent = 'Tạo Quiz mới';
+            typeDisplay.textContent = 'QUIZ';
+            lectureFields.style.display = 'none';
+            quizFields.style.display = 'block';
+
+            // Hủy CKEditor nếu đang có
+            if (editor) {
+                editor.destroy();
+                editor = null;
+            }
         }
-    });
+
+        bootstrap.Modal.getInstance('#addLessonModal').show();
+    }
+
+    async function saveLesson() {
+        const title = document.getElementById('lessonTitle').value.trim();
+        const chapterId = document.getElementById('chapterIdForLesson').value;
+        const lessonType = document.getElementById('lessonTypeForLesson').value;
+        const orderNumber = document.getElementById('lessonOrderNumber').value;
+
+        if (!title) return alert('Vui lòng nhập tên bài học.');
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('lessonType', lessonType);
+        formData.append('orderNumber', orderNumber);
+
+        if (lessonType === 'LECTURE') {
+            const estimatedTime = document.getElementById('estimatedTime').value;
+            const htmlContent = editor ? editor.getData() : '';
+
+            if (!/^\d+$/.test(estimatedTime)) alert('Vui lòng nhập thời lượng hợp lí.');
+            if (!htmlContent.trim()) return alert('Vui lòng nhập nội dung bài giảng.');
+
+            formData.append('estimatedTime', estimatedTime);
+            formData.append('htmlContent', htmlContent);
+
+            const videoFile = document.getElementById('videoFile').files[0];
+            if (videoFile) {
+                formData.append('video', videoFile);
+            } else {
+                return alert('Vui lòng chọn video cho bài giảng.');
+            }
+        } else {
+            const passRate = document.getElementById('passRate').value;
+            const timeLimitInMinutes = document.getElementById('timeLimitInMinutes').value;
+
+            if (isNaN(passRate) || passRate < 0 || passRate > 100) alert('Vui lòng nhập tỷ lệ đạt hợp lệ (từ 0 đến 100).');
+            if (!/^\d+$/.test(timeLimitInMinutes)) alert('Vui lòng nhập giới hạn thời gian hợp lí.');
+
+            formData.append('passRate', passRate);
+            formData.append('timeLimitInMinutes', timeLimitInMinutes);
+        }
+
+        try {
+            const res = await fetch(`/api/lessons/chapter/${chapterId}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!res.ok){
+                const errorData = await res.json();
+                throw new Error(errorData.message);
+            }
+
+            const newLesson = await res.json();
+            appendNewLesson(newLesson, chapterId);
+
+            //nếu thêm th
+            bootstrap.Modal.getInstance('#addLessonModal').hide();
+
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    function appendNewLesson(lesson, chapterId) {
+        const container = document.querySelector(`#collapse-${chapterId} .lesson-list-container`);
+        if (!container) return; // Thêm kiểm tra an toàn
+
+        const noLessonMsg = container.querySelector('p.text-muted');
+        if (noLessonMsg) {
+            noLessonMsg.remove();
+            // Đảm bảo có một div để chèn vào
+            if (!container.querySelector('div')) {
+                container.innerHTML = '<div></div>';
+            }
+        }
+
+        const iconClass = lesson.lessonType === 'LECTURE' ? 'fa-play-circle text-primary' : 'fa-question-circle text-success';
+        const courseId = document.getElementById('course-content').dataset.courseId;
+
+        // --- 1. Tạo biến chứa nút hành động, mặc định là rỗng ---
+        let actionButtons = '';
+
+        // --- 2. Kiểm tra nếu là QUIZ thì thêm nút vào biến ---
+        if (lesson.lessonType === 'QUIZ') {
+            actionButtons = `
+            <div class="lesson-actions">
+                <a href="/quizzes/${lesson.id}/questions" class="btn btn-sm btn-success">
+                    <i class="fas fa-tasks"></i> Quản lý câu hỏi
+                </a>
+            </div>
+        `;
+        }
+
+        // --- 3. Dựng HTML chính và chèn biến actionButtons vào ---
+        const html = `
+    <div class="lesson-item" id="lesson-item-${lesson.id}">
+        <div class="lesson-info">
+            <i class="far ${iconClass} me-2"></i>
+            <a href="/courses/${courseId}/lessons/${lesson.id}/edit" class="text-decoration-none text-dark">${lesson.title}</a>
+        </div>
+
+        ${actionButtons}
+    </div>`;
+
+        container.firstElementChild.insertAdjacentHTML('beforeend', html);
+    }
 </script>
 
 </body>
