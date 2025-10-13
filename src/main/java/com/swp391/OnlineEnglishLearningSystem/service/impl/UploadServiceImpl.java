@@ -47,7 +47,6 @@ public class UploadServiceImpl implements UploadService {
         if (subFolderPath.contains("..")) {
             throw new RuntimeException("Cannot store file with relative path outside current directory");
         }
-        validateFile(file, storageProperties.getMaxFileSize(), storageProperties.getAllowedExtensions());
         try{
             String fileName = generateSafeFileName(file, customFilename);
             Path targetDirectory = this.rootStorageLocation.resolve(subFolderPath);
@@ -158,7 +157,7 @@ public class UploadServiceImpl implements UploadService {
     }
 
     private void validateFileIsVideo(MultipartFile file){
-        String ext = getFileExtension(file.getOriginalFilename().replace(".",""));
+        String ext = getFileExtension(file.getOriginalFilename()).replace(".", "");
         if (!ALLOWED_VIDEO_EXTENSIONS.contains(ext.toLowerCase())){
             throw new RuntimeException("File is not a video. Allowed extensions: " + ALLOWED_VIDEO_EXTENSIONS.toString());
         }
