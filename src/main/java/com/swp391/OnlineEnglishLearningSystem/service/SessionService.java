@@ -27,12 +27,10 @@ public class SessionService {
         User currentUser = (User) session.getAttribute("currentUser");
         if (currentUser == null || !currentUser.getEmail().equals(email)) {
             // Load user từ database và lưu vào session
-            User user = userService.findByEmailAndEnabledTrue(email);
-            if (user != null) {
-                session.setAttribute("currentUserId", user.getId());
-                System.out.println("✅ User stored in session: " + user.getEmail() +
-                        " (Auth type: " + getAuthenticationType(authentication) + ")");
-            }
+            User user = userService.findByEmailAndEnabledTrue(email).orElseThrow();
+            session.setAttribute("currentUserId", user.getId());
+            System.out.println("✅ User stored in session: " + user.getEmail() +
+                    " (Auth type: " + getAuthenticationType(authentication) + ")");
         }
     }
 

@@ -34,7 +34,7 @@ public class UserController {
                               Principal principal,
                               RedirectAttributes redirectAttributes) {
         try{
-            User currentUser = userService.findByEmailAndEnabledTrue(principal.getName());
+            User currentUser = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
             model.addAttribute("user", currentUser);
             return "user/userProfile";
         }catch (Exception e){
@@ -48,12 +48,7 @@ public class UserController {
                                  Model model,
                                  RedirectAttributes redirectAttributes) {
         try {
-            User user = userService.findByEmailAndEnabledTrue(principal.getName());
-            if (user == null) {
-                redirectAttributes.addFlashAttribute("error", "Please login first");
-                return "redirect:/login";
-            }
-
+            User user = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
             model.addAttribute("updatedUser", user);
             return "user/updateProfile";
 
@@ -74,7 +69,7 @@ public class UserController {
             return "user/updateProfile";
         }
         try{
-            User user = userService.findByEmailAndEnabledTrue(principal.getName());
+            User user = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
 
             user.setFullName(updatedUser.getFullName());
             user.setDob(updatedUser.getDob());
@@ -84,7 +79,7 @@ public class UserController {
 
             if (avatarFile != null && !avatarFile.isEmpty()){
                 // Upload avatar mới
-                String avatarFileName = uploadService.uploadImage(avatarFile);
+                String avatarFileName = uploadService.uploadImage(avatarFile, "avatars");
                 user.setAvatar(avatarFileName);
             }
 

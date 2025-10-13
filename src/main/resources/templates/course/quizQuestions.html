@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Quiz - <span th:text="${lesson.title}"></span></title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        .question-card { border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 20px; }
+        .question-header { background-color: #f8f9fa; padding: 15px; border-bottom: 1px solid #dee2e6; }
+        .question-body { padding: 20px; }
+        .answer-option { border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; margin-bottom: 10px; }
+        .correct-answer { border-color: #28a745; background-color: #f8fff9; }
+        .media-preview { max-width: 200px; max-height: 150px; margin-top: 10px; }
+        .sortable-handle { cursor: move; color: #6c757d; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{components/header :: header}"></div>
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 th:text="${lesson.title}">Quiz Title</h1>
+            <p class="text-muted" th:text="'Chương: ' + ${chapter.name}"></p>
+        </div>
+        <a th:href="@{/courses/{courseId}/lessons/{lessonId}/edit(courseId=${course.id}, lessonId=${lesson.id})}"
+           class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại bài học
+        </a>
+    </div>
+
+    <!-- Thông tin quiz -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Thông tin Quiz</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Tỷ lệ đạt:</strong> <span th:text="${lesson.passRate}">0</span>%</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Thời gian làm bài:</strong> <span th:text="${lesson.timeLimitInMinute}">0</span> phút</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách questions -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Danh sách câu hỏi</h5>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+                <i class="fas fa-plus"></i> Thêm câu hỏi
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="questionsList">
+                <!-- Questions sẽ được render bằng JavaScript -->
+                <p class="text-muted text-center" th:if="${#lists.isEmpty(lesson.questions)}">
+                    Chưa có câu hỏi nào trong quiz này.
+                </p>
+
+                <div class="question-card" th:each="question : ${lesson.questions}" th:data-question-id="${question.id}">
+                    <div class="question-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-bold" th:text="'Câu ' + ${questionStat.index + 1}"></span>
+                            <span class="badge" th:classappend="${question.type == 'MULTIPLE_CHOICE'} ? 'bg-primary' : 'bg-success'"
+                                  th:text="${question.type == 'MULTIPLE_CHOICE'} ? 'Trắc nghiệm' : 'Tự luận'"></span>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary edit-question-btn"
+                                    th:data-question-id="${question.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger delete-question-btn"
+                                    th:data-question-id="${question.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <span class="sortable-handle ms-2">
+                                <i class="fas fa-bars"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="question-body">
+                        <p th:text="${question.content}">Nội dung câu hỏi</p>
+
+                        <!-- Hiển thị media -->
+                        <div th:if="${question.mediaType != 'NONE'}">
+                            <div th:if="${question.mediaType == 'IMAGE'}">
+                                <img th:src="@{'/uploads/questions/' + ${question.mediaUrl}}" class="media-preview">
+                            </div>
+                            <div th:if="${question.mediaType == 'VIDEO'}">
+                                <video controls class="media-preview">
+                                    <source th:src="@{'/uploads/questions/' + ${question.mediaUrl}}">
+                                </video>
+                            </div>
+                            <div th:if="${question.mediaType == 'AUDIO'}">
+                                <audio controls>
+                                    <source th:src="@{'/uploads/questions/' + ${question.mediaUrl}}">
+                                </audio>
+                            </div>
+                        </div>
+
+                        <!-- Hiển thị đáp án -->
+                        <div th:if="${question.type == 'SHORT_ANSWER'}">
+                            <p><strong>Đáp án:</strong> <span th:text="${question.solutionText}"></span></p>
+                        </div>
+
+                        <div th:if="${question.type == 'MULTIPLE_CHOICE'}">
+                            <p><strong>Các lựa chọn:</strong></p>
+                            <div th:each="answer : ${question.answerOptions}" class="answer-option"
+                                 th:classappend="${answer.correct} ? 'correct-answer' : ''">
+                                <span th:text="${answer.content}"></span>
+                                <span th:if="${answer.correct}" class="badge bg-success ms-2">Đúng</span>
+                                <div th:if="${answer.explanation}" class="mt-2">
+                                    <small class="text-muted"><strong>Giải thích:</strong> <span th:text="${answer.explanation}"></span></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add/Edit Question -->
+<div class="modal fade" id="addQuestionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="questionModalTitle">Thêm câu hỏi mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="questionForm" enctype="multipart/form-data">
+                    <input type="hidden" id="questionId">
+                    <input type="hidden" name="lessonId" th:value="${lesson.id}">
+
+                    <div class="mb-3">
+                        <label for="questionType" class="form-label">Loại câu hỏi</label>
+                        <select class="form-control" id="questionType" name="type" required>
+                            <option value="MULTIPLE_CHOICE">Trắc nghiệm</option>
+                            <option value="SHORT_ANSWER">Tự luận</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="questionContent" class="form-label">Nội dung câu hỏi</label>
+                        <textarea class="form-control" id="questionContent" name="content" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="mediaType" class="form-label">Loại media</label>
+                        <select class="form-control" id="mediaType" name="mediaType">
+                            <option value="NONE">Không có media</option>
+                            <option value="IMAGE">Hình ảnh</option>
+                            <option value="AUDIO">Âm thanh</option>
+                            <option value="VIDEO">Video</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="mediaUploadSection" style="display: none;">
+                        <label for="mediaFile" class="form-label">Tải lên media</label>
+                        <input type="file" class="form-control" id="mediaFile" name="mediaFile"
+                               accept="image/*,audio/*,video/*">
+                        <div class="form-text">
+                            <span id="mediaTypeHint"></span>
+                        </div>
+                    </div>
+
+                    <!-- Short Answer Fields -->
+                    <div id="shortAnswerFields" style="display: none;">
+                        <div class="mb-3">
+                            <label for="solutionText" class="form-label">Đáp án</label>
+                            <textarea class="form-control" id="solutionText" name="solutionText" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Multiple Choice Fields -->
+                    <div id="multipleChoiceFields">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <label class="form-label">Các lựa chọn</label>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="addAnswerOptionBtn">
+                                <i class="fas fa-plus"></i> Thêm lựa chọn
+                            </button>
+                        </div>
+
+                        <div id="answerOptionsContainer">
+                            <!-- Answer options sẽ được thêm bằng JavaScript -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" id="saveQuestionBtn" class="btn btn-primary">Lưu câu hỏi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let currentEditingQuestionId = null;
+    let answerOptionCount = 0;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeEventListeners();
+        setupMediaTypeHandler();
+        setupQuestionTypeHandler();
+    });
+
+    function initializeEventListeners() {
+        // Question type change
+        document.getElementById('questionType').addEventListener('change', handleQuestionTypeChange);
+
+        // Media type change
+        document.getElementById('mediaType').addEventListener('change', handleMediaTypeChange);
+
+        // Add answer option
+        document.getElementById('addAnswerOptionBtn').addEventListener('click', addAnswerOption);
+
+        // Save question
+        document.getElementById('saveQuestionBtn').addEventListener('click', saveQuestion);
+
+        // Edit question buttons
+        document.querySelectorAll('.edit-question-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const questionId = this.dataset.questionId;
+                editQuestion(questionId);
+            });
+        });
+
+        // Delete question buttons
+        document.querySelectorAll('.delete-question-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const questionId = this.dataset.questionId;
+                deleteQuestion(questionId);
+            });
+        });
+    }
+
+    function setupMediaTypeHandler() {
+        const mediaTypeSelect = document.getElementById('mediaType');
+        const mediaUploadSection = document.getElementById('mediaUploadSection');
+        const mediaTypeHint = document.getElementById('mediaTypeHint');
+
+        mediaTypeSelect.addEventListener('change', function() {
+            if (this.value === 'NONE') {
+                mediaUploadSection.style.display = 'none';
+            } else {
+                mediaUploadSection.style.display = 'block';
+                const hints = {
+                    'IMAGE': 'Hỗ trợ: JPG, PNG, GIF (tối đa 5MB)',
+                    'AUDIO': 'Hỗ trợ: MP3, WAV (tối đa 10MB)',
+                    'VIDEO': 'Hỗ trợ: MP4, AVI (tối đa 50MB)'
+                };
+                mediaTypeHint.textContent = hints[this.value];
+            }
+        });
+    }
+
+    function setupQuestionTypeHandler() {
+        const questionTypeSelect = document.getElementById('questionType');
+        const shortAnswerFields = document.getElementById('shortAnswerFields');
+        const multipleChoiceFields = document.getElementById('multipleChoiceFields');
+
+        questionTypeSelect.addEventListener('change', function() {
+            if (this.value === 'SHORT_ANSWER') {
+                shortAnswerFields.style.display = 'block';
+                multipleChoiceFields.style.display = 'none';
+            } else {
+                shortAnswerFields.style.display = 'none';
+                multipleChoiceFields.style.display = 'block';
+            }
+        });
+    }
+
+    function addAnswerOption() {
+        answerOptionCount++;
+        const container = document.getElementById('answerOptionsContainer');
+        const optionHtml = `
+            <div class="answer-option-template mb-3 p-3 border rounded">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="text" class="form-control mb-2" name="answerContents"
+                               placeholder="Nội dung lựa chọn" required>
+                        <textarea class="form-control" name="answerExplanations"
+                                  placeholder="Giải thích (tùy chọn)" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="correctAnswer"
+                                   value="${answerOptionCount}" required>
+                            <label class="form-check-label">Đáp án đúng</label>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-answer-option">
+                            <i class="fas fa-times"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', optionHtml);
+
+        // Add event listener for remove button
+        container.lastElementChild.querySelector('.remove-answer-option').addEventListener('click', function() {
+            this.closest('.answer-option-template').remove();
+        });
+    }
+
+    function handleQuestionTypeChange() {
+        const type = document.getElementById('questionType').value;
+        if (type === 'SHORT_ANSWER') {
+            document.getElementById('shortAnswerFields').style.display = 'block';
+            document.getElementById('multipleChoiceFields').style.display = 'none';
+        } else {
+            document.getElementById('shortAnswerFields').style.display = 'none';
+            document.getElementById('multipleChoiceFields').style.display = 'block';
+        }
+    }
+
+    function handleMediaTypeChange() {
+        const mediaType = document.getElementById('mediaType').value;
+        const mediaUploadSection = document.getElementById('mediaUploadSection');
+
+        if (mediaType === 'NONE') {
+            mediaUploadSection.style.display = 'none';
+        } else {
+            mediaUploadSection.style.display = 'block';
+        }
+    }
+
+    async function saveQuestion() {
+        const formData = new FormData(document.getElementById('questionForm'));
+        const questionId = document.getElementById('questionId').value;
+
+        const url = questionId ? `/api/questions/${questionId}` : '/api/questions';
+        const method = questionId ? 'PUT' : 'POST';
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Lỗi khi lưu câu hỏi');
+            }
+
+            const savedQuestion = await response.json();
+            location.reload(); // Reload để cập nhật danh sách
+
+        } catch (error) {
+            alert('Lỗi: ' + error.message);
+        }
+    }
+
+    async function editQuestion(questionId) {
+        try {
+            const response = await fetch(`/api/questions/${questionId}`);
+            if (!response.ok) throw new Error('Không thể tải thông tin câu hỏi');
+
+            const question = await response.json();
+
+            // Điền thông tin vào form
+            document.getElementById('questionModalTitle').textContent = 'Sửa câu hỏi';
+            document.getElementById('questionId').value = question.id;
+            document.getElementById('questionType').value = question.type;
+            document.getElementById('questionContent').value = question.content;
+            document.getElementById('mediaType').value = question.mediaType;
+
+            if (question.type === 'SHORT_ANSWER') {
+                document.getElementById('solutionText').value = question.solutionText || '';
+            } else {
+                // Xử lý multiple choice options
+                document.getElementById('answerOptionsContainer').innerHTML = '';
+                question.answerOptions.forEach((option, index) => {
+                    addAnswerOption();
+                    const lastOption = document.getElementById('answerOptionsContainer').lastElementChild;
+                    lastOption.querySelector('input[name="answerContents"]').value = option.content;
+                    lastOption.querySelector('textarea[name="answerExplanations"]').value = option.explanation || '';
+                    if (option.correct) {
+                        lastOption.querySelector(`input[value="${answerOptionCount}"]`).checked = true;
+                    }
+                });
+            }
+
+            // Hiển thị modal
+            const modal = new bootstrap.Modal(document.getElementById('addQuestionModal'));
+            modal.show();
+
+        } catch (error) {
+            alert('Lỗi: ' + error.message);
+        }
+    }
+
+    async function deleteQuestion(questionId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')) return;
+
+        try {
+            const response = await fetch(`/api/questions/${questionId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Không thể xóa câu hỏi');
+
+            location.reload();
+
+        } catch (error) {
+            alert('Lỗi: ' + error.message);
+        }
+    }
+</script>
+
+</body>
+</html>

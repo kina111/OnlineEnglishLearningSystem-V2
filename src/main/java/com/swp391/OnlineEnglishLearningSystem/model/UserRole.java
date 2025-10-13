@@ -15,7 +15,7 @@ public class UserRole {
     private String name;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(1000)")
     private String description;
 
     public UserRole() {

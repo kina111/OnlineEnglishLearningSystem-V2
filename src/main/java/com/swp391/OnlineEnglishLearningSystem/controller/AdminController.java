@@ -1,10 +1,8 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
+import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
-import com.swp391.OnlineEnglishLearningSystem.service.EmailService;
-import com.swp391.OnlineEnglishLearningSystem.service.RoleService;
-import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
-import com.swp391.OnlineEnglishLearningSystem.service.UserService;
+import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,13 +29,15 @@ public class AdminController {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final CourseCategoryService courseCategoryService;
 
-    public AdminController(UserService userService, UploadService uploadService, RoleService roleService, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public AdminController(UserService userService, UploadService uploadService, RoleService roleService, PasswordEncoder passwordEncoder, EmailService emailService, CourseCategoryService courseCategoryService) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.courseCategoryService = courseCategoryService;
     }
 
     //===================== DASHBOARD ========================
@@ -126,10 +126,10 @@ public class AdminController {
             userService.ensureEmailNotExists(user.getEmail());
 
             if (avatarFile != null && !avatarFile.isEmpty()) {
-                String avatarFileName = uploadService.uploadImage(avatarFile);
+                String avatarFileName = uploadService.uploadImage(avatarFile, "avatars");
                 user.setAvatar(avatarFileName);
             }
-
+            String plainPassword = user.getPassword();
             // Encode password and set default values
             String encodedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodedPassword);
@@ -140,7 +140,7 @@ public class AdminController {
 
             // Send email notification
             emailService.sendEmail(user.getEmail(), "Tài khoản đã được tạo bởi Quản trị viên",
-                    emailService.buildEmailContent(user.getPassword()));
+                    emailService.buildEmailContent(plainPassword));
 
             redirectAttributes.addFlashAttribute("successMessage", "Tạo người dùng thành công!");
             return "redirect:/admin/users";
@@ -201,6 +201,87 @@ public class AdminController {
         }catch(Exception e){
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa người dùng: " + e.getMessage());
             return "redirect:/admin/users";
+        }
+    }
+
+    //===================== COURSE CATEGORY ===============================
+    @GetMapping("/course_categories")
+    public String getCourseCategories(Model model,
+                           @RequestParam(value = "active", required = false) Boolean active,
+                           @RequestParam(value = "search", required = false) String search,
+                           @RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "10") int size) {
+
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<CourseCategory> courseCategoryPage = this.courseCategoryService.getCourseCategoriesWithSpecs(pageable, active, search);
+
+        model.addAttribute("courseCategoryPage", courseCategoryPage);
+
+        int totalPages = courseCategoryPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().toList();
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+        return "admin/courseCategory/list";
+    }
+
+    @GetMapping("/course_categories/create")
+    public String createCourseCategoryForm(Model model) {
+        model.addAttribute("courseCategory", new CourseCategory());
+        return "admin/courseCategory/create";
+    }
+
+    @PostMapping("/course_categories/create")
+    public String createCourseCategory(@Valid @ModelAttribute("courseCategory") CourseCategory courseCategory,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "admin/courseCategory/create";
+        }
+        try{
+            courseCategoryService.ensureNotDuplicateName(courseCategory.getName());
+            courseCategoryService.save(courseCategory);
+            return "redirect:/admin/course_categories";
+        }catch (Exception e) {
+            bindingResult.rejectValue("name", "error.courseCategory", e.getMessage());
+            return "redirect:/admin/course_categories";
+        }
+    }
+
+    @GetMapping("/course_categories/update/{id}")
+    public String createCourseCategoryForm(@PathVariable("id") Long id, Model model,
+                                           RedirectAttributes redirectAttributes) {
+        try{
+            CourseCategory cc = this.courseCategoryService.getById(id);
+            model.addAttribute("courseCategory", cc);
+            return "admin/courseCategory/update";
+        }catch (Exception e) {
+            return "redirect:/admin/course_categories";
+        }
+    }
+
+    @PostMapping("course_categories/update")
+    public String updateCourseCategory(@Valid @ModelAttribute("courseCategory") CourseCategory courseCategory,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "admin/courseCategory/update";
+        }
+        try{
+            CourseCategory cc = this.courseCategoryService.getById(courseCategory.getId());
+            this.courseCategoryService.ensureNotDuplicateName(courseCategory.getName());
+
+            cc.setName(courseCategory.getName());
+            cc.setDescription(courseCategory.getDescription());
+            cc.setActive(courseCategory.isActive());
+            this.courseCategoryService.save(cc);
+
+            return "redirect:/admin/course_categories";
+        }catch (Exception e) {
+            bindingResult.rejectValue("name", "error.courseCategory", e.getMessage());
+            return "redirect:/admin/course_categories";
         }
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Controller
 public class AuthController {
@@ -110,7 +111,7 @@ public class AuthController {
     public String processForgotPasswordForm(@RequestParam("email") String email,
                                             RedirectAttributes redirectAttributes) {
         try{
-            User user = userService.findByEmailAndEnabledTrue(email);
+            User user = userService.findByEmailAndEnabledTrue(email).orElseThrow();
             Token token = tokenService.create(user);
             tokenService.save(token);
             emailService.sendTokenEmail(user.getEmail(), token.getToken(), EmailService.EmailType.FORGOT_PASSWORD);
@@ -179,7 +180,7 @@ public class AuthController {
             if (!newPassword.equals(confirmedPassword)) {
                 throw new IllegalArgumentException("Passwords do not match!");
             }
-            User currentUser = userService.findByEmailAndEnabledTrue(principal.getName());
+            User currentUser = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
             if (!userService.isOldPasswordCorrect(currentUser, oldPassword)){
                 throw new IllegalArgumentException("Old password is incorrect!");
             };

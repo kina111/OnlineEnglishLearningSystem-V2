@@ -1,4 +1,4 @@
-package com.swp391.OnlineEnglishLearningSystem.service;
+package com.swp391.OnlineEnglishLearningSystem.config;
 
 import com.swp391.OnlineEnglishLearningSystem.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
