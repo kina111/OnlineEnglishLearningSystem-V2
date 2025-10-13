@@ -8,6 +8,8 @@ import com.swp391.OnlineEnglishLearningSystem.repository.CourseRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.ChapterService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ChapterServiceImpl implements ChapterService {
     private final CourseRepository courseRepository;
@@ -31,5 +33,10 @@ public class ChapterServiceImpl implements ChapterService {
         newChapter.setCourse(course);
 
         return this.chapterRepository.save(newChapter);
+    }
+
+    @Override
+    public Optional<Chapter> findById(Long chapterId) {
+        return Optional.ofNullable(chapterRepository.findById(chapterId).orElseThrow(() -> new IllegalArgumentException("Chapter not found")));
     }
 }
