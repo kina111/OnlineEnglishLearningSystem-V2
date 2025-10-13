@@ -9,4 +9,6 @@ public interface CourseService {
     Course buildNewCourse(@Valid CourseDTO courseDTO);
 
     void save(Course newCourse);
+
+    Course findById(Long id);
 }

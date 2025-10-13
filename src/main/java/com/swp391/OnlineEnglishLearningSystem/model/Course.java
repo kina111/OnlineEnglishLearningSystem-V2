@@ -65,7 +65,7 @@ public class Course extends BaseEntity{
     @JoinColumn(name = "category_id")
     private CourseCategory category;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chapter> chapters = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
