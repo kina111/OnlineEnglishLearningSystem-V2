@@ -1,4 +1,7 @@
 package com.swp391.OnlineEnglishLearningSystem.service;
 
-public interface shortAnswerOptionService {
+import com.swp391.OnlineEnglishLearningSystem.model.ShortAnswerOption;
+
+public interface ShortAnswerOptionService {
+    void save(ShortAnswerOption answerOption);
 }
