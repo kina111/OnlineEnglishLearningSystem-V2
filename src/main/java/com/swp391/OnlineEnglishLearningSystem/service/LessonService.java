@@ -6,4 +6,6 @@ public interface LessonService {
     void save(Lesson newLecture);
 
     Lesson findQuizAndQuestions(Long quizId);
+
+    Lesson findById(Long quizId);
 }

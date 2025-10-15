@@ -1,17 +1,20 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
-import com.swp391.OnlineEnglishLearningSystem.model.Chapter;
-import com.swp391.OnlineEnglishLearningSystem.model.Lesson;
-import com.swp391.OnlineEnglishLearningSystem.model.Question;
-import com.swp391.OnlineEnglishLearningSystem.service.ChapterService;
-import com.swp391.OnlineEnglishLearningSystem.service.LessonService;
-import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
+import com.swp391.OnlineEnglishLearningSystem.model.*;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.MultipleChoiceQuestionFormDTO;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.ShortAnswerQuestionFormDTO;
+import com.swp391.OnlineEnglishLearningSystem.service.*;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 public class LessonController {
@@ -19,12 +22,17 @@ public class LessonController {
     private final ChapterService chapterService;
     private final UploadService uploadService;
     private final LessonService lessonService;
+    private final QuestionService questionService;
+    private final AnswerOptionService answerOptionService;
+    private final ShortAnswerOptionService shortAnswerOptionService;
 
-
-    public LessonController(ChapterService chapterService, UploadService uploadService, LessonService lessonService) {
+    public LessonController(ChapterService chapterService, UploadService uploadService, LessonService lessonService, QuestionService questionService, AnswerOptionService answerOptionService, ShortAnswerOptionService shortAnswerOptionService) {
         this.chapterService = chapterService;
         this.uploadService = uploadService;
         this.lessonService = lessonService;
+        this.questionService = questionService;
+        this.answerOptionService = answerOptionService;
+        this.shortAnswerOptionService = shortAnswerOptionService;
     }
 
     @PostMapping("/api/lessons/chapter/{chapterId}")
@@ -76,15 +84,125 @@ public class LessonController {
     }
 
     //==== Xử lí Quiz ====
-    @GetMapping("/quizzes/{quizId}/questions")
-    public String getQuizQuestionsPage(@PathVariable("quizId") Long quizId, Model model){
-        Lesson quiz = lessonService.findQuizAndQuestions(quizId);
+    @GetMapping("/quizzes/{quizId}/questions/multiple-choice/create")
+    public String getMultipleChoiceQuestionPage(@PathVariable("quizId") Long quizId, Model model){
+        Lesson quiz = lessonService.findById(quizId);
+        MultipleChoiceQuestionFormDTO multipleChoiceQuestionFormDTO = new MultipleChoiceQuestionFormDTO();
 
+        multipleChoiceQuestionFormDTO.getAnswerOptions().add(new AnswerOption());
+        multipleChoiceQuestionFormDTO.getAnswerOptions().add(new AnswerOption());
+
+        model.addAttribute("mediaTypes", Question.MediaType.values());
         model.addAttribute("quiz", quiz);
-        model.addAttribute("questions", quiz.getQuestions());
+        model.addAttribute("multipleChoiceQuestionFormDTO", multipleChoiceQuestionFormDTO);
 
-        model.addAttribute("newQuestion", new Question());
+        return "course/createMultipleChoiceQuestion";
+    }
 
-        return "course/quizQuestions";
+    @PostMapping("/quizzes/{quizId}/questions/multiple-choice/create")
+    public String createQuizQuestion(@PathVariable("quizId") Long quizId,
+                                     @Valid @ModelAttribute("multipleChoiceQuestionFormDTO") MultipleChoiceQuestionFormDTO multipleChoiceQuestionFormDTO,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes,
+                                     Model model){
+        if (bindingResult.hasErrors()) {
+            Lesson quiz = lessonService.findById(quizId);
+            if (quiz == null) {
+                throw new IllegalArgumentException("Không tìm thấy Quiz với ID: " + quizId);
+            }
+
+            model.addAttribute("quiz", quiz); // 2. Add quiz back to the model
+            model.addAttribute("mediaTypes", Question.MediaType.values());// 3. Add mediaTypes back too
+
+            return "course/createMultipleChoiceQuestion";
+        }
+        try{
+            //save new question
+            Question newQuestion = new Question();
+            newQuestion.setQuestionType(Question.QuestionType.MULTIPLE_CHOICE);
+            newQuestion.setLesson(lessonService.findById(quizId));
+            newQuestion.setMediaType(multipleChoiceQuestionFormDTO.getMediaType());
+
+            newQuestion.setContent(multipleChoiceQuestionFormDTO.getContent());
+            if (multipleChoiceQuestionFormDTO.getMedia() != null && !multipleChoiceQuestionFormDTO.getMedia().isEmpty()){
+                String fileName = this.uploadService.uploadImage(multipleChoiceQuestionFormDTO.getMedia(), "quizzes/media");
+                newQuestion.setMediaUrl(fileName);
+            }else{
+                newQuestion.setMediaType(Question.MediaType.NONE);
+            }
+            this.questionService.save(newQuestion);
+
+            //save AnswerOption
+            List<AnswerOption> answerOptions = multipleChoiceQuestionFormDTO.getAnswerOptions();
+            answerOptions.forEach(answerOption -> {
+               answerOption.setQuestion(newQuestion);
+               this.answerOptionService.save(answerOption);
+            });
+
+            redirectAttributes.addFlashAttribute("message", "Question created successfully");
+            return "redirect:/quizzes/" + quizId;
+        }catch (Exception e){
+            bindingResult.reject("global.error", e.getMessage());
+            return "course/createMultipleChoiceQuestion";
+        }
+    }
+
+    @GetMapping("/quizzes/{quizId}/questions/short-answer/create")
+    public String getShortAnswerQuestionPage(@PathVariable("quizId") Long quizId, Model model){
+        Lesson quiz = lessonService.findById(quizId);
+        ShortAnswerQuestionFormDTO newQuestion = new ShortAnswerQuestionFormDTO();
+
+        model.addAttribute("mediaTypes", Question.MediaType.values());
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("shortAnswerQuestionFormDTO", newQuestion);
+
+        return "course/createShortAnswerQuestion";
+    }
+
+    @PostMapping("/quizzes/{quizId}/questions/short-answer/create")
+    public String createQuizQuestion(@PathVariable("quizId") Long quizId,
+                                     @Valid @ModelAttribute("shortAnswerQuestionFormDTO") ShortAnswerQuestionFormDTO shortAnswerQuestionFormDTO,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes,
+                                     Model model){
+        if (bindingResult.hasErrors()) {
+            Lesson quiz = lessonService.findById(quizId);
+            if (quiz == null) {
+                throw new IllegalArgumentException("Không tìm thấy Quiz với ID: " + quizId);
+            }
+
+            model.addAttribute("quiz", quiz); // 2. Add quiz back to the model
+            model.addAttribute("mediaTypes", Question.MediaType.values());// 3. Add mediaTypes back too
+
+            return "course/createShortAnswerQuestion";
+        }
+        try{
+            //save new question
+            Question newQuestion = new Question();
+            newQuestion.setQuestionType(Question.QuestionType.SHORT_ANSWER);
+            newQuestion.setLesson(lessonService.findById(quizId));
+            newQuestion.setMediaType(shortAnswerQuestionFormDTO.getMediaType());
+            newQuestion.setContent(shortAnswerQuestionFormDTO.getContent());
+
+            if (shortAnswerQuestionFormDTO.getMedia() != null && !shortAnswerQuestionFormDTO.getMedia().isEmpty()){
+                String fileName = this.uploadService.uploadImage(shortAnswerQuestionFormDTO.getMedia(), "quizzes/media");
+                newQuestion.setMediaUrl(fileName);
+            }else{
+                newQuestion.setMediaType(Question.MediaType.NONE);
+            }
+            this.questionService.save(newQuestion);
+
+            //save short answer option
+            ShortAnswerOption answerOption = new ShortAnswerOption();
+            answerOption.setQuestion(newQuestion);
+            answerOption.setSolutionText(shortAnswerQuestionFormDTO.getSolutionText());
+            this.shortAnswerOptionService.save(answerOption);
+
+            redirectAttributes.addFlashAttribute("message", "Question created successfully");
+            return "redirect:/quizzes/" + quizId;
+        }catch (Exception e){
+            bindingResult.reject("global.error", e.getMessage());
+            return "course/createShortAnswerQuestion";
+        }
     }
 }
