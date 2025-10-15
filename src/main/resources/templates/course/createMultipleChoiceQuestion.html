@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tạo câu hỏi mới</title>
+    <style>
+        /* CSS tương tự như trước */
+        body { font-family: sans-serif; margin: 2em; max-width: 800px; }
+        .form-group { margin-bottom: 1em; }
+        label { display: block; margin-bottom: 0.25em; }
+        input[type="text"], textarea, select { width: 100%; padding: 5px; box-sizing: border-box; }
+        .option-row { display: flex; align-items: center; margin-bottom: 0.5em; }
+        .option-row input[type="text"] { margin-right: 1em; }
+        .remove-btn { margin-left: 1em; cursor: pointer; color: red; font-weight: bold; }
+        .add-btn { margin-top: 1em; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<h1>Tạo câu hỏi mới</h1>
+
+<form th:action="@{/quizzes/{quizId}/questions/multiple-choice/create(quizId=${quiz.id})}" th:object="${questionFormDTO}" method="post" enctype="multipart/form-data">
+
+    <div class="form-group">
+        <label for="content">Nội dung câu hỏi:</label>
+        <textarea id="content" th:field="*{content}" rows="4" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="mediaType">Loại Media:</label>
+        <select id="mediaType" th:field="*{mediaType}" onchange="showUploadMedia()">
+            <option th:each="type : ${mediaTypes}"
+                    th:value="${type}"
+                    th:text="${type}">
+            </option>
+        </select>
+    </div>
+
+    <div class="form-group" id="media-upload">
+        <label for="media">Tải lên Media (nếu có):</label>
+        <input type="file" id="media" th:field="*{media}">
+    </div>
+
+    <hr>
+    <h3>Các lựa chọn trả lời:</h3>
+
+    <div id="answer-options-container">
+        <div class="option-row" th:each="option, stat : *{answerOptions}">
+            <input type="text"
+                   th:field="*{answerOptions[__${stat.index}__].content}"
+                   placeholder="Nội dung lựa chọn" required />
+            <input type="text"
+                   th:field="*{answerOptions[__${stat.index}__].explanation}"
+                   placeholder="Gợi ý, giải đáp, ..."/>
+            <input type="checkbox"
+                   th:id="'correct_' + ${stat.index}"
+                   th:field="*{answerOptions[__${stat.index}__].correct}" />
+
+            <label th:for="'correct_' + ${stat.index}">Là đáp án đúng</label>
+        </div>
+    </div>
+
+
+    <button type="button" class="add-btn" onclick="addOption()">+ Thêm lựa chọn</button>
+
+    <br><br>
+    <button type="submit">Lưu câu hỏi</button>
+</form>
+
+<script>
+    const container = document.getElementById('answer-options-container');
+
+    function addOption() {
+        const newIndex = container.getElementsByClassName('option-row').length;
+        if (newIndex >= 8) {
+            alert("Bạn chỉ có thể thêm tối đa 8 lựa chọn.");
+            return;
+        }
+        const newOptionRow = document.createElement('div');
+        newOptionRow.classList.add('option-row');
+
+        // SỬA LẠI TÊN THUỘC TÍNH CHO ĐÚNG
+        newOptionRow.innerHTML = `
+            <input type="text" name="answerOptions[${newIndex}].content" placeholder="Nội dung lựa chọn" required />
+            <input type="text" name="answerOptions[${newIndex}].explanation" placeholder="Gợi ý, giải đáp, ..." />
+            <input type="checkbox" id="correct_${newIndex}" name="answerOptions[${newIndex}].correct" />
+            <label for="correct_${newIndex}">Là đáp án đúng</label>
+            <span class="remove-btn" onclick="removeOption(this)">X</span>
+        `;
+        container.appendChild(newOptionRow);
+    }
+
+    function removeOption(button) {
+        button.closest('.option-row').remove();
+        reindexOptions();
+    }
+
+    function reindexOptions() {
+        const allOptionRows = container.getElementsByClassName('option-row');
+        for (let i = 0; i < allOptionRows.length; i++) {
+            const row = allOptionRows[i];
+            // Lấy tất cả các input trong row
+            const inputs = row.querySelectorAll('input');
+
+            // SỬA LẠI CHO ĐÚNG VỚI 3 INPUT
+            if(inputs.length >= 3) {
+                inputs[0].name = `answerOptions[${i}].content`;      // Input content
+                inputs[1].name = `answerOptions[${i}].explanation`; // Input explanation
+                inputs[2].name = `answerOptions[${i}].correct`;      // Input checkbox
+            }
+        }
+    }
+
+    function showUploadMedia() {
+        const mediaType = document.getElementById('mediaType').value;
+        document.getElementById('media-upload').style.display = (mediaType === 'NONE') ? 'none' : 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', showUploadMedia);
+</script>
+
+</body>
+</html>
