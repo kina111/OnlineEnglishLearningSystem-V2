@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuestionFormDTO {
+public class MultipleChoiceQuestionFormDTO {
     @NotBlank(message = "Question content is required")
     private String content;
 
@@ -22,11 +22,11 @@ public class QuestionFormDTO {
     @AtLeastOneCorrectAnswer(message = "At least one answer option must be marked as correct")
     private List<AnswerOption> answerOptions = new ArrayList<>();
 
-    public QuestionFormDTO() {
+    public MultipleChoiceQuestionFormDTO() {
         super();
     }
 
-    public QuestionFormDTO(String content, Question.MediaType mediaType, MultipartFile media, List<AnswerOption> answerOptions) {
+    public MultipleChoiceQuestionFormDTO(String content, Question.MediaType mediaType, MultipartFile media, List<AnswerOption> answerOptions) {
         this.content = content;
         this.mediaType = mediaType;
         this.media = media;
