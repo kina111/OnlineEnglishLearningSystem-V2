@@ -29,6 +29,7 @@ public class UploadServiceImpl implements UploadService {
 
     private static final Set<String> ALLOWED_IMAGE_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "bmp", "webp");
     private static final Set<String> ALLOWED_VIDEO_EXTENSIONS = Set.of("mp4", "avi", "mkv", "mov", "webm");
+    private static final Set<String> ALLOWED_AUDIO_EXTENSIONS = Set.of("mp3", "aac", "wav", "ogg");
 
     @Autowired
     public UploadServiceImpl(StorageProperties storageProperties) {
@@ -79,6 +80,12 @@ public class UploadServiceImpl implements UploadService {
         validateFileIsVideo(video);
         validateFile(video, storageProperties.getMaxVideoFileSize(), null);
         return uploadFile(video, subFolder, null);
+    }
+
+    public String uploadAudio(MultipartFile audio, String subFolder) {
+        validateFileIsAudio(audio);
+        validateFile(audio, storageProperties.getMaxAudioFileSize(), null);
+        return uploadFile(audio, subFolder, null);
     }
 
     @Override
@@ -160,6 +167,13 @@ public class UploadServiceImpl implements UploadService {
         String ext = getFileExtension(file.getOriginalFilename()).replace(".", "");
         if (!ALLOWED_VIDEO_EXTENSIONS.contains(ext.toLowerCase())){
             throw new RuntimeException("File is not a video. Allowed extensions: " + ALLOWED_VIDEO_EXTENSIONS.toString());
+        }
+    }
+
+    private void validateFileIsAudio(MultipartFile file){
+        String ext = getFileExtension(file.getOriginalFilename()).replace(".", "");
+        if (!ALLOWED_AUDIO_EXTENSIONS.contains(ext.toLowerCase())){
+            throw new RuntimeException("File is not an audio. Allowed extensions: " + ALLOWED_AUDIO_EXTENSIONS.toString());
         }
     }
 
