@@ -47,6 +47,23 @@
 <div th:replace="~{components/header :: header}"></div>
 
 <!-- Hero Section & Main Content (giữ nguyên phần HTML của bạn) -->
+<div class="course-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" th:text="${course.category.name}">Category</a></li>
+            </ol>
+        </nav>
+        <h1 th:text="${course.name}">Course Name</h1>
+        <p class="lead" th:utext="${course.shortDescription}">Short description...</p>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-warning text-dark me-2">Bán chạy nhất</span>
+            <span class="text-warning me-1">4.7</span> <i class="fas fa-star text-warning"></i>
+            <a href="#" class="ms-2 link-light">(1,234 đánh giá)</a>
+        </div>
+        <p class="mb-0">Tạo bởi <a href="#" class="link-light" th:text="${course.author.fullName}">Author Name</a></p>
+    </div>
+</div>
 <!-- Main Content -->
 <div class="container my-5">
     <div class="row gx-5">
@@ -112,7 +129,7 @@
                                                 <a th:if="${lesson.lessonType.name() == 'QUIZ'}"
                                                    th:href="@{/quizzes/{id}/questions(id=${lesson.id})}"
                                                    class="btn btn-sm btn-success">
-                                                    <i class="fas fa-tasks"></i> Quản lý câu hỏi
+                                                    <i class="fas fa-tasks"></i> Question Bank
                                                 </a>
                                             </div>
                                         </div>
@@ -543,7 +560,7 @@
             actionButtons = `
             <div class="lesson-actions">
                 <a href="/quizzes/${lesson.id}/questions" class="btn btn-sm btn-success">
-                    <i class="fas fa-tasks"></i> Quản lý câu hỏi
+                    <i class="fas fa-tasks"></i> Question Bank
                 </a>
             </div>
         `;
