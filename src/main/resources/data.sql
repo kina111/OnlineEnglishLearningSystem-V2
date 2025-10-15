@@ -69,3 +69,35 @@ INSERT INTO chapters (id, name, short_description, order_number, course_id) VALU
     (4, N'Kỹ năng viết Email', N'Các mẫu email thông dụng và cách sử dụng ngôn từ chuyên nghiệp.', 1, 2),
     (5, N'Tham gia họp trực tuyến', N'Các cụm từ hữu ích khi phát biểu ý kiến, đồng ý và phản đối.', 2, 2);
 SET IDENTITY_INSERT chapters OFF;
+
+-- 6. Bảng LESSONS (Phụ thuộc vào CHAPTERS)
+SET IDENTITY_INSERT lessons ON;
+INSERT INTO lessons (
+    id, title, order_number, lesson_type, estimated_time, pass_rate, time_limit_in_minutes,
+    html_content, video_url, chapter_id
+) VALUES
+      -- Quiz cho chương "Giới thiệu về IELTS Speaking" (chapter_id = 1)
+      (1, N'Quiz 1: Tổng quan IELTS Speaking', 1, 'QUIZ', 15, 60, 10,
+       N'<p>Bài kiểm tra tổng quan kiến thức cơ bản về cấu trúc và tiêu chí chấm điểm phần thi Speaking.</p>',
+       NULL, 1),
+
+      -- Quiz cho chương "Chiến lược trả lời Part 1" (chapter_id = 2)
+      (2, N'Quiz 2: Câu hỏi Part 1', 2, 'QUIZ', 20, 70, 15,
+       N'<p>Kiểm tra khả năng phản xạ và vốn từ vựng trong phần Part 1 của bài thi.</p>',
+       NULL, 2),
+
+      -- Quiz cho chương "Xây dựng bài nói Part 2" (chapter_id = 3)
+      (3, N'Quiz 3: Topic Development', 3, 'QUIZ', 25, 75, 20,
+       N'<p>Đánh giá khả năng phát triển ý tưởng và sử dụng cấu trúc nâng cao trong Part 2.</p>',
+       NULL, 3),
+
+      -- Quiz cho chương "Kỹ năng viết Email" (chapter_id = 4)
+      (4, N'Quiz 4: Email chuyên nghiệp', 1, 'QUIZ', 10, 60, 8,
+       N'<p>Bài kiểm tra chọn câu đúng về ngữ pháp và từ vựng trong Email công sở.</p>',
+       NULL, 4),
+
+      -- Quiz cho chương "Tham gia họp trực tuyến" (chapter_id = 5)
+      (5, N'Quiz 5: Giao tiếp trong cuộc họp', 2, 'QUIZ', 15, 65, 10,
+       N'<p>Bài trắc nghiệm tình huống khi tham gia thảo luận và phát biểu trong họp trực tuyến.</p>',
+       NULL, 5);
+SET IDENTITY_INSERT lessons OFF;
