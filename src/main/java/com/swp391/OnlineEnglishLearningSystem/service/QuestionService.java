@@ -1,4 +1,7 @@
 package com.swp391.OnlineEnglishLearningSystem.service;
 
-public class QuestionService {
+import com.swp391.OnlineEnglishLearningSystem.model.Question;
+
+public interface QuestionService {
+    void save(Question newQuestion);
 }
