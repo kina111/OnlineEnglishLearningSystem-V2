@@ -16,8 +16,8 @@ public class ShortAnswerOption {
     @Column(nullable = false, length = 255)
     private String solutionText; // Nội dung đáp án đúng
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "question_id")
     private Question question;
 
     public ShortAnswerOption() {
