@@ -237,8 +237,8 @@
                 </div>
 
                 <div class="question-actions">
-                    <a th:href="@{/quizzes/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.id})}" class="btn btn-edit">Chỉnh sửa</a>
-                    <form th:action="@{/quizzes/{quizId}/questions/{questionId}/delete(quizId=${quiz.id}, questionId=${question.id})}" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa câu hỏi này không?');">
+                    <a th:href="@{/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/{questionType}/update(courseId=${courseId}, quizId=${quiz.id}, questionId=${question.id}, questionType=${question.questionType.name() == 'MULTIPLE_CHOICE' ? 'multiple-choice' : 'short-answer'})}" class="btn btn-edit">Chỉnh sửa</a>
+                    <form th:action="@{/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/delete(courseId=${courseId}, quizId=${quiz.id}, questionId=${question.id})}" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa câu hỏi này không?');">
                         <button type="submit" class="btn btn-delete">Xóa</button>
                     </form>
                 </div>

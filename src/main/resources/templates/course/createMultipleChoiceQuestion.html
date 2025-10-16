@@ -168,9 +168,13 @@
 
 <div class="container">
     <div class="card">
-        <h1 class="card-header">Tạo câu hỏi trắc nghiệm</h1>
+        <h1 class="card-header" th:text="${isUpdate ? pageTitle : 'Tạo câu hỏi trắc nghiệm'}">Tạo câu hỏi trắc nghiệm</h1>
 
-        <form th:action="@{/courses/{courseId}/quizzes/{quizId}/questions/multiple-choice/create(courseId=${courseId},quizId=${quiz.id})}" th:object="${multipleChoiceQuestionFormDTO}" method="post" enctype="multipart/form-data">
+        <form enctype="multipart/form-data"
+              method="post" th:action="${isUpdate}
+                        ? @{/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/multiple-choice/update(courseId=${courseId}, quizId=${quiz.id}, questionId=${questionId})}
+                        : @{/courses/{courseId}/quizzes/{quizId}/questions/multiple-choice/create(courseId=${courseId}, quizId=${quiz.id})}"
+              th:object="${multipleChoiceQuestionFormDTO}">
             <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
             <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
                 <ul><li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li></ul>
