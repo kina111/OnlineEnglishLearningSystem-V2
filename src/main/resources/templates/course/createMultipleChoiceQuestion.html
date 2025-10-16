@@ -170,7 +170,7 @@
     <div class="card">
         <h1 class="card-header">Tạo câu hỏi trắc nghiệm</h1>
 
-        <form th:action="@{/quizzes/{quizId}/questions/multiple-choice/create(quizId=${quiz.id})}" th:object="${multipleChoiceQuestionFormDTO}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/courses/{courseId}/quizzes/{quizId}/questions/multiple-choice/create(courseId=${courseId},quizId=${quiz.id})}" th:object="${multipleChoiceQuestionFormDTO}" method="post" enctype="multipart/form-data">
             <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
             <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
                 <ul><li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li></ul>
@@ -212,7 +212,8 @@
 
             <button type="button" class="btn btn-secondary add-btn" onclick="addOption()">+ Thêm lựa chọn</button>
 
-            <div style="text-align: right; margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <button class="btn btn-primary"><a th:href="@{/courses/{courseId}/quizzes/{quizId}/questions(courseId=${courseId},quizId=${quiz.id})}" style="color: white">Trở về</a></button>
                 <button type="submit" class="btn btn-primary">Lưu câu hỏi</button>
             </div>
         </form>
@@ -234,7 +235,9 @@
             <input type="text" name="answerOptions[${newIndex}].content" placeholder="Nội dung lựa chọn" required />
             <input type="text" name="answerOptions[${newIndex}].explanation" placeholder="Giải thích (tùy chọn)" />
             <div class="checkbox-group">
-                 <input type="checkbox" id="correct_${newIndex}" name="answerOptions[${newIndex}].correct" />
+                <!-- quan trọng, nếu k tick, mặc định là gửi giá trị false -->
+                 <input type="hidden" name="answerOptions[${newIndex}].correct" value="false"/>
+                 <input type="checkbox" id="correct_${newIndex}" name="answerOptions[${newIndex}].correct"/>
                  <label for="correct_${newIndex}">Đáp án đúng</label>
             </div>
             <span class="remove-btn" onclick="removeOption(this)" title="Xóa lựa chọn">&times;</span>
