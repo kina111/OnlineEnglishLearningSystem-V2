@@ -108,6 +108,7 @@ public class LessonController {
         multipleChoiceQuestionFormDTO.getAnswerOptions().add(new AnswerOption());
         multipleChoiceQuestionFormDTO.getAnswerOptions().add(new AnswerOption());
 
+        model.addAttribute("isUpdate", false);
         model.addAttribute("mediaTypes", Question.MediaType.values());
         model.addAttribute("quiz", quiz);
         model.addAttribute("courseId", courseId);
@@ -128,6 +129,7 @@ public class LessonController {
             if (quiz == null) {
                 throw new IllegalArgumentException("Không tìm thấy Quiz với ID: " + quizId);
             }
+            model.addAttribute("isUpdate", false);
             model.addAttribute("courseId", courseId);
             model.addAttribute("quiz", quiz); // 2. Add quiz back to the model
             model.addAttribute("mediaTypes", Question.MediaType.values());// 3. Add mediaTypes back too
@@ -172,6 +174,7 @@ public class LessonController {
         Lesson quiz = lessonService.findById(quizId);
         ShortAnswerQuestionFormDTO newQuestion = new ShortAnswerQuestionFormDTO();
 
+        model.addAttribute("isUpdate", false);
         model.addAttribute("courseId", courseId);
         model.addAttribute("mediaTypes", Question.MediaType.values());
         model.addAttribute("quiz", quiz);
@@ -192,6 +195,7 @@ public class LessonController {
             if (quiz == null) {
                 throw new IllegalArgumentException("Không tìm thấy Quiz với ID: " + quizId);
             }
+            model.addAttribute("isUpdate", false);
             model.addAttribute("courseId", courseId);
             model.addAttribute("quiz", quiz); // 2. Add quiz back to the model
             model.addAttribute("mediaTypes", Question.MediaType.values());// 3. Add mediaTypes back too
@@ -226,5 +230,185 @@ public class LessonController {
             bindingResult.reject("global.error", e.getMessage());
             return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
         }
+    }
+
+    //===== Handle delete question =====
+    @PostMapping("/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/delete")
+    public String deleteMultipleChoiceQuestion(@PathVariable("questionId") Long questionId,
+                                               @PathVariable("courseId") Long courseId,
+                                               @PathVariable("quizId") Long quizId,
+                                               RedirectAttributes redirectAttributes,
+                                               Model model){
+        try{
+            Question question = questionService.findById(questionId);
+            questionService.delete(question);
+            redirectAttributes.addFlashAttribute("message", "Question deleted successfully");
+            return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
+        }catch (Exception e){
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
+    }
+
+
+    //==================== UPDATE MULTIPLE CHOICE QUESTION ====================
+
+    @GetMapping("/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/multiple-choice/update")
+    public String getUpdateMultipleChoiceQuestionPage(@PathVariable("questionId") Long questionId,
+                                                      @PathVariable("courseId") Long courseId,
+                                                      @PathVariable("quizId") Long quizId,
+                                                      Model model) {
+        try {
+            Question question = questionService.findByIdWithAnswerOptions(questionId);
+            Lesson quiz = lessonService.findById(quizId);
+
+            // Map từ Entity sang DTO để đổ dữ liệu vào form
+            MultipleChoiceQuestionFormDTO dto = new MultipleChoiceQuestionFormDTO();
+            dto.setContent(question.getContent());
+            dto.setMediaType(question.getMediaType());
+            // Lấy danh sách câu trả lời đã có
+            List<AnswerOption> existingOptions = question.getAnswerOptions();
+            dto.setAnswerOptions(existingOptions);
+
+            model.addAttribute("isUpdate", true); // Đánh dấu đây là form update
+            model.addAttribute("pageTitle", "Cập nhật câu hỏi trắc nghiệm");
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("questionId", questionId); // Truyền questionId để form action biết
+            model.addAttribute("multipleChoiceQuestionFormDTO", dto);
+            model.addAttribute("mediaTypes", Question.MediaType.values());
+
+            return "course/createMultipleChoiceQuestion"; // Tái sử dụng view create
+        } catch (Exception e) {
+            // Handle error, maybe redirect with an error message
+            return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
+        }
+    }
+
+    @PostMapping("/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/multiple-choice/update")
+    public String updateMultipleChoiceQuestion(@PathVariable("questionId") Long questionId,
+                                               @PathVariable("courseId") Long courseId,
+                                               @PathVariable("quizId") Long quizId,
+                                               @Valid @ModelAttribute("multipleChoiceQuestionFormDTO") MultipleChoiceQuestionFormDTO dto,
+                                               BindingResult bindingResult,
+                                               RedirectAttributes redirectAttributes,
+                                               Model model) {
+        if (bindingResult.hasErrors()) {
+            Lesson quiz = lessonService.findById(quizId);
+            model.addAttribute("isUpdate", true);
+            model.addAttribute("pageTitle", "Cập nhật câu hỏi trắc nghiệm");
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("questionId", questionId);
+            model.addAttribute("mediaTypes", Question.MediaType.values());
+            return "course/createMultipleChoiceQuestion";
+        }
+
+        try {
+            Question questionToUpdate = questionService.findById(questionId);
+            questionToUpdate.setContent(dto.getContent());
+            questionToUpdate.setMediaType(dto.getMediaType());
+
+            // Xử lý upload file mới (nếu có)
+            if (dto.getMedia() != null && !dto.getMedia().isEmpty()) {
+                String fileName = this.uploadService.uploadFile(dto.getMedia(), "quizzes/media", null);
+                questionToUpdate.setMediaUrl(fileName);
+            } else if (dto.getMediaType() == Question.MediaType.NONE) {
+                questionToUpdate.setMediaUrl(null); // Xóa media nếu người dùng chọn NONE
+            }
+
+            questionService.save(questionToUpdate);
+
+            //xóa và thêm mới các lựa chọn
+            //khi xóa ở question, các answerOption đó sẽ bị mồ côi và cũng bị xóa (do orphanRemoval = true)
+            questionToUpdate.getAnswerOptions().clear();
+
+            dto.getAnswerOptions().forEach(option -> {
+                option.setQuestion(questionToUpdate);
+                answerOptionService.save(option);
+            });
+
+            redirectAttributes.addFlashAttribute("message", "Cập nhật câu hỏi thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật câu hỏi: " + e.getMessage());
+        }
+
+        return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
+    }
+
+    //==================== UPDATE SHORT ANSWER QUESTION ====================
+
+    @GetMapping("/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/short-answer/update")
+    public String getUpdateShortAnswerQuestionPage(@PathVariable("questionId") Long questionId,
+                                                   @PathVariable("courseId") Long courseId,
+                                                   @PathVariable("quizId") Long quizId,
+                                                   Model model) {
+        try {
+            Question question = questionService.findById(questionId);
+            Lesson quiz = lessonService.findById(quizId);
+            ShortAnswerOption solution = question.getShortAnswerOption();
+
+            ShortAnswerQuestionFormDTO dto = new ShortAnswerQuestionFormDTO();
+            dto.setContent(question.getContent());
+            dto.setMediaType(question.getMediaType());
+            dto.setSolutionText(solution.getSolutionText());
+
+            model.addAttribute("isUpdate", true);
+            model.addAttribute("pageTitle", "Cập nhật câu hỏi trả lời ngắn");
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("questionId", questionId);
+            model.addAttribute("shortAnswerQuestionFormDTO", dto);
+            model.addAttribute("mediaTypes", Question.MediaType.values());
+
+            return "course/createShortAnswerQuestion"; // Tái sử dụng view create
+        } catch (Exception e) {
+            return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
+        }
+    }
+
+    @PostMapping("/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/short-answer/update")
+    public String updateShortAnswerQuestion(@PathVariable("questionId") Long questionId,
+                                            @PathVariable("courseId") Long courseId,
+                                            @PathVariable("quizId") Long quizId,
+                                            @Valid @ModelAttribute("shortAnswerQuestionFormDTO") ShortAnswerQuestionFormDTO dto,
+                                            BindingResult bindingResult,
+                                            RedirectAttributes redirectAttributes,
+                                            Model model) {
+        if (bindingResult.hasErrors()) {
+            Lesson quiz = lessonService.findById(quizId);
+            model.addAttribute("isUpdate", true);
+            model.addAttribute("pageTitle", "Cập nhật câu hỏi trả lời ngắn");
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("questionId", questionId);
+            model.addAttribute("mediaTypes", Question.MediaType.values());
+            return "course/createShortAnswerQuestion";
+        }
+
+        try {
+            Question questionToUpdate = questionService.findById(questionId);
+            questionToUpdate.setContent(dto.getContent());
+            questionToUpdate.setMediaType(dto.getMediaType());
+
+            if (dto.getMedia() != null && !dto.getMedia().isEmpty()) {
+                String fileName = this.uploadService.uploadFile(dto.getMedia(), "quizzes/media", null);
+                questionToUpdate.setMediaUrl(fileName);
+            } else if (dto.getMediaType() == Question.MediaType.NONE) {
+                questionToUpdate.setMediaUrl(null);
+            }
+
+            questionService.save(questionToUpdate);
+
+            ShortAnswerOption solution = questionToUpdate.getShortAnswerOption();
+            solution.setSolutionText(dto.getSolutionText());
+            shortAnswerOptionService.save(solution);
+
+            redirectAttributes.addFlashAttribute("message", "Cập nhật câu hỏi thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật câu hỏi: " + e.getMessage());
+        }
+
+        return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
     }
 }
