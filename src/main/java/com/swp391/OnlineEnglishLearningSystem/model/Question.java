@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "questions")
 public class Question extends BaseEntity{
@@ -48,12 +51,18 @@ public class Question extends BaseEntity{
     private MediaType mediaType; // Loại media đính kèm (nếu có)
 
     @Size(max = 2048, message = "Media URL is too long")
-    @Column(length = 2048) // Giới hạn độ dài trong CSDL
+    @Column(length = 2048, columnDefinition = "NVARCHAR(255)") // Giới hạn độ dài trong CSDL
     private String mediaUrl; // Đường dẫn tới file media
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
+
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AnswerOption> answerOptions = new ArrayList<>();
+
+    @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
+    private ShortAnswerOption shortAnswerOption;
 
     public Question() {
         super();
@@ -112,5 +121,21 @@ public class Question extends BaseEntity{
 
     public void setLesson(Lesson lesson) {
         this.lesson = lesson;
+    }
+
+    public List<AnswerOption> getAnswerOptions() {
+        return answerOptions;
+    }
+
+    public void setAnswerOptions(List<AnswerOption> answerOptions) {
+        this.answerOptions = answerOptions;
+    }
+
+    public ShortAnswerOption getShortAnswerOption() {
+        return shortAnswerOption;
+    }
+
+    public void setShortAnswerOption(ShortAnswerOption shortAnswerOption) {
+        this.shortAnswerOption = shortAnswerOption;
     }
 }
