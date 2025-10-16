@@ -35,8 +35,10 @@ public class ValidMediaTypeValidator implements ConstraintValidator<ValidMediaTy
         }
 
         // 1. Nếu người dùng chọn NONE, hoặc không upload file, thì luôn hợp lệ
-        if ( mediaFile == null ||  mediaType == Question.MediaType.NONE || mediaFile.isEmpty()) {
+        if (mediaType == Question.MediaType.NONE) {
             return true;
+        }else if (mediaFile == null || mediaFile.isEmpty()) {
+            return false;
         }
 
         // 2. Lấy phần mở rộng của file (extension)
