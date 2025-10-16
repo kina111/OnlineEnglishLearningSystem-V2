@@ -84,8 +84,24 @@ public class LessonController {
     }
 
     //==== Xử lí Quiz ====
-    @GetMapping("/quizzes/{quizId}/questions/multiple-choice/create")
-    public String getMultipleChoiceQuestionPage(@PathVariable("quizId") Long quizId, Model model){
+    @GetMapping("/courses/{courseId}/quizzes/{quizId}/questions")
+    public String getQuizQuestionBank(@PathVariable("quizId") Long id,
+                                      @PathVariable("courseId") Long courseId,
+                                      Model model){
+        try{
+            Lesson quiz = lessonService.findQuizAndQuestions(id);
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("courseId", courseId);
+            return "course/quizQuestions";
+        }catch (Exception e){
+            return "redirect:/courses/" + courseId;
+        }
+    }
+
+    @GetMapping("/courses/{courseId}/quizzes/{quizId}/questions/multiple-choice/create")
+    public String getMultipleChoiceQuestionPage(@PathVariable("courseId") Long courseId,
+                                                @PathVariable("quizId") Long quizId,
+                                                Model model){
         Lesson quiz = lessonService.findById(quizId);
         MultipleChoiceQuestionFormDTO multipleChoiceQuestionFormDTO = new MultipleChoiceQuestionFormDTO();
 
@@ -94,13 +110,15 @@ public class LessonController {
 
         model.addAttribute("mediaTypes", Question.MediaType.values());
         model.addAttribute("quiz", quiz);
+        model.addAttribute("courseId", courseId);
         model.addAttribute("multipleChoiceQuestionFormDTO", multipleChoiceQuestionFormDTO);
 
         return "course/createMultipleChoiceQuestion";
     }
 
-    @PostMapping("/quizzes/{quizId}/questions/multiple-choice/create")
-    public String createQuizQuestion(@PathVariable("quizId") Long quizId,
+    @PostMapping("/courses/{courseId}/quizzes/{quizId}/questions/multiple-choice/create")
+    public String createQuizQuestion(@PathVariable("courseId") Long courseId,
+                                     @PathVariable("quizId") Long quizId,
                                      @Valid @ModelAttribute("multipleChoiceQuestionFormDTO") MultipleChoiceQuestionFormDTO multipleChoiceQuestionFormDTO,
                                      BindingResult bindingResult,
                                      RedirectAttributes redirectAttributes,
@@ -110,7 +128,7 @@ public class LessonController {
             if (quiz == null) {
                 throw new IllegalArgumentException("Không tìm thấy Quiz với ID: " + quizId);
             }
-
+            model.addAttribute("courseId", courseId);
             model.addAttribute("quiz", quiz); // 2. Add quiz back to the model
             model.addAttribute("mediaTypes", Question.MediaType.values());// 3. Add mediaTypes back too
 
@@ -125,7 +143,7 @@ public class LessonController {
 
             newQuestion.setContent(multipleChoiceQuestionFormDTO.getContent());
             if (multipleChoiceQuestionFormDTO.getMedia() != null && !multipleChoiceQuestionFormDTO.getMedia().isEmpty()){
-                String fileName = this.uploadService.uploadImage(multipleChoiceQuestionFormDTO.getMedia(), "quizzes/media");
+                String fileName = this.uploadService.uploadFile(multipleChoiceQuestionFormDTO.getMedia(), "quizzes/media", null);
                 newQuestion.setMediaUrl(fileName);
             }else{
                 newQuestion.setMediaType(Question.MediaType.NONE);
@@ -140,18 +158,21 @@ public class LessonController {
             });
 
             redirectAttributes.addFlashAttribute("message", "Question created successfully");
-            return "redirect:/quizzes/" + quizId;
+            return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
         }catch (Exception e){
             bindingResult.reject("global.error", e.getMessage());
-            return "course/createMultipleChoiceQuestion";
+            return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
         }
     }
 
-    @GetMapping("/quizzes/{quizId}/questions/short-answer/create")
-    public String getShortAnswerQuestionPage(@PathVariable("quizId") Long quizId, Model model){
+    @GetMapping("/courses/{courseId}/quizzes/{quizId}/questions/short-answer/create")
+    public String getShortAnswerQuestionPage(@PathVariable("courseId") Long courseId,
+                                             @PathVariable("quizId") Long quizId,
+                                             Model model){
         Lesson quiz = lessonService.findById(quizId);
         ShortAnswerQuestionFormDTO newQuestion = new ShortAnswerQuestionFormDTO();
 
+        model.addAttribute("courseId", courseId);
         model.addAttribute("mediaTypes", Question.MediaType.values());
         model.addAttribute("quiz", quiz);
         model.addAttribute("shortAnswerQuestionFormDTO", newQuestion);
@@ -159,8 +180,9 @@ public class LessonController {
         return "course/createShortAnswerQuestion";
     }
 
-    @PostMapping("/quizzes/{quizId}/questions/short-answer/create")
-    public String createQuizQuestion(@PathVariable("quizId") Long quizId,
+    @PostMapping("/courses/{courseId}/quizzes/{quizId}/questions/short-answer/create")
+    public String createQuizQuestion(@PathVariable("courseId") Long courseId,
+                                     @PathVariable("quizId") Long quizId,
                                      @Valid @ModelAttribute("shortAnswerQuestionFormDTO") ShortAnswerQuestionFormDTO shortAnswerQuestionFormDTO,
                                      BindingResult bindingResult,
                                      RedirectAttributes redirectAttributes,
@@ -170,7 +192,7 @@ public class LessonController {
             if (quiz == null) {
                 throw new IllegalArgumentException("Không tìm thấy Quiz với ID: " + quizId);
             }
-
+            model.addAttribute("courseId", courseId);
             model.addAttribute("quiz", quiz); // 2. Add quiz back to the model
             model.addAttribute("mediaTypes", Question.MediaType.values());// 3. Add mediaTypes back too
 
@@ -199,10 +221,10 @@ public class LessonController {
             this.shortAnswerOptionService.save(answerOption);
 
             redirectAttributes.addFlashAttribute("message", "Question created successfully");
-            return "redirect:/quizzes/" + quizId;
+            return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
         }catch (Exception e){
             bindingResult.reject("global.error", e.getMessage());
-            return "course/createShortAnswerQuestion";
+            return "redirect:/courses/" + courseId + "/quizzes/" + quizId + "/questions";
         }
     }
 }

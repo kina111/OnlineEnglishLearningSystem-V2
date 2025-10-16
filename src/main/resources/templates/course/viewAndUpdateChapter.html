@@ -127,7 +127,7 @@
 
                                             <div class="lesson-actions">
                                                 <a th:if="${lesson.lessonType.name() == 'QUIZ'}"
-                                                   th:href="@{/quizzes/{id}/questions(id=${lesson.id})}"
+                                                   th:href="@{/courses/{courseId}/quizzes/{id}/questions(courseId=${course.id},id=${lesson.id})}"
                                                    class="btn btn-sm btn-success">
                                                     <i class="fas fa-tasks"></i> Question Bank
                                                 </a>
@@ -559,7 +559,7 @@
         if (lesson.lessonType === 'QUIZ') {
             actionButtons = `
             <div class="lesson-actions">
-                <a href="/quizzes/${lesson.id}/questions" class="btn btn-sm btn-success">
+                <a href="/courses/${courseId}/quizzes/${lesson.id}/questions" class="btn btn-sm btn-success">
                     <i class="fas fa-tasks"></i> Question Bank
                 </a>
             </div>

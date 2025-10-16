@@ -4,6 +4,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.AnswerOption;
 import com.swp391.OnlineEnglishLearningSystem.model.Question;
 import com.swp391.OnlineEnglishLearningSystem.model.ShortAnswerOption;
 import com.swp391.OnlineEnglishLearningSystem.util.AtLeastOneCorrectAnswer;
+import com.swp391.OnlineEnglishLearningSystem.util.ValidMediaType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
+@ValidMediaType
 public class ShortAnswerQuestionFormDTO {
     @NotBlank(message = "Question content is required")
     private String content;
