@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="addChapterModal" class="modal fade" id="addChapterModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo chương mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addChapterForm">
+                    <div class="mb-3">
+                        <label class="form-label">Tên chương</label>
+                        <input type="text" class="form-control" id="chapterName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="chapterShortDescription">Mô tả ngắn</label>
+                        <textarea class="form-control" id="chapterShortDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="saveChapterBtn">Lưu lại</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="addLessonModal" class="modal fade" id="addLessonModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLessonModalTitle">Thêm bài học mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addLessonForm">
+                    <input type="hidden" id="chapterIdForLesson">
+                    <input type="hidden" id="lessonTypeForLesson">
+
+                    <div class="mb-3">
+                        <label for="lessonTitle" class="form-label">Tên bài học</label>
+                        <input type="text" class="form-control" id="lessonTitle" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lessonOrderNumber" class="form-label">Thứ tự bài học</label>
+                        <input type="number" class="form-control" id="lessonOrderNumber" min="1" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Loại bài giảng</label>
+                        <div class="form-control bg-light" id="lessonTypeDisplay"></div>
+                    </div>
+
+                    <!-- Fields for LECTURE -->
+                    <div id="lectureFields">
+                        <div class="mb-3">
+                            <label for="estimatedTime" class="form-label">Thời lượng dự kiến (phút)</label>
+                            <input type="number" class="form-control" id="estimatedTime" min="1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tải lên video</label>
+                            <div class="file-upload-area" id="videoUploadArea">
+                                <div class="file-upload-placeholder">
+                                    <i class="fas fa-cloud-upload-alt fs-1 text-muted"></i>
+                                    <p class="mt-2">Kéo thả video vào đây hoặc nhấp để chọn</p>
+                                    <small class="text-muted">Hỗ trợ: MP4, AVI, MOV (tối đa 500MB)</small>
+                                </div>
+                                <input type="file" id="videoFile" accept="video/*" style="display: none;">
+                            </div>
+                            <div class="file-info" id="videoFileInfo"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="htmlContent" class="form-label">Nội dung HTML</label>
+                            <textarea class="form-control" id="htmlContent"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Fields for QUIZ -->
+                    <div id="quizFields" style="display: none;">
+                        <div class="mb-3">
+                            <lavel for="numberOfQuestions" class="form-label">Số câu hỏi</lavel>
+                            <input type="number" class="form-control" id="numberOfQuestions" min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="passRate" class="form-label">Tỷ lệ đạt (%)</label>
+                            <input type="number" class="form-control" id="passRate" min="1" max="100">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="timeLimitInMinutes" class="form-label">Thời gian làm bài (phút)</label>
+                            <input type="number" class="form-control" id="timeLimitInMinutes" min="1">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" id="saveLessonBtn" class="btn btn-primary">Lưu lại</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

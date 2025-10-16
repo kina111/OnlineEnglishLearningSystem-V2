@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tạo câu hỏi trắc nghiệm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --danger-color: #dc2626;
+            --success-color: #16a34a;
+            --border-color: #d1d5db;
+            --background-color: #f9fafb;
+            --text-color: #111827;
+            --label-color: #374151;
+            --placeholder-color: #9ca3af;
+            --card-background: #ffffff;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+        }
+
+        .card-header {
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--label-color);
+        }
+
+        input[type="text"], textarea, select, input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="file"] {
+            padding: 0.5rem;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        .btn-secondary:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .option-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto auto;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--background-color);
+            border-radius: var(--border-radius);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .remove-btn {
+            cursor: pointer;
+            color: var(--danger-color);
+            font-weight: bold;
+            font-size: 1.25rem;
+            padding: 0 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid transparent;
+        }
+        .alert-success {
+            background-color: #dcfce7;
+            color: #14532d;
+            border-color: #bbf7d0;
+        }
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+        .alert ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1 class="card-header" th:text="${isUpdate ? pageTitle : 'Tạo câu hỏi trắc nghiệm'}">Tạo câu hỏi trắc nghiệm</h1>
+
+        <form enctype="multipart/form-data"
+              method="post" th:action="${isUpdate}
+                        ? @{/courses/{courseId}/quizzes/{quizId}/questions/{questionId}/multiple-choice/update(courseId=${courseId}, quizId=${quiz.id}, questionId=${questionId})}
+                        : @{/courses/{courseId}/quizzes/{quizId}/questions/multiple-choice/create(courseId=${courseId}, quizId=${quiz.id})}"
+              th:object="${multipleChoiceQuestionFormDTO}">
+            <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                <ul><li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li></ul>
+            </div>
+
+            <div class="form-group">
+                <label for="content">Nội dung câu hỏi:</label>
+                <textarea id="content" th:field="*{content}" rows="4" required></textarea>
+                <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="mediaType">Loại Media:</label>
+                <select id="mediaType" th:field="*{mediaType}" onchange="showUploadMedia()">
+                    <option th:each="type : ${mediaTypes}" th:value="${type}" th:text="${type}"></option>
+                </select>
+            </div>
+
+            <div class="form-group" id="media-upload">
+                <label for="media">Tải lên Media (nếu có):</label>
+                <input type="file" id="media" th:field="*{media}">
+            </div>
+
+            <hr style="margin: 2rem 0;">
+            <h3>Các lựa chọn trả lời:</h3>
+            <span th:if="${#fields.hasErrors('answerOptions')}" th:errors="*{answerOptions}" class="error-message"></span>
+
+            <div id="answer-options-container">
+                <div class="option-row" th:each="option, stat : *{answerOptions}">
+                    <input type="text" th:field="*{answerOptions[__${stat.index}__].content}" placeholder="Nội dung lựa chọn" required />
+                    <input type="text" th:field="*{answerOptions[__${stat.index}__].explanation}" placeholder="Giải thích (tùy chọn)"/>
+                    <div class="checkbox-group">
+                        <input type="checkbox" th:id="'correct_' + ${stat.index}" th:field="*{answerOptions[__${stat.index}__].correct}" />
+                        <label th:for="'correct_' + ${stat.index}">Đáp án đúng</label>
+                    </div>
+                    <span class="remove-btn" onclick="removeOption(this)" title="Xóa lựa chọn">&times;</span>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary add-btn" onclick="addOption()">+ Thêm lựa chọn</button>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <button class="btn btn-primary"><a th:href="@{/courses/{courseId}/quizzes/{quizId}/questions(courseId=${courseId},quizId=${quiz.id})}" style="color: white">Trở về</a></button>
+                <button type="submit" class="btn btn-primary">Lưu câu hỏi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const container = document.getElementById('answer-options-container');
+
+    function addOption() {
+        const newIndex = container.getElementsByClassName('option-row').length;
+        if (newIndex >= 8) {
+            alert("Bạn chỉ có thể thêm tối đa 8 lựa chọn.");
+            return;
+        }
+        const newOptionRow = document.createElement('div');
+        newOptionRow.classList.add('option-row');
+        newOptionRow.innerHTML = `
+            <input type="text" name="answerOptions[${newIndex}].content" placeholder="Nội dung lựa chọn" required />
+            <input type="text" name="answerOptions[${newIndex}].explanation" placeholder="Giải thích (tùy chọn)" />
+            <div class="checkbox-group">
+                <!-- quan trọng, nếu k tick, mặc định là gửi giá trị false -->
+                 <input type="hidden" name="answerOptions[${newIndex}].correct" value="false"/>
+                 <input type="checkbox" id="correct_${newIndex}" name="answerOptions[${newIndex}].correct"/>
+                 <label for="correct_${newIndex}">Đáp án đúng</label>
+            </div>
+            <span class="remove-btn" onclick="removeOption(this)" title="Xóa lựa chọn">&times;</span>
+        `;
+        container.appendChild(newOptionRow);
+    }
+
+    function removeOption(button) {
+        if (container.getElementsByClassName('option-row').length <= 2) {
+            alert("Phải có ít nhất 2 lựa chọn.");
+            return;
+        }
+        button.closest('.option-row').remove();
+        reindexOptions();
+    }
+
+    function reindexOptions() {
+        const allOptionRows = container.getElementsByClassName('option-row');
+        for (let i = 0; i < allOptionRows.length; i++) {
+            const row = allOptionRows[i];
+            const inputs = row.querySelectorAll('input[name], textarea[name]');
+            inputs.forEach(input => {
+                let currentName = input.getAttribute('name');
+                if (currentName) {
+                    let newName = currentName.replace(/\[\d+\]/, `[${i}]`);
+                    input.setAttribute('name', newName);
+                }
+            });
+        }
+    }
+
+    function showUploadMedia() {
+        const mediaType = document.getElementById('mediaType').value;
+        document.getElementById('media-upload').style.display = (mediaType === 'NONE') ? 'none' : 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', showUploadMedia);
+</script>
+
+</body>
+</html>

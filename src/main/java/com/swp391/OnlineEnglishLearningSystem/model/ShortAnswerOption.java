@@ -16,7 +16,40 @@ public class ShortAnswerOption {
     @Column(nullable = false, length = 255)
     private String solutionText; // Nội dung đáp án đúng
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "question_id")
     private Question question;
+
+    public ShortAnswerOption() {
+        super();
+    }
+
+    public ShortAnswerOption(String solutionText, Question question) {
+        this.solutionText = solutionText;
+        this.question = question;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getSolutionText() {
+        return solutionText;
+    }
+
+    public void setSolutionText(String solutionText) {
+        this.solutionText = solutionText;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
 }

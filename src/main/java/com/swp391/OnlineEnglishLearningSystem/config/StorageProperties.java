@@ -7,6 +7,7 @@ public class StorageProperties {
     private String location = "uploads";
     private long maxFileSize = 5 * 1024 * 1024;
     private long maxVideoFileSize = 500 * 1024 * 1024;// 500MB default
+    private long maxAudioFileSize = 100 * 1024 * 1024;
     private String[] allowedExtensions = {"jpg", "jpeg", "png", "gif", "pdf", "doc", "docx"};
     private String[] allowedVideoExtensions = {"mp4", "avi", "mkv", "mov", "webm"};
     private boolean autoCreateDir = true;
@@ -30,6 +31,14 @@ public class StorageProperties {
 
     public void setMaxVideoFileSize(long maxVideoFileSize) {
         this.maxVideoFileSize = maxVideoFileSize;
+    }
+
+    public long getMaxAudioFileSize() {
+        return maxAudioFileSize;
+    }
+
+    public void setMaxAudioFileSize(long maxAudioFileSize) {
+        this.maxAudioFileSize = maxAudioFileSize;
     }
 
     public String[] getAllowedVideoExtensions() {

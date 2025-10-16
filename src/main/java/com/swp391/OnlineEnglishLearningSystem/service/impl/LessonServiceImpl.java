@@ -22,4 +22,9 @@ public class LessonServiceImpl implements LessonService {
     public Lesson findQuizAndQuestions(Long quizId) {
         return this.lessonRepository.findQuizWithQuestions(quizId).orElseThrow(() -> new IllegalArgumentException("Lesson not found"));
     }
+
+    @Override
+    public Lesson findById(Long quizId) {
+        return this.lessonRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Lesson not found"));
+    }
 }
