@@ -45,7 +45,8 @@ public class LessonController {
             @RequestParam(value = "htmlContent", required = false) String htmlContent,
             @RequestParam(value = "video", required = false) MultipartFile videoFile,
             @RequestParam(value = "passRate", required = false) Integer passRate,
-            @RequestParam(value = "timeLimitInMinutes", required = false) Integer timeLimitInMinutes){
+            @RequestParam(value = "timeLimitInMinutes", required = false) Integer timeLimitInMinutes,
+            @RequestParam(value = "numberOfQuestions", required = false) Integer numberOfQuestions){
 
         try{
             Chapter chapter = chapterService.findById(chapterId)
@@ -67,6 +68,7 @@ public class LessonController {
                     break;
                 }
                 case QUIZ -> {
+                    newLecture.setNumberOfQuestions(numberOfQuestions);
                     newLecture.setPassRate(passRate);
                     newLecture.setTimeLimitInMinutes(timeLimitInMinutes);
                     break;

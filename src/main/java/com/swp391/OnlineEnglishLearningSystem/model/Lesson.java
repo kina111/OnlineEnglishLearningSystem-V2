@@ -57,6 +57,11 @@ public class Lesson extends BaseEntity{
     @Positive(message = "Time limit must be a positive number")
     private Integer timeLimitInMinutes;
 
+    @Column(nullable = false, name = "number_of_questions")
+    @Min(value = 1, message = "Number of questions must be greater than or equal to 1")
+    @Max(value = 100, message = "Number of questions must be less than or equal to 100")
+    private Integer numberOfQuestions;
+
     @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
@@ -68,13 +73,14 @@ public class Lesson extends BaseEntity{
         super();
     }
 
-    public Lesson(String title, Integer orderNumber, LessonType lessonType, Integer estimatedTime, Integer passRate, Integer timeLimitInMinutes) {
+    public Lesson(String title, Integer orderNumber, LessonType lessonType, Integer estimatedTime, Integer passRate, Integer timeLimitInMinutes, Integer numberOfQuestions) {
         this.title = title;
         this.orderNumber = orderNumber;
         this.lessonType = lessonType;
         this.estimatedTime = estimatedTime;
         this.passRate = passRate;
         this.timeLimitInMinutes = timeLimitInMinutes;
+        this.numberOfQuestions = numberOfQuestions;
     }
 
     public Lesson(String title, Integer orderNumber, LessonType lessonType, Integer estimatedTime, Integer passRate, Integer timeLimitInMinutes, List<Question> questions, Chapter chapter) {
@@ -87,6 +93,7 @@ public class Lesson extends BaseEntity{
         this.questions = questions;
         this.chapter = chapter;
     }
+
 
     public Long getId() {
         return id;
@@ -174,5 +181,13 @@ public class Lesson extends BaseEntity{
 
     public void setHtmlContent(String htmlContent) {
         this.htmlContent = htmlContent;
+    }
+
+    public Integer getNumberOfQuestions() {
+        return numberOfQuestions;
+    }
+
+    public void setNumberOfQuestions(Integer numberOfQuestions) {
+        this.numberOfQuestions = numberOfQuestions;
     }
 }
