@@ -1,8 +1,7 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.*;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.MultipleChoiceQuestionFormDTO;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.ShortAnswerQuestionFormDTO;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.*;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -34,58 +33,99 @@ public class LessonController {
         this.answerOptionService = answerOptionService;
         this.shortAnswerOptionService = shortAnswerOptionService;
     }
-
-    @PostMapping("/api/lessons/chapter/{chapterId}")
+    //=========================================== Xử lí Lesson ===================================================
+    //--- GET LESSONS ---
+    @GetMapping("/api/chapters/{chapterId}/lessons")
     @ResponseBody
-    public ResponseEntity<?> createLesson(
-            @PathVariable("chapterId") Long chapterId,
-            @RequestParam("title") String title,
-            @RequestParam("lessonType") String lessonType,
-            @RequestParam(value = "estimatedTime", required = false) String estimatedTime,
-            @RequestParam(value = "htmlContent", required = false) String htmlContent,
-            @RequestParam(value = "video", required = false) MultipartFile videoFile,
-            @RequestParam(value = "passRate", required = false) Integer passRate,
-            @RequestParam(value = "timeLimitInMinutes", required = false) Integer timeLimitInMinutes,
-            @RequestParam(value = "numberOfQuestions", required = false) Integer numberOfQuestions){
+    public ResponseEntity<ApiResponse<List<LessonResponse>>> getLessons(@PathVariable("chapterId") Long chapterId) {
+        Chapter chapter = this.chapterService.findById(chapterId).orElseThrow(() -> new IllegalArgumentException("Chapter not found with id: " + chapterId));
+        List<Lesson> lessons = chapter.getLessons();
 
-        try{
-            Chapter chapter = chapterService.findById(chapterId)
-                    .orElseThrow(() -> new IllegalArgumentException("Chapter not found"));
-            Lesson newLecture = new Lesson();
-            newLecture.setChapter(chapter);
-            newLecture.setTitle(title);
-            newLecture.setOrderNumber(chapter.getLessons().size() + 1);
-            newLecture.setLessonType(Lesson.LessonType.valueOf(lessonType));
-
-            switch (newLecture.getLessonType()){
-                case LECTURE -> {
-                    newLecture.setEstimatedTime(Integer.parseInt(estimatedTime));
-                    newLecture.setHtmlContent(htmlContent);
-                    if (videoFile != null && !videoFile.isEmpty()){
-                        String videoUrl = uploadService.uploadVideo(videoFile, "lectures/videos");
-                        newLecture.setVideoUrl(videoUrl);
-                    }
-                    break;
-                }
-                case QUIZ -> {
-                    newLecture.setNumberOfQuestions(numberOfQuestions);
-                    newLecture.setPassRate(passRate);
-                    newLecture.setTimeLimitInMinutes(timeLimitInMinutes);
-                    break;
-                }
-                default -> {
-                    throw new IllegalArgumentException("Invalid lesson type");
-                }
-            }
-
-            this.lessonService.save(newLecture);
-            return new ResponseEntity<>(newLecture, HttpStatus.CREATED);
-        }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        List<LessonResponse> lessonResponses = lessons.stream().map(LessonResponse::new).toList();
+        ApiResponse<List<LessonResponse>> response = new ApiResponse<>(HttpStatus.OK,
+                "List of lessons",
+                lessonResponses,
+                null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //==== Xử lí Quiz ====
+    @GetMapping("/api/lessons/{lessonId}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<LessonResponse>> getLesson(@PathVariable("lessonId") Long lessonId) {
+        Lesson lesson = this.lessonService.findById(lessonId);
+        LessonResponse lessonResponse = new LessonResponse(lesson);
+
+        ApiResponse<LessonResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Details of lesson",
+                lessonResponse,
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    //--- CREATE LESSON ---
+    @PostMapping("/api/chapters/{chapterId}/lectures")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<LessonResponse>> createLecture(@PathVariable("chapterId") Long chapterId,
+                                                                     @Valid @ModelAttribute CreateLectureRequest request) { // <-- Dùng LectureRequest
+        Lesson newLesson = lessonService.createLecture(chapterId, request); // Gọi service tương ứng
+        LessonResponse lessonResponse = new LessonResponse(newLesson);
+        ApiResponse<LessonResponse> response = new ApiResponse<>(HttpStatus.CREATED, "Tạo bài giảng thành công", lessonResponse, null);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/api/chapters/{chapterId}/quizzes")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<LessonResponse>> createQuiz(@PathVariable("chapterId") Long chapterId,
+                                                                  @Valid @ModelAttribute CreateQuizRequest request) { // <-- Dùng LectureRequest
+        Lesson newLesson = lessonService.createQuiz(chapterId, request);
+        LessonResponse lessonResponse = new LessonResponse(newLesson);
+        ApiResponse<LessonResponse> response = new ApiResponse<>(HttpStatus.CREATED, "Tạo bài test thành công", lessonResponse, null);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    //--- UPDATE LESSON ---
+    @PutMapping("/api/lectures/{lectureId}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<LessonResponse>> updateLecture(@PathVariable("lectureId") Long lectureId,
+                                                                     @Valid @ModelAttribute CreateLectureRequest request){
+        Lesson lectureToUpdate = this.lessonService.updateLectureById(lectureId, request);
+
+        LessonResponse lessonResponse = new LessonResponse(lectureToUpdate);
+        ApiResponse<LessonResponse> response = new ApiResponse<>(HttpStatus.OK,
+                "Lecture updated successfully!",
+                lessonResponse,
+                null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/api/quizzes/{quizId}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<LessonResponse>> updateLecture(@PathVariable("quizId") Long quizId,
+                                                                     @Valid @ModelAttribute CreateQuizRequest request){
+        Lesson lectureToUpdate = this.lessonService.updateQuizById(quizId, request);
+
+        LessonResponse lessonResponse = new LessonResponse(lectureToUpdate);
+        ApiResponse<LessonResponse> response = new ApiResponse<>(HttpStatus.OK,
+                "Quiz updated successfully!",
+                lessonResponse,
+                null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    //--- DELETE LESSON ---
+    @DeleteMapping("/api/chapters/{chapterId}/lessons/{lessonId}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> deleteLecture(@PathVariable("chapterId") Long chapterId,
+                                                                     @PathVariable("lessonId") Long lessonId){
+        this.lessonService.deleteAndReorder(chapterId, lessonId);
+        ApiResponse<Void> response = new ApiResponse<>(HttpStatus.OK,
+                "Lesson deleted successfully!", null, null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    //============================== XỬ LÍ QUIZ ===================================
     @GetMapping("/courses/{courseId}/quizzes/{quizId}/questions")
     public String getQuizQuestionBank(@PathVariable("quizId") Long id,
                                       @PathVariable("courseId") Long courseId,
