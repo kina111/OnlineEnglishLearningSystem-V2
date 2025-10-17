@@ -14,7 +14,8 @@
         .course-sidebar-card { position: sticky; top: 20px; }
         .original-price { text-decoration: line-through; color: #6c757d; }
         .content-box { border: 1px solid #ddd; padding: 1.5rem; margin-bottom: 2rem; }
-        .lesson-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; }
+        .lesson-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #eee; }
+        .lesson-item:last-child { border-bottom: none; }
         .file-upload-area {
             border: 2px dashed #dee2e6;
             border-radius: 5px;
@@ -40,13 +41,31 @@
         .ck-editor__editable {
             min-height: 200px;
         }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .chapter-actions {
+            margin-left: auto;
+            padding-right: 1rem;
+        }
+        .lesson-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
 
 <div th:replace="~{components/header :: header}"></div>
 
-<!-- Hero Section & Main Content (giữ nguyên phần HTML của bạn) -->
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- Hero Section & Main Content -->
 <div class="course-hero">
     <div class="container">
         <nav aria-label="breadcrumb">
@@ -64,6 +83,7 @@
         <p class="mb-0">Tạo bởi <a href="#" class="link-light" th:text="${course.author.fullName}">Author Name</a></p>
     </div>
 </div>
+
 <!-- Main Content -->
 <div class="container my-5">
     <div class="row gx-5">
@@ -79,18 +99,30 @@
                 </div>
 
                 <div class="accordion" id="chaptersAccordion">
-                    <div class="accordion-item" th:each="chapter : ${course.chapters}">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    <div class="accordion-item" th:each="chapter : ${course.chapters}" th:id="'chapter-item-' + ${chapter.id}">
+                        <h2 class="accordion-header d-flex align-items-center">
+                            <button class="accordion-button collapsed flex-grow-1" type="button" data-bs-toggle="collapse"
                                     th:data-bs-target="'#collapse-' + ${chapter.id}"
                                     th:aria-controls="'collapse-' + ${chapter.id}">
-                                <span class="fw-bold" th:text="'Chương ' + ${chapter.orderNumber} + ': ' + ${chapter.name}"></span>
+                                <span class="fw-bold chapter-name-display" th:text="'Chương ' + ${chapter.orderNumber} + ': ' + ${chapter.name}"></span>
                             </button>
+                            <div class="chapter-actions ms-2 d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary btn-edit-chapter"
+                                        th:data-chapter-id="${chapter.id}"
+                                        title="Sửa chương">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete-chapter"
+                                        th:data-chapter-id="${chapter.id}"
+                                        title="Xóa chương">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </h2>
                         <div th:id="'collapse-' + ${chapter.id}" class="accordion-collapse collapse"
                              th:attr="data-bs-parent='#chaptersAccordion'">
                             <div class="accordion-body">
-                                <p class="fst-italic text-muted" th:text="${chapter.shortDescription}"></p>
+                                <p class="fst-italic text-muted chapter-short-description" th:text="${chapter.shortDescription}"></p>
                                 <hr>
                                 <div class="mt-3 d-flex justify-content-end gap-2">
                                     <button type="button" class="btn btn-outline-primary btn-sm btn-add-lesson"
@@ -126,6 +158,18 @@
                                             </div>
 
                                             <div class="lesson-actions">
+                                                <button class="btn btn-sm btn-outline-primary btn-edit-lesson"
+                                                        th:data-lesson-id="${lesson.id}"
+                                                        th:data-lesson-type="${lesson.lessonType.name()}"
+                                                        title="Sửa bài học">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger btn-delete-lesson"
+                                                        th:data-lesson-id="${lesson.id}"
+                                                        th:data-chapter-id="${chapter.id}"
+                                                        title="Xóa bài học">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                                 <a th:if="${lesson.lessonType.name() == 'QUIZ'}"
                                                    th:href="@{/courses/{courseId}/quizzes/{id}/questions(courseId=${course.id},id=${lesson.id})}"
                                                    class="btn btn-sm btn-success">
@@ -189,145 +233,199 @@
         </div>
     </div>
 </div>
-<!-- ... -->
 
-<!-- Add Modal -->
+<!-- Modals -->
 <div th:replace="~{components/modals :: addChapterModal}"></div>
 <div th:replace="~{components/modals :: addLessonModal}"></div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     let editor;
+    let editingChapterId = null;
+    let editingLessonId = null;
+    let chapterModalInstance = null;
+    let lessonModalInstance = null;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        //khởi tạo modal
-        const chapterModal = new bootstrap.Modal('#addChapterModal');
-        const lessonModal = new bootstrap.Modal('#addLessonModal');
-        const courseId = document.getElementById('course-content').dataset.courseId;
+    //------- UTILITY FUNCTIONS -------
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 3000);
+    }
+
+    function getModalInstance(modalElement) {
+        return bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    }
+
+    // --- MAIN SCRIPT ---
+    document.addEventListener('DOMContentLoaded', function (){
+        // Khởi tạo modal instances
+        chapterModalInstance = getModalInstance(document.getElementById('addChapterModal'));
+        lessonModalInstance = getModalInstance(document.getElementById('addLessonModal'));
 
         // Chapter events
-        document.getElementById('add-chapter-btn').onclick = () => chapterModal.show();
-        document.getElementById('saveChapterBtn').onclick = saveChapter;
+        document.getElementById('add-chapter-btn').addEventListener('click', openCreateChapterModal);
+        document.getElementById('saveChapterBtn').addEventListener('click', saveChapter);
 
         // Lesson events
-        document.getElementById('saveLessonBtn').onclick = saveLesson;
-        document.getElementById('chaptersAccordion').onclick = (e) => {
-            const btn = e.target.closest('.btn-add-lesson');
-            if (btn) openAddLessonModal(btn.dataset.chapterId, btn.dataset.lessonType);
-        };
+        document.getElementById('saveLessonBtn').addEventListener('click', saveLesson);
+
+        // Event delegation for dynamic buttons
+        document.getElementById('chaptersAccordion').addEventListener('click', (e) => {
+            // Edit chapter
+            const editBtn = e.target.closest('.btn-edit-chapter');
+            if (editBtn) {
+                openEditChapterModal(editBtn.dataset.chapterId);
+            }
+
+            // Delete chapter
+            const deleteBtn = e.target.closest('.btn-delete-chapter');
+            if (deleteBtn) {
+                deleteChapter(deleteBtn.dataset.chapterId);
+            }
+
+            // Add lesson
+            const addLessonBtn = e.target.closest('.btn-add-lesson');
+            if (addLessonBtn) {
+                openAddLessonModal(addLessonBtn.dataset.chapterId, addLessonBtn.dataset.lessonType);
+            }
+
+            // Edit lesson
+            const editLessonBtn = e.target.closest('.btn-edit-lesson');
+            if (editLessonBtn) {
+                openEditLessonModal(editLessonBtn.dataset.lessonId, editLessonBtn.dataset.lessonType);
+            }
+
+            // Delete lesson
+            const deleteLessonBtn = e.target.closest('.btn-delete-lesson');
+            if (deleteLessonBtn) {
+                deleteLesson(deleteLessonBtn.dataset.lessonId, deleteLessonBtn.dataset.chapterId);
+            }
+        });
 
         // Video upload handling
         setupVideoUpload();
     });
-    //---- xử lí video upload ----
-    function setupVideoUpload() {
-        const videoUploadArea = document.getElementById('videoUploadArea');
-        const videoFileInput = document.getElementById('videoFile');
-        const videoFileInfo = document.getElementById('videoFileInfo');
 
-        videoUploadArea.addEventListener('click', () => videoFileInput.click());
-
-        videoFileInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                displayFileInfo(this.files[0]);
-            }
-        });
-
-        // Drag and drop
-        videoUploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault(); //mặc định trình duyệt không cho thả file vào vùng bất kì
-            videoUploadArea.classList.add('dragover');
-        });
-
-        videoUploadArea.addEventListener('dragleave', () => {
-            videoUploadArea.classList.remove('dragover');
-        });
-
-        videoUploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            videoUploadArea.classList.remove('dragover');
-
-            if (e.dataTransfer.files.length > 0) {
-                const file = e.dataTransfer.files[0];
-                videoFileInput.files = e.dataTransfer.files;
-                displayFileInfo(file);
-            }
-        });
+    //--- CHAPTER CRUD LOGIC ---
+    function openCreateChapterModal() {
+        editingChapterId = null;
+        document.getElementById('addChapterForm').reset();
+        document.querySelector('#addChapterModal .modal-title').textContent = 'Tạo chương mới';
+        chapterModalInstance.show();
     }
 
-    function displayFileInfo(file) {
-        const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-        const videoFileInfo = document.getElementById('videoFileInfo');
-        videoFileInfo.innerHTML = `
-            <strong>${file.name}</strong> (${fileSize} MB)
-            <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="removeVideoBtn">Xóa</button>
-        `;
+    async function openEditChapterModal(chapterId) {
+        try {
+            const res = await fetch(`/api/chapters/${chapterId}`);
+            if (!res.ok) throw new Error('Không thể tải dữ liệu chương!');
 
-        document.getElementById('removeVideoBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('videoFile').value = '';
-            videoFileInfo.innerHTML = '';
-        });
+            const apiResponse = await res.json();
+            const chapter = apiResponse.data;
+            editingChapterId = chapter.id;
+
+            document.getElementById('chapterName').value = chapter.name;
+            document.getElementById('chapterShortDescription').value = chapter.shortDescription;
+            document.querySelector('#addChapterModal .modal-title').textContent = 'Cập nhật chương';
+
+            chapterModalInstance.show();
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
     }
 
-    //---- xử lí thêm chapter ----
     async function saveChapter() {
         const name = document.getElementById('chapterName').value.trim();
         const desc = document.getElementById('chapterShortDescription').value.trim();
         const courseId = document.getElementById('course-content').dataset.courseId;
 
-        if (!name) return alert('Vui lòng nhập tên chương.');
+        if (!name) {
+            showToast('Vui lòng nhập tên chương.', 'error');
+            return;
+        }
+
+        const isUpdating = editingChapterId !== null;
+        const url = isUpdating ? `/api/chapters/${editingChapterId}` : `/api/courses/${courseId}/chapters`;
+        const method = isUpdating ? 'PUT' : 'POST';
 
         try {
-            const res = await fetch(`/api/chapters/course/${courseId}`, {
-                method: 'POST',
+            const res = await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, shortDescription: desc })
             });
-            if (!res.ok) throw new Error('Tạo chương thất bại!');
-            appendNewChapter(await res.json());
-            bootstrap.Modal.getInstance('#addChapterModal').hide();
+
+            const apiResponse = await res.json();
+            if (!res.ok) throw new Error(apiResponse.message || 'Thao tác thất bại');
+
+            if (isUpdating) {
+                updateChapterInDOM(apiResponse.data);
+                showToast('Cập nhật chương thành công!');
+            } else {
+                appendNewChapter(apiResponse.data);
+                showToast('Tạo chương mới thành công!');
+            }
+
+            chapterModalInstance.hide();
         } catch (err) {
-            alert(err.message);
+            showToast(err.message, 'error');
+        }
+    }
+
+    async function deleteChapter(chapterId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa chương này không? Mọi bài học bên trong cũng sẽ bị xóa vĩnh viễn!!')) {
+            return;
+        }
+
+        const courseId = document.getElementById('course-content').dataset.courseId;
+        try {
+            const res = await fetch(`/api/courses/${courseId}/chapters/${chapterId}`, {
+                method: 'DELETE'
+            });
+
+            if (!res.ok) {
+                const errorResponse = await res.json().catch(() => null);
+                throw new Error(errorResponse?.message || 'Xóa chương thất bại!');
+            }
+
+            document.getElementById(`chapter-item-${chapterId}`).remove();
+            showToast('Xóa chương thành công');
+
+            // Reload để đảm bảo orderNumber được cập nhật chính xác
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+
+        } catch (err) {
+            showToast(err.message, 'error');
         }
     }
 
     function appendNewChapter(chapter) {
-        const accordion = document.getElementById('chaptersAccordion');
-        const html = `
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapse-${chapter.id}">
-                    <span class="fw-bold">Chương ${chapter.orderNumber}: ${chapter.name}</span>
-                </button>
-            </h2>
-            <div id="collapse-${chapter.id}" class="accordion-collapse collapse" data-bs-parent="#chaptersAccordion">
-                <div class="accordion-body">
-                    <p class="fst-italic text-muted">${chapter.shortDescription || ''}</p>
-                    <hr>
-                    <div class="mt-3 d-flex justify-content-end gap-2">
-                        <button class="btn btn-outline-primary btn-sm btn-add-lesson"
-                                data-chapter-id="${chapter.id}" data-lesson-type="LECTURE">
-                            <i class="fas fa-video"></i> Thêm Bài giảng
-                        </button>
-                        <button class="btn btn-outline-secondary btn-sm btn-add-lesson"
-                                data-chapter-id="${chapter.id}" data-lesson-type="QUIZ">
-                            <i class="fas fa-question-circle"></i> Thêm Quiz
-                        </button>
-                    </div>
-                    <div class="lesson-list-container mt-3">
-                        <p class="text-muted text-center">Chưa có bài học nào trong chương này.</p>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-        accordion.insertAdjacentHTML('beforeend', html);
+        window.location.reload();
     }
 
-    //xử lí thêm lesson: lecture và quiz
-    function openAddLessonModal(chapterId, lessonType) {
+    function updateChapterInDOM(chapter) {
+        const chapterElement = document.getElementById(`chapter-item-${chapter.id}`);
+        if (chapterElement) {
+            chapterElement.querySelector('.chapter-name-display').textContent = `Chương ${chapter.orderNumber}: ${chapter.name}`;
+            chapterElement.querySelector('.chapter-short-description').textContent = chapter.shortDescription;
+        }
+    }
+
+    //---- LESSON CRUD LOGIC ----
+    async function openAddLessonModal(chapterId, lessonType) {
+        editingLessonId = null;
         document.getElementById('addLessonForm').reset();
         document.getElementById('chapterIdForLesson').value = chapterId;
         document.getElementById('lessonTypeForLesson').value = lessonType;
@@ -372,7 +470,70 @@
             }
         }
 
-        bootstrap.Modal.getInstance('#addLessonModal').show();
+        lessonModalInstance.show();
+    }
+
+    async function openEditLessonModal(lessonId, lessonType) {
+        try {
+            const res = await fetch(`/api/lessons/${lessonId}`);
+            if (!res.ok) throw new Error('Không thể tải dữ liệu bài học!');
+
+            const apiResponse = await res.json();
+            const lesson = apiResponse.data;
+            editingLessonId = lessonId;
+
+            document.getElementById('addLessonForm').reset();
+            document.getElementById('lessonTitle').value = lesson.title;
+            document.getElementById('lessonOrderNumber').value = lesson.orderNumber;
+            document.getElementById('lessonTypeForLesson').value = lessonType;
+
+            const modalTitle = document.getElementById('addLessonModalTitle');
+            const typeDisplay = document.getElementById('lessonTypeDisplay');
+            const lectureFields = document.getElementById('lectureFields');
+            const quizFields = document.getElementById('quizFields');
+
+            if (lessonType === 'LECTURE') {
+                modalTitle.textContent = 'Sửa Bài giảng';
+                typeDisplay.textContent = 'LECTURE';
+                lectureFields.style.display = 'block';
+                quizFields.style.display = 'none';
+
+                document.getElementById('estimatedTime').value = lesson.estimatedTime || '';
+
+                // Initialize CKEditor
+                if (editor) {
+                    editor.destroy();
+                }
+                ClassicEditor
+                    .create(document.querySelector('#htmlContent'))
+                    .then(newEditor => {
+                        editor = newEditor;
+                        editor.setData(lesson.htmlContent || '');
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            } else {
+                modalTitle.textContent = 'Sửa Quiz';
+                typeDisplay.textContent = 'QUIZ';
+                lectureFields.style.display = 'none';
+                quizFields.style.display = 'block';
+
+                document.getElementById('passRate').value = lesson.passRate || '';
+                document.getElementById('timeLimitInMinutes').value = lesson.timeLimitInMinutes || '';
+                document.getElementById('numberOfQuestions').value = lesson.numberOfQuestions || '';
+
+                // Hủy CKEditor nếu đang có
+                if (editor) {
+                    editor.destroy();
+                    editor = null;
+                }
+            }
+
+            lessonModalInstance.show();
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
     }
 
     async function saveLesson() {
@@ -381,19 +542,48 @@
         const lessonType = document.getElementById('lessonTypeForLesson').value;
         const orderNumber = document.getElementById('lessonOrderNumber').value;
 
-        if (!title) return alert('Vui lòng nhập tên bài học.');
+        if (!title) {
+            showToast('Vui lòng nhập tên bài học.', 'error');
+            return;
+        }
+
+        const isUpdating = editingLessonId !== null;
+        let url, method;
+
+        if (isUpdating) {
+            // Update lesson
+            if (lessonType === 'LECTURE') {
+                url = `/api/lectures/${editingLessonId}`;
+            } else {
+                url = `/api/quizzes/${editingLessonId}`;
+            }
+            method = 'PUT';
+        } else {
+            // Create lesson
+            if (lessonType === 'LECTURE') {
+                url = `/api/chapters/${chapterId}/lectures`;
+            } else {
+                url = `/api/chapters/${chapterId}/quizzes`;
+            }
+            method = 'POST';
+        }
 
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('lessonType', lessonType);
         formData.append('orderNumber', orderNumber);
 
         if (lessonType === 'LECTURE') {
             const estimatedTime = document.getElementById('estimatedTime').value;
             const htmlContent = editor ? editor.getData() : '';
 
-            if (!/^\d+$/.test(estimatedTime)) alert('Vui lòng nhập thời lượng hợp lí.');
-            if (!htmlContent.trim()) return alert('Vui lòng nhập nội dung bài giảng.');
+            if (!estimatedTime || !/^\d+$/.test(estimatedTime)) {
+                showToast('Vui lòng nhập thời lượng hợp lí.', 'error');
+                return;
+            }
+            if (!htmlContent.trim()) {
+                showToast('Vui lòng nhập nội dung bài giảng.', 'error');
+                return;
+            }
 
             formData.append('estimatedTime', estimatedTime);
             formData.append('htmlContent', htmlContent);
@@ -401,17 +591,27 @@
             const videoFile = document.getElementById('videoFile').files[0];
             if (videoFile) {
                 formData.append('video', videoFile);
-            } else {
-                return alert('Vui lòng chọn video cho bài giảng.');
+            } else if (!isUpdating) {
+                showToast('Vui lòng chọn video cho bài giảng.', 'error');
+                return;
             }
         } else {
             const passRate = document.getElementById('passRate').value;
             const timeLimitInMinutes = document.getElementById('timeLimitInMinutes').value;
             const numberOfQuestions = document.getElementById('numberOfQuestions').value;
 
-            if (isNaN(passRate) || passRate < 0 || passRate > 100) alert('Vui lòng nhập tỷ lệ đạt hợp lệ (từ 0 đến 100).');
-            if (!/^\d+$/.test(timeLimitInMinutes)) alert('Vui lòng nhập giới hạn thời gian hợp lí.');
-            if (isNaN(numberOfQuestions) || numberOfQuestions < 0 || numberOfQuestions > 100) alert('Vui lòng nhập số lượng câu hỏi hợp lí.');
+            if (!passRate || isNaN(passRate) || passRate < 0 || passRate > 100) {
+                showToast('Vui lòng nhập tỷ lệ đạt hợp lệ (từ 0 đến 100).', 'error');
+                return;
+            }
+            if (!timeLimitInMinutes || !/^\d+$/.test(timeLimitInMinutes)) {
+                showToast('Vui lòng nhập giới hạn thời gian hợp lí.', 'error');
+                return;
+            }
+            if (!numberOfQuestions || isNaN(numberOfQuestions) || numberOfQuestions < 0 || numberOfQuestions > 100) {
+                showToast('Vui lòng nhập số lượng câu hỏi hợp lí.', 'error');
+                return;
+            }
 
             formData.append('passRate', passRate);
             formData.append('timeLimitInMinutes', timeLimitInMinutes);
@@ -419,35 +619,70 @@
         }
 
         try {
-            const res = await fetch(`/api/lessons/chapter/${chapterId}`, {
-                method: 'POST',
+            const res = await fetch(url, {
+                method: method,
                 body: formData
             });
 
-            if (!res.ok){
-                const errorData = await res.json();
-                throw new Error(errorData.message);
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText || `${isUpdating ? 'Cập nhật' : 'Tạo'} bài học thất bại!`);
             }
 
-            const newLesson = await res.json();
-            appendNewLesson(newLesson, chapterId);
+            const apiResponse = await res.json();
+            const newLesson = apiResponse.data;
 
-            //nếu thêm th
-            bootstrap.Modal.getInstance('#addLessonModal').hide();
+            if (isUpdating) {
+                updateLessonInDOM(newLesson);
+                showToast('Cập nhật bài học thành công!');
+            } else {
+                appendNewLesson(newLesson, chapterId);
+                showToast('Tạo bài học thành công!');
+            }
+
+            lessonModalInstance.hide();
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    async function deleteLesson(lessonId, chapterId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa bài học này không?')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/chapters/${chapterId}/lessons/${lessonId}`, {
+                method: 'DELETE'
+            });
+
+            if (!res.ok) {
+                const errorResponse = await res.json().catch(() => null);
+                throw new Error(errorResponse?.message || 'Xóa bài học thất bại!');
+            }
+
+            document.getElementById(`lesson-item-${lessonId}`).remove();
+            showToast('Xóa bài học thành công');
+
+            // Kiểm tra nếu không còn lesson nào thì hiển thị thông báo
+            const container = document.querySelector(`#collapse-${chapterId} .lesson-list-container`);
+            const remainingLessons = container.querySelectorAll('.lesson-item').length;
+            if (remainingLessons === 0) {
+                container.innerHTML = '<p class="text-muted text-center p-3">Chưa có bài học nào trong chương này.</p>';
+            }
 
         } catch (err) {
-            alert(err.message);
+            showToast(err.message, 'error');
         }
     }
 
     function appendNewLesson(lesson, chapterId) {
         const container = document.querySelector(`#collapse-${chapterId} .lesson-list-container`);
-        if (!container) return; // Thêm kiểm tra an toàn
+        if (!container) return;
 
         const noLessonMsg = container.querySelector('p.text-muted');
         if (noLessonMsg) {
             noLessonMsg.remove();
-            // Đảm bảo có một div để chèn vào
             if (!container.querySelector('div')) {
                 container.innerHTML = '<div></div>';
             }
@@ -456,32 +691,108 @@
         const iconClass = lesson.lessonType === 'LECTURE' ? 'fa-play-circle text-primary' : 'fa-question-circle text-success';
         const courseId = document.getElementById('course-content').dataset.courseId;
 
-        // --- 1. Tạo biến chứa nút hành động, mặc định là rỗng ---
-        let actionButtons = '';
-
-        // --- 2. Kiểm tra nếu là QUIZ thì thêm nút vào biến ---
-        if (lesson.lessonType === 'QUIZ') {
-            actionButtons = `
+        let actionButtons = `
             <div class="lesson-actions">
+                <button class="btn btn-sm btn-outline-primary btn-edit-lesson"
+                        data-lesson-id="${lesson.id}"
+                        data-lesson-type="${lesson.lessonType}"
+                        title="Sửa bài học">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger btn-delete-lesson"
+                        data-lesson-id="${lesson.id}"
+                        data-chapter-id="${chapterId}"
+                        title="Xóa bài học">
+                    <i class="fas fa-trash"></i>
+                </button>
+        `;
+
+        if (lesson.lessonType === 'QUIZ') {
+            actionButtons += `
                 <a href="/courses/${courseId}/quizzes/${lesson.id}/questions" class="btn btn-sm btn-success">
                     <i class="fas fa-tasks"></i> Question Bank
                 </a>
-            </div>
-        `;
+            `;
         }
 
-        // --- 3. Dựng HTML chính và chèn biến actionButtons vào ---
+        actionButtons += `</div>`;
+
         const html = `
-    <div class="lesson-item" id="lesson-item-${lesson.id}">
-        <div class="lesson-info">
-            <i class="far ${iconClass} me-2"></i>
-            <a href="/courses/${courseId}/lessons/${lesson.id}/edit" class="text-decoration-none text-dark">${lesson.title}</a>
-        </div>
+            <div class="lesson-item" id="lesson-item-${lesson.id}">
+                <div class="lesson-info">
+                    <i class="far ${iconClass} me-2"></i>
+                    <a href="/courses/${courseId}/lessons/${lesson.id}/edit" class="text-decoration-none text-dark">${lesson.title}</a>
+                </div>
+                ${actionButtons}
+            </div>`;
 
-        ${actionButtons}
-    </div>`;
+        if (container.firstElementChild) {
+            container.firstElementChild.insertAdjacentHTML('beforeend', html);
+        } else {
+            container.innerHTML = `<div>${html}</div>`;
+        }
+    }
 
-        container.firstElementChild.insertAdjacentHTML('beforeend', html);
+    function updateLessonInDOM(lesson) {
+        const lessonElement = document.getElementById(`lesson-item-${lesson.id}`);
+        if (lessonElement) {
+            const titleLink = lessonElement.querySelector('.lesson-info a');
+            titleLink.textContent = lesson.title;
+            // Có thể cập nhật thêm các thông tin khác nếu cần
+        }
+    }
+
+    //---- VIDEO UPLOAD HANDLING ----
+    function setupVideoUpload() {
+        const videoUploadArea = document.getElementById('videoUploadArea');
+        const videoFileInput = document.getElementById('videoFile');
+        const videoFileInfo = document.getElementById('videoFileInfo');
+
+        if (!videoUploadArea) return;
+
+        videoUploadArea.addEventListener('click', () => videoFileInput.click());
+
+        videoFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                displayFileInfo(this.files[0]);
+            }
+        });
+
+        // Drag and drop
+        videoUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            videoUploadArea.classList.add('dragover');
+        });
+
+        videoUploadArea.addEventListener('dragleave', () => {
+            videoUploadArea.classList.remove('dragover');
+        });
+
+        videoUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            videoUploadArea.classList.remove('dragover');
+
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                videoFileInput.files = e.dataTransfer.files;
+                displayFileInfo(file);
+            }
+        });
+    }
+
+    function displayFileInfo(file) {
+        const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+        const videoFileInfo = document.getElementById('videoFileInfo');
+        videoFileInfo.innerHTML = `
+            <strong>${file.name}</strong> (${fileSize} MB)
+            <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="removeVideoBtn">Xóa</button>
+        `;
+
+        document.getElementById('removeVideoBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('videoFile').value = '';
+            videoFileInfo.innerHTML = '';
+        });
     }
 </script>
 
