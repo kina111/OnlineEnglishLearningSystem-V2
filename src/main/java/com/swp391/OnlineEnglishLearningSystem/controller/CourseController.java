@@ -8,6 +8,10 @@ import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
 import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,6 +37,34 @@ public class CourseController {
         this.userService = userService;
     }
 
+    // ===================== GET COURSES =========================
+    @GetMapping("/users/{expertId}")
+    public String getCoursesByUserPage(
+            @PathVariable("expertId") Long userId,
+            @RequestParam(required = false) Course.CourseStatus status,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String keyword,
+            // tự động lấy tham số page, size, sort từ URL
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            Model model) { // Inject Model to pass data to the view
+
+        // 1. Call the service method to get the paginated data
+        Page<Course> coursePage = courseService.findCoursesByAuthorAndFilters(userId, status, categoryId, keyword, pageable);
+
+        // 2. Add data to the Model for Thymeleaf
+        model.addAttribute("coursePage", coursePage); // The Page object containing courses and pagination info
+        model.addAttribute("expertId", userId); // Pass the expertId back for links
+        model.addAttribute("currentStatus", status); // Pass current filters back for display/forms
+        model.addAttribute("currentCategoryId", categoryId); // Pass current filters back for display/forms
+        model.addAttribute("currentKeyword", keyword);
+
+        //info for dropdown list
+        model.addAttribute("allStatuses", Course.CourseStatus.values());
+        model.addAttribute("allCategories", courseCategoryService.findAll());
+
+        // 3. Return the name of the Thymeleaf template
+        return "course/expertDashboard"; // Name of your HTML file (e.g., user-course-list.html)
+    }
     // ===================== CREATE COURSE ========================
     @RequestMapping("/create")
     public String getCreateCoursePage (Model model) {
