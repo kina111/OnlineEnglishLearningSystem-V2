@@ -1,5 +1,6 @@
 package com.swp391.OnlineEnglishLearningSystem.service.specification;
 
+import com.swp391.OnlineEnglishLearningSystem.model.User_;
 import org.springframework.data.jpa.domain.Specification;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.User.Gender;
@@ -13,7 +14,7 @@ public class UserSpecs {
             }
             try {
                 Gender genderEnum = Gender.valueOf(gender);
-                return cb.equal(root.get("gender"), genderEnum);
+                return cb.equal(root.get(User_.GENDER), genderEnum);
             } catch (IllegalArgumentException e) {
                 return cb.conjunction();
             }
@@ -34,47 +35,7 @@ public class UserSpecs {
             if (enabled == null) {
                 return cb.conjunction();
             }
-            return cb.equal(root.get("enabled"), enabled);
-        };
-    }
-
-    public static Specification<User> searchByEnabled(String enabled) {
-        return (root, query, cb) -> {
-            if (enabled == null || enabled.equals("ALL")) {
-                return cb.conjunction();
-            }
-            Boolean enabledBool = Boolean.valueOf(enabled);
-            return cb.equal(root.get("enabled"), enabledBool);
-        };
-    }
-
-    public static Specification<User> searchByEmail(String email) {
-        return (root, query, cb) -> {
-            if (email == null || email.trim().isEmpty()) {
-                return cb.conjunction();
-            }
-            String likePattern = "%" + email.toLowerCase() + "%";
-            return cb.like(cb.lower(root.get("email")), likePattern);
-        };
-    }
-
-    public static Specification<User> searchByFullName(String fullName) {
-        return (root, query, cb) -> {
-            if (fullName == null || fullName.trim().isEmpty()) {
-                return cb.conjunction();
-            }
-            String likePattern = "%" + fullName.toLowerCase() + "%";
-            return cb.like(cb.lower(root.get("fullName")), likePattern);
-        };
-    }
-
-    public static Specification<User> searchByMobile(String mobile) {
-        return (root, query, cb) -> {
-            if (mobile == null || mobile.trim().isEmpty()) {
-                return cb.conjunction();
-            }
-            String likePattern = "%" + mobile + "%";
-            return cb.like(root.get("mobile"), likePattern);
+            return cb.equal(root.get(User_.ENABLED), enabled);
         };
     }
 
@@ -86,9 +47,9 @@ public class UserSpecs {
 
             String likePattern = "%" + keyword.toLowerCase() + "%";
             return cb.or(
-                    cb.like(cb.lower(root.get("email")), likePattern),
-                    cb.like(cb.lower(root.get("fullName")), likePattern),
-                    cb.like(root.get("mobile"), "%" + keyword + "%")
+                    cb.like(cb.lower(root.get(User_.EMAIL)), likePattern),
+                    cb.like(cb.lower(root.get(User_.FULL_NAME)), likePattern),
+                    cb.like(root.get(User_.MOBILE), "%" + keyword + "%")
             );
         };
     }
