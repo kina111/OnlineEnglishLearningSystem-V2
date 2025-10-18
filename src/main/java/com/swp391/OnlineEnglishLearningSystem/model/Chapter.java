@@ -31,7 +31,7 @@ public class Chapter {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @OneToMany(mappedBy = "chapter")
+    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lesson> lessons = new ArrayList<>();
 
     public Chapter() {

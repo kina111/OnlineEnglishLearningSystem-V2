@@ -49,7 +49,7 @@ public class Lesson extends BaseEntity{
 
 
     //---dành cho Quiz---
-    @Column(nullable = false, name = "pass_rate")
+    @Column(name = "pass_rate")
     @Min(value = 0, message = "Pass score must be positive or zero")
     @Max(value = 100, message = "Pass score must be less than or equal to 100")
     private Integer passRate;
@@ -57,7 +57,7 @@ public class Lesson extends BaseEntity{
     @Positive(message = "Time limit must be a positive number")
     private Integer timeLimitInMinutes;
 
-    @Column(nullable = false, name = "number_of_questions")
+    @Column(name = "number_of_questions")
     @Min(value = 1, message = "Number of questions must be greater than or equal to 1")
     @Max(value = 100, message = "Number of questions must be less than or equal to 100")
     private Integer numberOfQuestions;
