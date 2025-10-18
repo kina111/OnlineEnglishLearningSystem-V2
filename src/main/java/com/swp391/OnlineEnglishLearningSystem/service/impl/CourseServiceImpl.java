@@ -1,11 +1,14 @@
 package com.swp391.OnlineEnglishLearningSystem.service.impl;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
-import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.repository.CourseCategoryRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.CourseRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
+import com.swp391.OnlineEnglishLearningSystem.service.specification.CourseSpecs;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,5 +46,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course findById(Long id) {
         return this.courseRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public Page<Course> findCoursesByAuthorAndFilters(Long userId, Course.CourseStatus status, Long categoryId, String keyword, Pageable pageable) {
+        Specification<Course> spec = CourseSpecs.hasAuthorId(userId).and(CourseSpecs.hasStatus(status)).and(CourseSpecs.hasCategoryId(categoryId)).and(CourseSpecs.hasNameContaining(keyword));
+        return this.courseRepository.findAll(spec, pageable);
     }
 }
