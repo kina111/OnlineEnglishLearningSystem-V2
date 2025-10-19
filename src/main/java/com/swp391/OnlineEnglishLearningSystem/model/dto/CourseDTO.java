@@ -1,6 +1,6 @@
 package com.swp391.OnlineEnglishLearningSystem.model.dto;
 
-import jakarta.persistence.Column;
+import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +36,8 @@ public class CourseDTO {
     @NotNull(message = "Course thumbnail is required")
     private MultipartFile thumbnailFile;
 
+    private Course.CourseStatus status;
+
     public CourseDTO() {
         super();
     }
@@ -48,6 +50,7 @@ public class CourseDTO {
         this.discount = discount;
         this.categoryId = categoryId;
         this.thumbnailFile = thumbnailFile;
+        this.status = Course.CourseStatus.DRAFT;
     }
 
     public String getName() {
@@ -112,5 +115,13 @@ public class CourseDTO {
 
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
+    }
+
+    public Course.CourseStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(Course.CourseStatus status) {
+        this.status = status;
     }
 }
