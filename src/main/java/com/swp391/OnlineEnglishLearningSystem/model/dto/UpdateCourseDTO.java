@@ -4,7 +4,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
-public class CourseDTO {
+public class UpdateCourseDTO {
     @NotBlank(message = "Course name is required")
     @Size(min = 5, max = 100, message = "Course name must be between 5-100 characters")
     private String name;
@@ -33,24 +33,27 @@ public class CourseDTO {
     @NotNull(message = "Course category is required")
     private Long categoryId;
 
-    @NotNull(message = "Course thumbnail is required")
     private MultipartFile thumbnailFile;
+
+    private String currentThumbnailUrl;
 
     private Course.CourseStatus status;
 
-    public CourseDTO() {
+    public UpdateCourseDTO() {
         super();
     }
-    public CourseDTO(String name, String description, String prerequisite, Double price, Double discount, Long categoryId, MultipartFile thumbnailFile) {
-        super();
-        this.name = name;
-        this.description = description;
-        this.prerequisite = prerequisite;
-        this.price = price;
-        this.discount = discount;
-        this.categoryId = categoryId;
-        this.thumbnailFile = thumbnailFile;
-        this.status = Course.CourseStatus.DRAFT;
+
+    public UpdateCourseDTO(Course course) {
+        this.name = course.getName();
+        this.shortDescription = course.getShortDescription();
+        this.description = course.getDescription();
+        this.prerequisite = course.getPrerequisite();
+        this.price = course.getPrice();
+        this.discount = course.getDiscount();
+        this.categoryId = course.getCategory().getId();
+        this.thumbnailFile = null;
+        this.currentThumbnailUrl = course.getThumbnail();
+        this.status = course.getStatus();
     }
 
     public String getName() {
@@ -59,6 +62,14 @@ public class CourseDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
     }
 
     public String getDescription() {
@@ -109,12 +120,12 @@ public class CourseDTO {
         this.thumbnailFile = thumbnailFile;
     }
 
-    public String getShortDescription() {
-        return shortDescription;
+    public String getCurrentThumbnailUrl() {
+        return currentThumbnailUrl;
     }
 
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
+    public void setCurrentThumbnailUrl(String currentThumbnailUrl) {
+        this.currentThumbnailUrl = currentThumbnailUrl;
     }
 
     public Course.CourseStatus getStatus() {

@@ -20,12 +20,13 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Token create(User newUser) {
-        return new Token(
+        Token t = new Token(
                 UUID.randomUUID().toString(),
                 LocalDateTime.now(),
                 LocalDateTime.now().plusMinutes(TOKEN_VALIDITY_MINUTES),
                 newUser
         );
+        return this.tokenRepository.save(t);
     }
 
     @Override
