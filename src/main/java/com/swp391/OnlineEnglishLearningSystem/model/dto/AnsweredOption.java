@@ -1,0 +1,30 @@
+package com.swp391.OnlineEnglishLearningSystem.model.dto;
+
+public class AnsweredOption {
+    private String answer;
+    private boolean bookmarked;
+
+    public AnsweredOption() {}
+
+    public AnsweredOption(String answer, boolean bookmarked) {
+        this.answer = answer;
+        this.bookmarked = bookmarked;
+    }
+
+    // Getters and Setters
+    public String getAnswerId() {
+        return answer;
+    }
+
+    public void setAnswerId(String answerId) {
+        this.answer = answerId;
+    }
+
+    public boolean isBookmarked() {
+        return bookmarked;
+    }
+
+    public void setBookmarked(boolean bookmarked) {
+        this.bookmarked = bookmarked;
+    }
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #ffffff;
+            margin: 40px;
+        }
+
+        .question-header {
+            background-color: #3a3a3a;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .answer-option {
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .answer-option input[type="radio"] {
+            transform: scale(1.4);
+            margin-right: 15px;
+        }
+
+        .answer-option.selected {
+            border-color: #66c280;
+            background-color: #e8f5e9;
+        }
+
+        .option-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .green-footer {
+            background-color: #66c280;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .green-footer button {
+            background-color: #66c280;
+            color: white;
+            border: 2px solid #66c280;
+            font-weight: bold;
+        }
+
+        .green-footer button:hover {
+            background-color: #e8f5e9;
+            border-color: white;
+        }
+
+        .progress-text {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<form th:action="@{/quiz/{quizId}/{questionIndex}(quizId=${quiz.id}, questionIndex=${questionIndex})}" method="post" class="container">
+
+
+
+    <!-- ✅ Top Progress & Timer Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-geo-alt"></i>
+            <span th:text="${questionIndex + 1} + ' / ' + ${questionCount}">1 / 20</span>
+        </div>
+
+        <div class="px-3 py-1 rounded" style="background-color: #cfe2ff;">
+            <i class="bi bi-hourglass-split"></i>
+            <span id="quiz-timer">00:00:00</span>
+        </div>
+    </div>
+
+
+    <!-- ✅ Question Header -->
+    <div class="question-header mb-4">
+        <div><strong th:text="${questionIndex + 1} + ')'">1)</strong></div>
+        <div>Question ID: <span th:text="${question.id}">643</span></div>
+    </div>
+
+    <!-- ✅ Question Text -->
+    <div class="mb-4 fs-5" th:text="${question.content}">
+        Question content goes here...
+    </div>
+
+    <!-- ✅ Answer Options -->
+    <div class="mb-4">
+        <div th:each="answer, iterStat : ${question.answerOptions}"
+             th:classappend="${answer.id == selectedAnswerId} ? 'selected'"
+             class="answer-option">
+            <input type="radio" name="answer"
+                   th:value="${answer.id}"
+                   th:id="'option_' + ${iterStat.index}">
+<!--                   th:checked="${quizAnswers[question.id]?.answerId == answer.id}"-->
+
+<!--                   th:checked="${answer.id == selectedAnswerId}"--><!-- load selected answer -->
+
+            <label th:for="'option_' + ${iterStat.index}" class="form-check-label d-flex align-items-center">
+                <span class="option-label"
+                      th:text="${(iterStat.index + 'A')} + '.'">A.</span>
+                <span th:text="${answer.content}">Answer content</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- ✅ Top Right Buttons -->
+    <div class="d-flex justify-content-end mb-3 gap-2">
+        <button type="button" class="btn btn-secondary">Peek at Answer</button>
+        <input type="checkbox" class="btn btn-secondary " name="isMarked" value="true">
+<!--               th:checked="${quizAnswers[question.id]?.bookmarked}"-->
+        Mark for Review</input>
+    </div>
+
+    <!-- ✅ Navigation Buttons in Green Footer -->
+    <div class="green-footer d-flex justify-content-between">
+        <div>
+            <button type="submit" class="btn" name="action" value="previous"
+                    th:if="${questionIndex > 0}">Previous</button>
+        </div>
+        <div>
+            <button type="submit" class="btn" name="action" value="next"
+                    th:if="${questionIndex < questionCount - 1}">Next</button>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    // Highlight selected answer (client-side visual feedback)
+    document.addEventListener('DOMContentLoaded', function () {
+        const answers = document.querySelectorAll('.answer-option input[type="radio"]');
+        answers.forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
+                radio.closest('.answer-option').classList.add('selected');
+            });
+        });
+
+        // Initial highlight
+        const selected = document.querySelector('.answer-option input[type="radio"]:checked');
+        if (selected) {
+            selected.closest('.answer-option').classList.add('selected');
+        }
+    });
+</script>
+
+<!-- Bootstrap JS (optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

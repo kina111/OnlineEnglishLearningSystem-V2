@@ -101,3 +101,51 @@ INSERT INTO lessons (
        N'<p>Bài trắc nghiệm tình huống khi tham gia thảo luận và phát biểu trong họp trực tuyến.</p>',
        NULL, 5, 10);
 SET IDENTITY_INSERT lessons OFF;
+
+-- Question for lesson
+
+INSERT INTO questions (content, question_type, media_type, media_url, lesson_id, created_at, updated_at)
+VALUES  (N'What is the capital of France?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (N'Which planet is known as the Red Planet?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (N'What is the largest ocean on Earth?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (N'Who wrote "Romeo and Juliet"?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (N'What is the chemical symbol for water?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (N'Which language is used for Android app development?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE());
+
+SET IDENTITY_INSERT lessons OFF;
+
+-- Correct answer
+INSERT INTO answer_options (content, correct, explanation, question_id, created_at, updated_at)
+VALUES (N'Paris', 1, N'Paris is the capital city of France.', 1, GETDATE(), GETDATE()),
+-- Incorrect answers
+       (N'London', 0, N'London is the capital of the UK, not France.', 1, GETDATE(), GETDATE()),
+       (N'Rome', 0, N'Rome is the capital of Italy.', 1, GETDATE(), GETDATE()),
+       (N'Madrid', 0, N'Madrid is the capital of Spain.', 1, GETDATE(), GETDATE()),
+
+       (N'Mars', 1, N'Mars is called the Red Planet due to its reddish appearance.', 2, GETDATE(), GETDATE()),
+       (N'Jupiter', 0, N'Jupiter is the largest planet but not red.', 2, GETDATE(), GETDATE()),
+       (N'Venus', 0, N'Venus is often called Earth’s sister planet.', 2, GETDATE(), GETDATE()),
+       (N'Mercury', 0, N'Mercury is the closest to the sun.', 2, GETDATE(), GETDATE()),
+
+       (N'Pacific Ocean', 1, N'The Pacific Ocean is the largest and deepest ocean.', 3, GETDATE(), GETDATE()),
+       (N'Atlantic Ocean', 0, N'The Atlantic is the second-largest ocean.', 3, GETDATE(), GETDATE()),
+       (N'Indian Ocean', 0, N'The Indian Ocean is third in size.', 3, GETDATE(), GETDATE()),
+       (N'Arctic Ocean', 0, N'The Arctic Ocean is the smallest.', 3, GETDATE(), GETDATE()),
+
+       (N'William Shakespeare', 1, N'Shakespeare wrote this famous tragedy.', 4, GETDATE(), GETDATE()),
+       (N'Jane Austen', 0, N'Jane Austen wrote "Pride and Prejudice".', 4, GETDATE(), GETDATE()),
+       (N'Charles Dickens', 0, N'Dickens is known for "Oliver Twist".', 4, GETDATE(), GETDATE()),
+       (N'Mark Twain', 0, N'Mark Twain wrote "Huckleberry Finn".', 4, GETDATE(), GETDATE()),
+
+       (N'H₂O', 1, N'This is the molecular formula for water.', 5, GETDATE(), GETDATE()),
+       (N'O₂', 0, N'This represents oxygen gas.', 5, GETDATE(), GETDATE()),
+       (N'CO₂', 0, N'This is carbon dioxide.', 5, GETDATE(), GETDATE()),
+       (N'NaCl', 0, N'This is table salt.', 5, GETDATE(), GETDATE()),
+
+       (N'Java', 1, N'Java has been the primary language for Android for many years.', 6, GETDATE(), GETDATE()),
+       (N'Python', 0, N'Python is not commonly used for native Android development.', 6, GETDATE(), GETDATE()),
+       (N'PHP', 0, N'PHP is used for web development.', 6, GETDATE(), GETDATE()),
+       (N'C#', 0, N'C# is used for Windows and Xamarin apps.', 6, GETDATE(), GETDATE());
+
+
+SET IDENTITY_INSERT lessons OFF;
