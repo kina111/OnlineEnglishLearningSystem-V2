@@ -102,4 +102,28 @@ public class CourseServiceImpl implements CourseService {
         this.courseRepository.delete(c);
         return c;
     }
+
+    @Override
+    public Course handleChangingCourseStatus(Long courseId, String respondToPublish) {
+        Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("Course not found"));
+        switch (respondToPublish) {
+            case "true":
+                if (course.getStatus() == Course.CourseStatus.PUBLISHED) throw new IllegalArgumentException("Course is already published");
+                course.setStatus(Course.CourseStatus.PUBLISHED);
+                return this.courseRepository.save(course);
+            case "false":
+                if (course.getStatus() == Course.CourseStatus.DRAFT) throw new IllegalArgumentException("Course is already draft");
+                else if (course.getStatus() == Course.CourseStatus.PUBLISHED) throw new IllegalArgumentException("Course was published, cannot be drafted");
+                course.setStatus(Course.CourseStatus.DRAFT);
+                return this.courseRepository.save(course);
+        }
+        return null;
+    }
+
+    @Override
+    public void updateFeaturedStatus(Long courseId, Boolean featured) {
+        Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("Course not found"));
+        course.setFeatured(featured);
+        this.courseRepository.save(course);
+    }
 }

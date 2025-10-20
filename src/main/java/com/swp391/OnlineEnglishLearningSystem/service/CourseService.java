@@ -22,4 +22,8 @@ public interface CourseService {
     void sendSubmitReview(Long courseId);
 
     Course deleteById(Long courseId);
+
+    Course handleChangingCourseStatus(Long courseId, String respond);
+
+    void updateFeaturedStatus(Long courseId, Boolean featured);
 }
