@@ -57,9 +57,7 @@ public class AuthController {
         try {
             userService.ensureEmailNotExists(userDTO.getEmail());
             User newUser = userService.buildNewUser(userDTO);
-            userService.save(newUser);
             Token newToken = tokenService.create(newUser);
-            tokenService.save(newToken);
             emailService.sendTokenEmail(newUser.getEmail(), newToken.getToken(), EmailService.EmailType.REGISTER);
 
             redirectAttributes.addFlashAttribute("message",
@@ -113,7 +111,6 @@ public class AuthController {
         try{
             User user = userService.findByEmailAndEnabledTrue(email).orElseThrow();
             Token token = tokenService.create(user);
-            tokenService.save(token);
             emailService.sendTokenEmail(user.getEmail(), token.getToken(), EmailService.EmailType.FORGOT_PASSWORD);
             redirectAttributes.addFlashAttribute("message",
                     "Please check your email for resetting your password!");
@@ -185,7 +182,6 @@ public class AuthController {
                 throw new IllegalArgumentException("Old password is incorrect!");
             };
             userService.updatePassword(currentUser, newPassword);
-            userService.save(currentUser);
 
             redirectAttributes.addFlashAttribute("message",
                     "Password updated successfully. Please login with your new password.");
