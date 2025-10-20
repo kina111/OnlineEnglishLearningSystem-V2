@@ -113,9 +113,19 @@
 <body>
 
 <div class="container">
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <div class="header">
         <h1>Dashboard Giảng viên</h1>
-        <a th:href="@{/courses/new}" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Khóa Học Mới</a>
+        <a th:href="@{/courses/create}" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Khóa Học Mới</a>
     </div>
 
     <form th:action="@{'/courses/users/' + ${expertId}}" method="get" class="filters">
@@ -203,14 +213,24 @@
                 <td th:text="${#temporals.format(course.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
                 <td th:text="${#temporals.format(course.updatedAt, 'dd/MM/yyyy HH:mm')}">Date</td>
                 <td>
-                    <div class="actions">
-                        <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-sm btn-outline-primary" title="Xem thông tin">
-                            <i class="fas fa-eye"></i> Info
-                        </a>
-                        <a th:href="@{'/courses/' + ${course.id} + '/content'}" class="btn btn-sm btn-outline-primary" title="Xem nội dung">
-                            <i class="fas fa-list-alt"></i> Content
+                    <div class="d-flex gap-2 mb-2"> <a th:href="@{'/courses/' + ${course.id} + '/update'}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem thông tin">
+                        <i class="fas fa-eye"></i> Thông tin
+                    </a>
+                        <a th:href="@{'/courses/' + ${course.id} + '/content'}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem nội dung">
+                            <i class="fas fa-list-alt"></i> Nội dung
                         </a>
                     </div>
+
+                    <form th:action="@{'/courses/' + ${course.id} + '/submit-review'}" method="post"
+                          onsubmit="return confirm('Sau khi gửi duyệt thì thông tin và nội dung của khóa học sẽ không thể sửa đổi! Bạn có chắc muốn gửi yêu cầu duyệt khóa học này không?');" class="d-grid">
+                        <button type="submit" class="btn btn-sm btn-warning w-100"> <i class="fas fa-paper-plane"></i> Gửi duyệt
+                        </button>
+                    </form>
+                    <form th:action="@{'/courses/' + ${course.id} + '/delete'}" method="post"
+                          onsubmit="return confirm('Khóa học sẽ bị xóa vĩnh viễn. Bạn có chắc chắn xóa khóa học này không?');" class="d-grid">
+                        <button type="submit" class="btn btn-sm btn-danger w-100"> <i class="fas fa-paper-plane"></i> Xóa
+                        </button>
+                    </form>
                 </td>
             </tr>
             </tbody>
