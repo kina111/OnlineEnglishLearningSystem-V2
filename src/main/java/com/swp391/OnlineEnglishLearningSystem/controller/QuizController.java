@@ -19,6 +19,9 @@ import java.util.Map;
 @RequestMapping("/quiz")
 public class QuizController {
 
+    private static final String QUIZ_SESSION = "quizAnswers";
+    private static final String QUIZ_PATH = "redirect:/quiz/";
+    
     private final QuestionService questionService;
     private final LessonService lessonService;
 
@@ -42,18 +45,18 @@ public class QuizController {
         }
         //Session to store answers
         @SuppressWarnings("unchecked")
-        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute("quizAnswers");
+        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
 
         if (answers == null) {
             answers = new HashMap<>();
-            session.setAttribute("quizAnswers", answers);
+            session.setAttribute(QUIZ_SESSION, answers);
         }
 
-        model.addAttribute("quizAnswers",answers);
+        model.addAttribute(QUIZ_SESSION,answers);
         model.addAttribute("quiz", lesson);
         model.addAttribute("questionIndex",0);
         model.addAttribute("questionCount",lesson.getQuestions().size());
-        return "redirect:/quiz/" + lessonId + "/0";
+        return QUIZ_PATH + lessonId + "/0";
     }
 
     @GetMapping("/{quizId}/{questionIndex}")
@@ -62,14 +65,14 @@ public class QuizController {
                                         @PathVariable("questionIndex") int questionIndex,
                                         HttpSession session) {
         @SuppressWarnings("unchecked")
-        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute("quizAnswers");
+        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
 
         if (answers == null) {
             answers = new HashMap<>();
-            session.setAttribute("quizAnswers", answers);
+            session.setAttribute(QUIZ_SESSION, answers);
         }
 
-        model.addAttribute("quizAnswers",answers);
+        model.addAttribute(QUIZ_SESSION,answers);
 
         Lesson quiz = lessonService.findById(quizId);
         List<Question> questions = quiz.getQuestions();
@@ -89,7 +92,7 @@ public class QuizController {
                                             @PathVariable("questionIndex") int questionIndex,
                                             @RequestParam(name = "answer", defaultValue = "",required = false) String answer,
                                             @RequestParam("action") String action,
-                                            @RequestParam(name = "isBookmarked", defaultValue = "",required = false) String isBookmarked,
+                                            @RequestParam(name = "isBookmarked",required = false) boolean isBookmarked,
                                             HttpSession session) {
         Lesson quiz = lessonService.findById(quizId);
         List<Question> questions = quiz.getQuestions();
@@ -100,27 +103,27 @@ public class QuizController {
 
         //Save answer to session
         @SuppressWarnings("unchecked")
-        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute("quizAnswers");
+        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
         if (answers == null) {
             answers = new HashMap<>();
-            session.setAttribute("quizAnswers", answers);
+            session.setAttribute(QUIZ_SESSION, answers);
         }
-        if((answer!=null && !answer.isEmpty())||isBookmarked.equals("true")){
-            AnsweredOption answeredOption = new AnsweredOption(answer, isBookmarked.equals("true"));
+        if((answer!=null && !answer.isEmpty())||isBookmarked){
+            AnsweredOption answeredOption = new AnsweredOption(answer, isBookmarked);
             answers.put(quiz.getQuestions().get(questionIndex).getId(), answeredOption);
         }
 
-        model.addAttribute("quizAnswers",answers);
+        model.addAttribute(QUIZ_SESSION,answers);
         //Navigate
         if ("previous".equals(action)) {
-            return "redirect:/quiz/" + quizId + "/" + (questionIndex - 1);
+            return QUIZ_PATH + quizId + "/" + (questionIndex - 1);
         } else if ("next".equals(action)) {
-            return "redirect:/quiz/" + quizId + "/" + (questionIndex + 1);
+            return QUIZ_PATH + quizId + "/" + (questionIndex + 1);
         } else if ("submit".equals(action)) {
 //            quizService.finalizeQuiz(quizId, session); // e.g., save all and grade
-            return "redirect:/quiz/" + quizId + "/result";
+            return QUIZ_PATH + quizId + "/result";
         }
 
-        return "redirect:/quiz/" + quizId + "/question/" + questionIndex;
+        return QUIZ_PATH + quizId + "/question/" + questionIndex;
     }
 }

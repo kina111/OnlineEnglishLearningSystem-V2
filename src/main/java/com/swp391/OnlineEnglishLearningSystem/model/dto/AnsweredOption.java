@@ -1,6 +1,8 @@
 package com.swp391.OnlineEnglishLearningSystem.model.dto;
 
-public class AnsweredOption {
+import java.io.Serializable;
+
+public class AnsweredOption implements Serializable {
     private String answer;
     private boolean bookmarked;
 
