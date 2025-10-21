@@ -1,8 +1,10 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
+import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.Token;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.UserDTO;
+import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
 import com.swp391.OnlineEnglishLearningSystem.service.EmailService;
 import com.swp391.OnlineEnglishLearningSystem.service.TokenService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -27,16 +30,20 @@ public class AuthController {
     private final UserService userService;
     private final TokenService tokenService;
     private final EmailService emailService;
+    private final CourseService courseService;
 
-    public AuthController(UserService userService, TokenService tokenService, EmailService emailService) {
+    public AuthController(UserService userService, TokenService tokenService, EmailService emailService, CourseService courseService) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.emailService = emailService;
+        this.courseService = courseService;
     }
 
     // ---------------- HOME ----------------
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        List<Course> featuredCourses = this.courseService.findFeaturedCourses(3);
+        model.addAttribute("featuredCourses", featuredCourses);
         return "home";
     }
     // ---------------- REGISTER ----------------

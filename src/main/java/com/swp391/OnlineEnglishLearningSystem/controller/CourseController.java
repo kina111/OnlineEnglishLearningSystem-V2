@@ -44,6 +44,34 @@ public class CourseController {
     }
 
     // ===================== GET COURSES =========================
+    @GetMapping("/learner")
+    public String getCoursesLearnerPage(@RequestParam(required = false) Long categoryId,
+                                        @RequestParam(required = false) String keyword,
+                                        @PageableDefault(page = 0, size = 6, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                        HttpSession session, Model model){
+        Page<Course> coursePage = this.courseService.findCoursesByAuthorAndFilters(null, Course.CourseStatus.PUBLISHED, categoryId, keyword, pageable);
+        List<Course> featuredCourses = this.courseService.findFeaturedCourses(3);
+
+        model.addAttribute("coursePage", coursePage);
+        model.addAttribute("allCategories", this.courseCategoryService.findAll());
+        model.addAttribute("featuredCourses", featuredCourses);
+        model.addAttribute("currentCategoryId", categoryId); // For highlighting active category
+        model.addAttribute("currentKeyword", keyword); // For search box value
+
+        return "user/viewCourseList";
+    }
+
+    @GetMapping("/{courseId}/learner")
+    public String getCourseDetailsForLearner(@PathVariable("courseId") Long courseId, Model model){
+        try{
+            Course course = this.courseService.findById(courseId);
+            model.addAttribute("course", course);
+            return "user/viewCourseDetails";
+        }catch (Exception e){
+            return "home";
+        }
+    }
+
     @GetMapping("/admin")
     public String getCoursesAdminPage(@RequestParam(required = false) Long expertId,
                                       @RequestParam(required = false) Course.CourseStatus status,

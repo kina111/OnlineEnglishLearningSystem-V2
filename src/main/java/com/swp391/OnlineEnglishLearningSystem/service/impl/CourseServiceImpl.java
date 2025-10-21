@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CourseServiceImpl implements CourseService {
 
@@ -125,5 +127,12 @@ public class CourseServiceImpl implements CourseService {
         Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("Course not found"));
         course.setFeatured(featured);
         this.courseRepository.save(course);
+    }
+
+    @Override
+    public List<Course> findFeaturedCourses(int quantity) {
+        List<Course> courses = this.courseRepository.findAllByFeaturedTrue();
+        if (courses.size() < quantity) return courses;
+        else return courses.subList(0, quantity);
     }
 }
