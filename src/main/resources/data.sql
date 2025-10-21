@@ -101,3 +101,86 @@ INSERT INTO lessons (
        N'<p>Bài trắc nghiệm tình huống khi tham gia thảo luận và phát biểu trong họp trực tuyến.</p>',
        NULL, 5, 10);
 SET IDENTITY_INSERT lessons OFF;
+
+-- *** BỔ SUNG DỮ LIỆU ***
+
+-- Bổ sung Users (Experts)
+-- Mật khẩu vẫn là "password123"
+SET IDENTITY_INSERT users ON;
+INSERT INTO users (id, email, password, full_name, gender, mobile, address, avatar, dob, enabled, role_id) VALUES
+                                                                                                               (5, 'expert2@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Michael Chen', 'MALE', '0922334455', '111 IELTS Street, Hanoi', 'avatars/expert_michael.png', '1988-03-10', 1, 2),
+                                                                                                               (6, 'expert3@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Sophia Nguyen', 'FEMALE', '0933445566', '222 TOEIC Road, HCMC', 'avatars/expert_sophia.png', '1991-11-25', 1, 2);
+SET IDENTITY_INSERT users OFF;
+
+-- Bổ sung Courses (Thêm 9 khóa học)
+SET IDENTITY_INSERT courses ON;
+INSERT INTO courses (id, name, short_description, description, prerequisite, thumbnail, price, discount, featured, status, total_lesson, category_id, author_id) VALUES
+                                                                                                                                                                     -- Expert 1 (ID=2)
+                                                                                                                                                                     (4, N'Từ vựng IELTS theo chủ đề', N'Học 1000+ từ vựng học thuật quan trọng cho IELTS.', N'Phân loại từ vựng theo các chủ đề thường gặp trong IELTS như Environment, Technology, Education...', N'Trình độ IELTS 4.5+', 'courses/thumbnails/6195519.jpg', 1800000.0, 20.0, 0, 0, 0, 2, 2),
+                                                                                                                                                                     (5, N'Ngữ pháp Tiếng Anh nâng cao', N'Ôn tập và nâng cao các cấu trúc ngữ pháp phức tạp.', N'Đi sâu vào các điểm ngữ pháp khó như Mệnh đề quan hệ, Câu điều kiện, Thể bị động nâng cao...', N'Trình độ Intermediate trở lên', 'courses/thumbnails/6734768.jpg', 1600000.0, 5.0, 1, 1, 0, 1, 2),
+                                                                                                                                                                     (6, N'Thuyết trình Tiếng Anh chuyên nghiệp', N'Kỹ năng chuẩn bị và thực hiện bài thuyết trình ấn tượng.', N'Học cách xây dựng cấu trúc, sử dụng ngôn ngữ cơ thể, và trả lời câu hỏi Q&A.', N'Trình độ Upper-Intermediate', 'courses/thumbnails/6743349.jpg', 1700000.0, 0.0, 0, 2, 0, 3, 2),
+
+                                                                                                                                                                     -- Expert 2 (ID=5)
+                                                                                                                                                                     (7, N'Luyện nghe IELTS Listening Max Score', N'Chiến thuật làm bài và luyện tập các dạng câu hỏi Listening.', N'Phân tích các dạng bài Map, Multiple Choice, Form Completion... và mẹo tránh bẫy.', N'Trình độ IELTS 5.0+', 'courses/thumbnails/7420258.jpg', 1900000.0, 10.0, 1, 0, 0, 2, 5),
+                                                                                                                                                                     (8, N'Tiếng Anh du lịch cho người Việt', N'Các mẫu câu và từ vựng cần thiết khi đi du lịch nước ngoài.', N'Bao gồm các tình huống tại sân bay, khách sạn, nhà hàng, hỏi đường...', N'Trình độ Basic', 'courses/thumbnails/10019196.jpg', 900000.0, 0.0, 0, 1, 0, 1, 5),
+                                                                                                                                                                     (9, N'Viết luận IELTS Writing Task 2', N'Hướng dẫn viết các dạng bài luận Agree/Disagree, Discussion, Problem/Solution.', N'Phân tích đề, lập dàn ý, sử dụng từ nối và cấu trúc câu hiệu quả.', N'Trình độ IELTS 5.5+', 'courses/thumbnails/ielts_writing2.png', 2100000.0, 15.0, 1, 2, 0, 2, 5),
+
+                                                                                                                                                                     -- Expert 3 (ID=6)
+                                                                                                                                                                     (10, N'Tiếng Anh phỏng vấn xin việc', N'Chuẩn bị cho các câu hỏi phỏng vấn tiếng Anh phổ biến.', N'Cách giới thiệu bản thân, trả lời về điểm mạnh/yếu, kinh nghiệm làm việc...', N'Trình độ Intermediate', 'courses/thumbnails/job_interview.png', 1300000.0, 5.0, 0, 0, 0, 3, 6),
+                                                                                                                                                                     (11, N'Luyện đọc IELTS Reading Intensive', N'Kỹ năng Skimming, Scanning và làm các dạng bài True/False/NG, Matching Headings.', N'Thực hành với các bài đọc học thuật đa dạng.', N'Trình độ IELTS 5.0+', 'courses/thumbnails/ielts_reading.png', 1800000.0, 10.0, 0, 1, 0, 2, 6),
+                                                                                                                                                                     (12, N'Tiếng Anh giao tiếp hàng ngày (Nâng cao)', N'Mở rộng vốn từ lóng, thành ngữ và cách diễn đạt tự nhiên.', N'Thảo luận các chủ đề phức tạp hơn, luyện phản xạ nghe nói.', N'Trình độ Upper-Intermediate', 'courses/thumbnails/daily_english_adv.png', 1400000.0, 0.0, 1, 0, 0, 1, 6);
+SET IDENTITY_INSERT courses OFF;
+
+-- Bổ sung Chapters cho các khóa học mới
+SET IDENTITY_INSERT chapters ON;
+INSERT INTO chapters (id, name, short_description, order_number, course_id) VALUES
+                                                                                -- Course 4 (IELTS Vocab)
+                                                                                (6, N'Chủ đề Environment', N'Từ vựng về môi trường, biến đổi khí hậu.', 1, 4),
+                                                                                (7, N'Chủ đề Technology', N'Từ vựng về công nghệ, internet, AI.', 2, 4),
+                                                                                -- Course 5 (Grammar Advanced)
+                                                                                (8, N'Mệnh đề quan hệ (Relative Clauses)', N'Cách dùng who, whom, which, that, whose.', 1, 5),
+                                                                                -- Course 6 (Presentation Skills)
+                                                                                (9, N'Cấu trúc bài thuyết trình', N'Mở bài, thân bài, kết luận hiệu quả.', 1, 6),
+                                                                                -- Course 7 (IELTS Listening)
+                                                                                (10, N'Dạng bài Multiple Choice', N'Chiến thuật chọn đáp án đúng.', 1, 7),
+                                                                                -- Course 8 (Travel English)
+                                                                                (11, N'Tại sân bay', N'Check-in, hải quan, tìm cổng bay.', 1, 8),
+                                                                                -- Course 9 (IELTS Writing 2)
+                                                                                (12, N'Dạng bài Agree/Disagree', N'Cách trình bày quan điểm cá nhân.', 1, 9),
+                                                                                -- Course 10 (Job Interview)
+                                                                                (13, N'Giới thiệu bản thân (Tell me about yourself)', N'Cách tóm tắt kinh nghiệm ấn tượng.', 1, 10),
+                                                                                -- Course 11 (IELTS Reading)
+                                                                                (14, N'Kỹ năng Skimming & Scanning', N'Đọc lướt và đọc quét tìm thông tin.', 1, 11),
+                                                                                -- Course 12 (Daily English Adv)
+                                                                                (15, N'Thành ngữ (Idioms) thông dụng', N'Học các thành ngữ phổ biến trong giao tiếp.', 1, 12);
+SET IDENTITY_INSERT chapters OFF;
+
+-- Bổ sung Lessons (Quizzes) cho các chapter mới
+SET IDENTITY_INSERT lessons ON;
+INSERT INTO lessons (
+    id, title, order_number, lesson_type, estimated_time, pass_rate, time_limit_in_minutes,
+    html_content, video_url, chapter_id, number_of_questions
+) VALUES
+      -- Quiz cho Chapter 6 (Course 4)
+      (6, N'Quiz: Environment Vocabulary', 1, 'QUIZ', 10, 70, 8, N'<p>Kiểm tra từ vựng chủ đề môi trường.</p>', NULL, 6, 20),
+      -- Quiz cho Chapter 7 (Course 4)
+      (7, N'Quiz: Technology Terms', 1, 'QUIZ', 10, 70, 8, N'<p>Kiểm tra từ vựng chủ đề công nghệ.</p>', NULL, 7, 20),
+      -- Quiz cho Chapter 8 (Course 5)
+      (8, N'Quiz: Relative Clauses Practice', 1, 'QUIZ', 15, 65, 12, N'<p>Bài tập điền từ và chọn đáp án đúng.</p>', NULL, 8, 15),
+      -- Quiz cho Chapter 9 (Course 6)
+      (9, N'Quiz: Presentation Structure', 1, 'QUIZ', 10, 60, 7, N'<p>Trắc nghiệm về cấu trúc bài thuyết trình.</p>', NULL, 9, 10),
+      -- Quiz cho Chapter 10 (Course 7)
+      (10, N'Quiz: Listening Multiple Choice', 1, 'QUIZ', 20, 75, 15, N'<p>Luyện nghe dạng Multiple Choice.</p>', NULL, 10, 18),
+      -- Quiz cho Chapter 11 (Course 8)
+      (11, N'Quiz: Airport Situations', 1, 'QUIZ', 8, 50, 5, N'<p>Chọn mẫu câu phù hợp tại sân bay.</p>', NULL, 11, 12),
+      -- Quiz cho Chapter 12 (Course 9)
+      (12, N'Quiz: Agree/Disagree Essays', 1, 'QUIZ', 25, 70, 20, N'<p>Kiểm tra cấu trúc và từ nối.</p>', NULL, 12, 10),
+      -- Quiz cho Chapter 13 (Course 10)
+      (13, N'Quiz: Common Interview Questions', 1, 'QUIZ', 15, 60, 10, N'<p>Trắc nghiệm cách trả lời phỏng vấn.</p>', NULL, 13, 15),
+      -- Quiz cho Chapter 14 (Course 11)
+      (14, N'Quiz: Reading Skills', 1, 'QUIZ', 20, 65, 15, N'<p>Bài tập Skimming và Scanning.</p>', NULL, 14, 20),
+      -- Quiz cho Chapter 15 (Course 12)
+      (15, N'Quiz: Idioms Matching', 1, 'QUIZ', 10, 70, 8, N'<p>Nối thành ngữ với định nghĩa đúng.</p>', NULL, 15, 25);
+SET IDENTITY_INSERT lessons OFF;
+
+-- *** KẾT THÚC PHẦN BỔ SUNG ***
