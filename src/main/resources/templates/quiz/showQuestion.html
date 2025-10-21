@@ -117,7 +117,7 @@
                    name="answer"
                    th:value="${answer.id}"
                    th:id="'option_' + ${iterStat.index}"
-                   th:attr="checked=${answeredOption != null and answeredOption == answer.id} ? 'checked' : null" />
+                   th:attr="checked=${answeredOptionId != null and answeredOptionId == answer.id} ? 'checked' : null" />
 <!--                   th:checked="${answeredOption != null and answeredOption == answer.id.toString()}" />-->
 
 
@@ -132,8 +132,8 @@
     <!-- ✅ Top Right Buttons -->
     <div class="d-flex justify-content-end mb-3 gap-2">
         <button type="button" class="btn btn-secondary">Peek at Answer</button>
-        <input type="checkbox" class="btn btn-secondary " name="isMarked">
-<!--               th:checked="${quizAnswers[question.id]?.bookmarked}"-->
+        <input type="checkbox" class="btn btn-secondary " name="isMarked"
+               th:checked="${quizAnswers[question.id]?.bookmarked}">
         Mark for Review</input>
     </div>
 
@@ -144,8 +144,13 @@
                     th:if="${questionIndex > 0}">Previous</button>
         </div>
         <div>
+            <button type="submit" class="btn" name="action" value="progress">Review Progress</button>
+        </div>
+        <div>
             <button type="submit" class="btn" name="action" value="next"
                     th:if="${questionIndex < questionCount - 1}">Next</button>
+            <button type="submit" class="btn" name="action" value="finish"
+                    th:if="${questionIndex == questionCount - 1}">Finish</button>
         </div>
     </div>
 

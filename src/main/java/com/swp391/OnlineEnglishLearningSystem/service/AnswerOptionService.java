@@ -7,4 +7,7 @@ public interface AnswerOptionService {
     void save(AnswerOption answerOption);
 
     void deleteByQuestion(Question questionToUpdate);
+
+    AnswerOption findByAnswerOptionId(Long answerOptionId);
+
 }

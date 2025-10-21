@@ -4,6 +4,9 @@ import com.swp391.OnlineEnglishLearningSystem.model.AnswerOption;
 import com.swp391.OnlineEnglishLearningSystem.model.Lesson;
 import com.swp391.OnlineEnglishLearningSystem.model.Question;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.AnsweredOption;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.QuestionView;
+import com.swp391.OnlineEnglishLearningSystem.repository.AnswerOptionRepository;
+import com.swp391.OnlineEnglishLearningSystem.service.AnswerOptionService;
 import com.swp391.OnlineEnglishLearningSystem.service.LessonService;
 import com.swp391.OnlineEnglishLearningSystem.service.QuestionService;
 import jakarta.servlet.http.HttpSession;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +28,12 @@ public class QuizController {
     
     private final QuestionService questionService;
     private final LessonService lessonService;
+    private final AnswerOptionService answerOptionService;
 
-    public QuizController(QuestionService questionService, LessonService lessonService) {
+    public QuizController(QuestionService questionService, LessonService lessonService, AnswerOptionService answerOptionService) {
         this.questionService = questionService;
         this.lessonService = lessonService;
+        this.answerOptionService = answerOptionService;
     }
 
 
@@ -86,12 +92,14 @@ public class QuizController {
             try{
                 answerOptionId = Long.parseLong(answers.get(question.getId()).getAnswerId());
             } catch (NumberFormatException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
 
         if(answers.containsKey(question.getId())){
-            model.addAttribute("answeredOption",answerOptionId);
+            model.addAttribute("answeredOptionId",answerOptionId);
+            model.addAttribute("answeredOption",answers);
+            model.addAttribute("isMarked",answers.get(question.getId()).isBookmarked());
         }
         model.addAttribute("quiz", quiz);
         model.addAttribute("question", question);
@@ -106,7 +114,7 @@ public class QuizController {
                                             @PathVariable("questionIndex") int questionIndex,
                                             @RequestParam(name = "answer", defaultValue = "",required = false) String answer,
                                             @RequestParam("action") String action,
-                                            @RequestParam(name = "isBookmarked",defaultValue = "false",required = false) Boolean isBookmarked,
+                                            @RequestParam(name = "isMarked",defaultValue = "false",required = false) Boolean isBookmarked,
                                             HttpSession session) {
         Lesson quiz = lessonService.findById(quizId);
         List<Question> questions = quiz.getQuestions();
@@ -133,11 +141,69 @@ public class QuizController {
             return QUIZ_PATH + quizId + "/" + (questionIndex - 1);
         } else if ("next".equals(action)) {
             return QUIZ_PATH + quizId + "/" + (questionIndex + 1);
-        } else if ("submit".equals(action)) {
+        } else if ("finish".equals(action)) {
 //            quizService.finalizeQuiz(quizId, session); // e.g., save all and grade
             return QUIZ_PATH + quizId + "/result";
+        } else if ("progress".equals(action)) {
+            return QUIZ_PATH + quizId + "/progress";
         }
 
         return QUIZ_PATH + quizId + "/question/" + questionIndex;
     }
+    @GetMapping("/{quizId}/result")
+    public String getQuizResult(Model model,HttpSession session,@PathVariable("quizId") long quizId) {
+        Lesson lesson = lessonService.findById(quizId);
+        List<Question> questions = lesson.getQuestions();
+
+        @SuppressWarnings("unchecked")
+        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
+
+
+
+        int kq = 0;
+
+        if(answers != null && !answers.isEmpty()){
+            for(Question question : questions){
+                AnsweredOption answeredOption =  answers.get(question.getId());
+                if(answeredOption != null){
+                    try{
+                        long answerOptionId = Long.parseLong(answeredOption.getAnswerId());
+                        if( answerOptionService.findByAnswerOptionId(answerOptionId).getCorrect()){
+                            kq++;
+                        }
+                    }catch (Exception e){
+                            e.printStackTrace();
+                    }
+                }
+
+            }
+        }
+        model.addAttribute("kq",kq);
+        model.addAttribute("total",questions.size());
+
+        return "quiz/result";
+    }
+
+    @GetMapping("/{quizId}/progress")
+    public String getQuizProgress(Model model,HttpSession session,@PathVariable("quizId") long quizId) {
+        Lesson lesson = lessonService.findById(quizId);
+        List<Question> questions = lesson.getQuestions();
+        @SuppressWarnings("unchecked")
+        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
+
+        List<QuestionView> questionViews = new ArrayList<>();
+        for (Question q : questions) {
+            AnsweredOption option = answers.get(q.getId());
+            questionViews.add(new QuestionView(q, (option != null &&!option.getAnswerId().isEmpty()), (option != null && option.isBookmarked())));
+        }
+        model.addAttribute("questionViews", questionViews);
+
+
+        model.addAttribute("questions",questions);
+        model.addAttribute("answers",answers);
+        model.addAttribute("quiz",lesson);
+
+        return "quiz/progress";
+    }
+
 }
