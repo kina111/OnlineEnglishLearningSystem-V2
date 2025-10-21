@@ -169,6 +169,7 @@
             box-shadow: var(--shadow);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+            text-decoration: none;
         }
 
         .course-card:hover {
@@ -421,47 +422,19 @@
             <section class="section">
                 <div class="section-header">
                     <h2 class="section-title">Khóa Học Nổi Bật</h2>
-                    <a href="#" class="view-all">Xem tất cả</a>
-                </div>
+                    <a th:href="@{/courses/learner}" class="view-all">Xem tất cả</a> </div>
                 <div class="courses-grid">
-                    <!-- Course 1 -->
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Tiếng Anh Giao Tiếp" class="course-thumbnail">
+                    <a th:each="course : ${featuredCourses}" th:href="@{'/courses/' + ${course.id} + '/learner'}" class="course-card">
+                        <img th:src="@{'/uploads/' + ${course.thumbnail}}" alt="Course Thumbnail" class="course-thumbnail">
                         <div class="course-content">
-                            <h3 class="course-title">Tiếng Anh Giao Tiếp Cơ Bản</h3>
-                            <p class="course-tagline">Làm chủ kỹ năng giao tiếp hàng ngày chỉ sau 3 tháng</p>
+                            <h3 class="course-title" th:text="${course.name}">Course Title</h3>
+                            <p class="course-tagline" th:text="${course.shortDescription}">Course Tagline</p>
                             <div class="course-meta">
-                                <span>24 bài học</span>
-                                <span>★ 4.8 (1.2k)</span>
+                                <span><i class="fas fa-star text-warning"></i> 4.8</span>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Course 2 -->
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Luyện Thi IELTS" class="course-thumbnail">
-                        <div class="course-content">
-                            <h3 class="course-title">Luyện Thi IELTS Chuyên Sâu</h3>
-                            <p class="course-tagline">Chinh phục band điểm 7.0+ với lộ trình tối ưu</p>
-                            <div class="course-meta">
-                                <span>36 bài học</span>
-                                <span>★ 4.9 (856)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Course 3 -->
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Tiếng Anh Thương Mại" class="course-thumbnail">
-                        <div class="course-content">
-                            <h3 class="course-title">Tiếng Anh Thương Mại</h3>
-                            <p class="course-tagline">Thành thạo ngôn ngữ trong môi trường công sở</p>
-                            <div class="course-meta">
-                                <span>28 bài học</span>
-                                <span>★ 4.7 (643)</span>
-                            </div>
-                        </div>
-                    </div>
+                    </a>
+                    <p th:if="${#lists.isEmpty(featuredCourses)}" class="text-muted w-100 text-center">Chưa có khóa học nổi bật nào.</p>
                 </div>
             </section>
 

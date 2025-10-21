@@ -2,9 +2,9 @@
     <nav class="navbar">
         <a href="#" class="logo">OELS</a>
         <ul class="nav-links" style="margin-bottom: 0">
-            <li><a href="/" class="active">Trang chủ</a></li>
-            <li><a href="#">Khóa học</a></li>
-            <li><a href="#">Bài viết</a></li>
+            <li><a href="/" id="home">Trang chủ</a></li>
+            <li><a href="/courses/learner" id="courses">Khóa học</a></li>
+            <li><a href="#" id="posts">Bài viết</a></li>
         </ul>
         <div class="user-menu" sec:authorize="isAuthenticated()">
             <div class="user-icon" id="userIcon">
@@ -57,6 +57,17 @@
             const overlay = document.createElement('div');
             overlay.className = 'overlay';
             document.body.appendChild(overlay);
+
+            // Add active class to the current link
+            const currentUrl = window.location.pathname;
+            const menuLinks = document.querySelectorAll('ul li a');
+            menuLinks.forEach(link => {
+                if (link.getAttribute('href') === currentUrl || currentUrl.startsWith(link.getAttribute('href') + '/')) {
+                    link.classList.add('active');
+                }else{
+                    link.classList.remove('active');
+                }
+            })
 
             userIcon.addEventListener('click', function(e) {
                 e.stopPropagation();
