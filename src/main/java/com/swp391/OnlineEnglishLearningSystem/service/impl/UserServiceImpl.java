@@ -111,5 +111,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(spec, pageable);
     }
 
+    @Override
+    public List<User> getUsersByRoleName(String roleName) {
+        UserRole role = this.roleRepository.findByName(roleName).orElseThrow(() -> new IllegalArgumentException("Role not found"));
+        return this.userRepository.findAllByRole(role);
+    }
 
 }

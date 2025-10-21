@@ -33,4 +33,6 @@ public interface UserService {
     Page<User> findPaginated(Pageable pageable);
 
     Page<User> getUsersWithSpecs(Pageable pageale, String gender, String role, Boolean enabled, String search);
+
+    List<User> getUsersByRoleName(String roleName);
 }

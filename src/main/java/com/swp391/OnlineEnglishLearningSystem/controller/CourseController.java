@@ -1,5 +1,6 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
+import com.swp391.OnlineEnglishLearningSystem.model.ApiResponse;
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/courses")
@@ -40,6 +44,26 @@ public class CourseController {
     }
 
     // ===================== GET COURSES =========================
+    @GetMapping("/admin")
+    public String getCoursesAdminPage(@RequestParam(required = false) Long expertId,
+                                      @RequestParam(required = false) Course.CourseStatus status,
+                                      @RequestParam(required = false) Long categoryId,
+                                      @RequestParam(required = false) String keyword,
+                                      // tự động lấy tham số page, size, sort từ URL
+                                      @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                      Model model){
+        Page<Course> coursePage = this.courseService.findCoursesByAuthorAndFilters(expertId, status, categoryId, keyword, pageable);
+        model.addAttribute("coursePage", coursePage);
+        model.addAttribute("currentExpertId", expertId);
+        model.addAttribute("currentStatus", status);
+        model.addAttribute("currentCategoryId", categoryId);
+        model.addAttribute("currentKeyword", keyword);
+        model.addAttribute("allStatuses", Course.CourseStatus.values());
+        model.addAttribute("allCategories", this.courseCategoryService.findAll());
+        model.addAttribute("allExperts", this.userService.getUsersByRoleName("ROLE_EXPERT"));
+        return "admin/course/courseDashboard";
+    }
+
     @GetMapping("/users/{expertId}")
     public String getCoursesByUserPage(
             @PathVariable("expertId") Long userId,
@@ -178,5 +202,40 @@ public class CourseController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/courses/users/" + session.getAttribute("currentUserId");
+    }
+
+    @PostMapping("/{courseId}")
+    public String handleAdminRespond(@PathVariable("courseId") Long courseId,
+                                     @RequestParam("admin-respond") String respondToPublish,
+                                     RedirectAttributes redirectAttributes){
+        try{
+            Course courseToHandle = this.courseService.handleChangingCourseStatus(courseId, respondToPublish);
+            redirectAttributes.addFlashAttribute("message", "Handle course status success!");
+            return "redirect:/courses/admin";
+        }catch (Exception e){
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/courses/admin";
+        }
+    }
+
+    @PatchMapping("/api/{courseId}/toggle-featured")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> toggleFeatured(@PathVariable("courseId") Long courseId,
+                                                            @RequestBody Map<String, Boolean> featuredStatus){
+        Boolean featured = featuredStatus.get("featured");
+        if (featured == null) {
+            // Trả về lỗi nếu không có trạng thái 'featured' trong request body
+            ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST, "Missing 'featured' status in request body", null, "BAD_REQUEST");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            this.courseService.updateFeaturedStatus(courseId, featured); // Gọi service để cập nhật
+            ApiResponse<Void> response = new ApiResponse<>(HttpStatus.OK, "Cập nhật trạng thái featured thành công", null, null);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST, "Cập nhật trạng thái featured không thành công!", null, e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
 }

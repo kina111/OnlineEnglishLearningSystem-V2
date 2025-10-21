@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Giảng viên</title>
+    <title>Course Dashboard for Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <style>
@@ -124,11 +124,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <div class="header">
-        <h1>Dashboard Giảng viên</h1>
+        <h1>Quản lí course</h1>
         <a th:href="@{/courses/create}" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Khóa Học Mới</a>
     </div>
 
-    <form th:action="@{'/courses/users/' + ${expertId}}" method="get" class="filters">
+    <form th:action="@{/courses/admin}" method="get" class="filters">
         <div class="filter-group search-box">
             <label for="keyword">Tìm kiếm theo tên</label>
             <input type="text" id="keyword" name="keyword" placeholder="Nhập tên khóa học..." th:value="${currentKeyword}">
@@ -153,6 +153,16 @@
                         th:selected="${cat.id == currentCategoryId}">Category</option>
             </select>
         </div>
+        <div class="filter-group">
+            <label for="expertId">Chuyên gia</label>
+            <select id="expertId" name="expertId">
+                <option value="">Tất cả chuyên gia</option>
+                <option th:each="expert : ${allExperts}"
+                        th:value="${expert.id}"
+                        th:text="${expert.fullName}"
+                        th:selected="${expert.id == currentExpertId}">Expert</option>
+            </select>
+        </div>
         <div class="filter-group d-flex justify-content-end">
             <input type="hidden" name="sort" th:value="${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')}">
             <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
@@ -165,7 +175,7 @@
             <tr>
                 <th>ID</th>
                 <th>
-                    <a th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, sort=${coursePage.sort.getOrderFor('name') == null || coursePage.sort.getOrderFor('name').direction.name() == 'DESC' ? 'name,asc' : 'name,desc'})}">
+                    <a th:href="@{/courses/admin(expertId=${currentExpertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, sort=${coursePage.sort.getOrderFor('name') == null || coursePage.sort.getOrderFor('name').direction.name() == 'DESC' ? 'name,asc' : 'name,desc'})}">
                         Tên Khóa Học
                         <span th:if="${coursePage.sort.getOrderFor('name') != null}" class="sort-icon">
                                 <i th:classappend="${coursePage.sort.getOrderFor('name').direction.name() == 'ASC' ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
@@ -196,18 +206,23 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:if="${coursePage.empty}">
+            <tr th:if="${coursePage.totalElements == 0}">
                 <td colspan="9" class="no-data">Không tìm thấy khóa học nào.</td>
             </tr>
             <tr th:each="course : ${coursePage.content}">
                 <td th:text="${course.id}">1</td>
                 <td th:text="${course.name}">Course Name</td>
-                <td th:text="${course.category?.name}">Category</td> <td>
-                <span class="badge" th:classappend="'status-' + ${course.status.name()}" th:text="${course.status.displayName}">Status</span>
-            </td>
+                <td th:text="${course.category?.name}">Category</td>
                 <td>
-                        <span th:classappend="${course.featured ? 'featured-yes fw-bold' : 'featured-no'}"
-                              th:text="${course.featured ? 'Có' : 'Không'}"></span>
+                    <span class="badge" th:classappend="'status-' + ${course.status.name()}" th:text="${course.status.displayName}">Status</span>
+                </td>
+                <td>
+                    <div class="form-check form-switch d-flex justify-content-center">
+                        <input class="form-check-input featured-toggle" type="checkbox" role="switch" onChange="return confirm(`Bạn có chắc chắn muốn set giá trị nổi bật về ${course.featured}`)"
+                               th:id="'featuredSwitch-' + ${course.id}"
+                               th:checked="${course.featured}"
+                               th:data-course-id="${course.id}">
+                    </div>
                 </td>
                 <td th:text="${#numbers.formatCurrency(course.price * (1 - course.discount / 100.0))}">Price</td>
                 <td th:text="${#temporals.format(course.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
@@ -221,14 +236,14 @@
                         </a>
                     </div>
 
-                    <form th:action="@{'/courses/' + ${course.id} + '/submit-review'}" method="post"
-                          onsubmit="return confirm('Sau khi gửi duyệt thì thông tin và nội dung của khóa học sẽ không thể sửa đổi! Bạn có chắc muốn gửi yêu cầu duyệt khóa học này không?');" class="d-grid">
-                        <button type="submit" class="btn btn-sm btn-warning w-100"> <i class="fas fa-paper-plane"></i> Gửi duyệt
+                    <form th:action="@{'/courses/' + ${course.id} + '?admin-respond=true'}" method="post"
+                          onsubmit="return confirm('Sau khi phê duyệt thì thông tin và nội dung của khóa học sẽ được public và không thể sửa đổi! Bạn có chắc muốn phê duyệt khóa học này không?');" class="d-grid">
+                        <button type="submit" class="btn btn-sm btn-warning w-100"> <i class="fas fa-paper-plane"></i> Phê duyệt
                         </button>
                     </form>
-                    <form th:action="@{'/courses/' + ${course.id} + '/delete'}" method="post"
-                          onsubmit="return confirm('Khóa học sẽ bị xóa vĩnh viễn. Bạn có chắc chắn xóa khóa học này không?');" class="d-grid">
-                        <button type="submit" class="btn btn-sm btn-danger w-100"> <i class="fas fa-paper-plane"></i> Xóa
+                    <form th:action="@{'/courses/' + ${course.id} + '?admin-respond=false'}" method="post"
+                          onsubmit="return confirm('Khóa học sẽ lưu ở trạng thái DRAFT và gửi về cho chuyên gia. Bạn có chắc chắn không phê duyệt khóa học này không?');" class="d-grid">
+                        <button type="submit" class="btn btn-sm btn-danger w-100"> <i class="fas fa-paper-plane"></i> Không phê duyệt
                         </button>
                     </form>
                 </td>
@@ -263,5 +278,53 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // --- FEATURED TOGGLE LOGIC ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const tableBody = document.querySelector('table tbody'); // Tìm thẻ tbody
+
+        if (tableBody) {
+            tableBody.addEventListener('change', async function(event) {
+                // Chỉ xử lý nếu event xảy ra trên phần tử có class 'featured-toggle'
+                if (event.target.classList.contains('featured-toggle')) {
+                    const toggleSwitch = event.target;
+                    const courseId = toggleSwitch.dataset.courseId;
+                    const isChecked = toggleSwitch.checked;
+
+                    // (Optional) Vô hiệu hóa switch tạm thời
+                    toggleSwitch.disabled = true;
+
+                    try {
+                        const res = await fetch(`/courses/api/${courseId}/toggle-featured`, {
+                            method: 'PATCH', // Hoặc PUT/POST tùy API của bạn
+                            headers: {
+                                'Content-Type': 'application/json',
+                                // Thêm header Authorization nếu cần
+                            },
+                            body: JSON.stringify({ featured: isChecked }) // Gửi trạng thái mới
+                        });
+
+                        const apiResponse = await res.json(); // Luôn đọc response để kiểm tra
+
+                        if (!res.ok) {
+                            throw new Error(apiResponse.message || 'Cập nhật thất bại!');
+                        }
+
+                        // showToast(`Đã ${isChecked ? 'bật' : 'tắt'} nổi bật cho khóa học ${courseId}.`);
+                        // Không cần showToast vì đã thấy kết quả ngay trên switch
+
+                    } catch (err) {
+                        showToast(err.message || 'Có lỗi xảy ra', 'error');
+                        // QUAN TRỌNG: Hoàn tác lại trạng thái switch nếu API lỗi
+                        toggleSwitch.checked = !isChecked;
+                    } finally {
+                        // (Optional) Kích hoạt lại switch
+                        toggleSwitch.disabled = false;
+                    }
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
