@@ -87,10 +87,7 @@ public class LessonServiceImpl implements LessonService {
         if (request.getVideo() != null && !request.getVideo().isEmpty()){
             String videoUrl = uploadService.uploadVideo(request.getVideo(), "lectures/videos");
             lectureToUpdate.setVideoUrl(videoUrl);
-        }else{
-            throw new IllegalArgumentException("Video file is empty");
         }
-
         return this.lessonRepository.save(lectureToUpdate);
     }
 
@@ -107,7 +104,11 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public void deleteAndReorder(Long chapterId, Long lessonId) {
+        Chapter chapter = this.chapterRepository.findById(chapterId).orElseThrow(() -> new IllegalArgumentException("Chapter not found"));
         Lesson lessonToDelete = this.lessonRepository.findById(lessonId).orElseThrow(() -> new IllegalArgumentException("Lesson not found"));
+        if (lessonToDelete.getChapter() != chapter) {
+            throw new IllegalArgumentException("Lesson does not belong to the chapter");
+        }
         this.lessonRepository.delete(lessonToDelete);
 
         //cập nhật lại orderNumber cho các lesson còn lại
@@ -117,6 +118,5 @@ public class LessonServiceImpl implements LessonService {
             lesson.setOrderNumber(i + 1);
             this.lessonRepository.save(lesson);
         }
-
     }
 }

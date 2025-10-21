@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         user.setFullName(userDTO.getFullName());
         user.setRole(roleUser);
         user.setEnabled(false);
-        return user;
+        return this.userRepository.save(user);
     }
 
     @Override
@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
+        this.userRepository.save(user);
     }
 
     @Override
@@ -110,5 +111,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(spec, pageable);
     }
 
+    @Override
+    public List<User> getUsersByRoleName(String roleName) {
+        UserRole role = this.roleRepository.findByName(roleName).orElseThrow(() -> new IllegalArgumentException("Role not found"));
+        return this.userRepository.findAllByRole(role);
+    }
 
 }

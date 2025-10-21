@@ -1,6 +1,7 @@
 package com.swp391.OnlineEnglishLearningSystem.service.specification;
 
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
+import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory_;
 import org.springframework.data.jpa.domain.Specification;
 
 public class CourseCategorySpecs {
@@ -9,7 +10,7 @@ public class CourseCategorySpecs {
             if (name == null) {
                 return cb.conjunction();
             } else {
-                return cb.like(root.get("name"), "%" + name + "%");
+                return cb.like(root.get(CourseCategory_.NAME), "%" + name + "%");
             }
         };
     }
@@ -19,7 +20,7 @@ public class CourseCategorySpecs {
             if (active == null) {
                 return criteriaBuilder.conjunction();
             }else{
-                return criteriaBuilder.equal(root.get("active"), active);
+                return criteriaBuilder.equal(root.get(CourseCategory_.ACTIVE), active);
             }
         };
     }
