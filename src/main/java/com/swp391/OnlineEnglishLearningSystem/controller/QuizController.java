@@ -58,7 +58,7 @@ public class QuizController {
         model.addAttribute("questionCount",lesson.getQuestions().size());
         return QUIZ_PATH + lessonId + "/0";
     }
-
+    //Get question page
     @GetMapping("/{quizId}/{questionIndex}")
     public String getQuizQuestionPage(Model model,
                                         @PathVariable("quizId") long quizId,
@@ -71,14 +71,28 @@ public class QuizController {
             answers = new HashMap<>();
             session.setAttribute(QUIZ_SESSION, answers);
         }
-
+        //?
         model.addAttribute(QUIZ_SESSION,answers);
+//        model.addAttribute("answeredOption",quizId);
 
         Lesson quiz = lessonService.findById(quizId);
         List<Question> questions = quiz.getQuestions();
         Question question = questions.get(questionIndex);
 //        List<AnswerOption> answerOptions = question.getAnswerOptions();
 //        question.setAnswerOptions(answerOptions);
+        //put answer option to
+        long answerOptionId = 0;
+        if(answers.containsKey(question.getId())){
+            try{
+                answerOptionId = Long.parseLong(answers.get(question.getId()).getAnswerId());
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if(answers.containsKey(question.getId())){
+            model.addAttribute("answeredOption",answerOptionId);
+        }
         model.addAttribute("quiz", quiz);
         model.addAttribute("question", question);
         model.addAttribute("questionIndex", questionIndex);
@@ -92,7 +106,7 @@ public class QuizController {
                                             @PathVariable("questionIndex") int questionIndex,
                                             @RequestParam(name = "answer", defaultValue = "",required = false) String answer,
                                             @RequestParam("action") String action,
-                                            @RequestParam(name = "isBookmarked",required = false) boolean isBookmarked,
+                                            @RequestParam(name = "isBookmarked",defaultValue = "false",required = false) Boolean isBookmarked,
                                             HttpSession session) {
         Lesson quiz = lessonService.findById(quizId);
         List<Question> questions = quiz.getQuestions();

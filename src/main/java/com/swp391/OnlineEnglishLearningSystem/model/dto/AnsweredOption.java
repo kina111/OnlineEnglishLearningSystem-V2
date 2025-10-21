@@ -29,4 +29,12 @@ public class AnsweredOption implements Serializable {
     public void setBookmarked(boolean bookmarked) {
         this.bookmarked = bookmarked;
     }
+
+    @Override
+    public String toString() {
+        return "AnsweredOption{" +
+                "answer='" + answer + '\'' +
+                ", bookmarked=" + bookmarked +
+                '}';
+    }
 }

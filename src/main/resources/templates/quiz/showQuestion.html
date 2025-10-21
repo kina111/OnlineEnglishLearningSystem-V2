@@ -92,6 +92,9 @@
             <i class="bi bi-hourglass-split"></i>
             <span id="quiz-timer">00:00:00</span>
         </div>
+        <div class="px-3 py-1 rounded" style="background-color: #e6f7ff;">
+            <p th:text="${answeredOption}"></p>
+        </div>
     </div>
 
 
@@ -108,21 +111,21 @@
 
     <!-- ✅ Answer Options -->
     <div class="mb-4">
-        <div th:each="answer, iterStat : ${question.answerOptions}"
-             th:classappend="${answer.id == selectedAnswerId} ? 'selected'"
-             class="answer-option">
-            <input type="radio" name="answer"
+        <div th:each="answer, iterStat : ${question.answerOptions}" class="answer-option">
+
+            <input type="radio"
+                   name="answer"
                    th:value="${answer.id}"
-                   th:id="'option_' + ${iterStat.index}">
-<!--                   th:checked="${quizAnswers[question.id]?.answerId == answer.id}"-->
+                   th:id="'option_' + ${iterStat.index}"
+                   th:attr="checked=${answeredOption != null and answeredOption == answer.id} ? 'checked' : null" />
+<!--                   th:checked="${answeredOption != null and answeredOption == answer.id.toString()}" />-->
 
-<!--                   th:checked="${answer.id == selectedAnswerId}"--><!-- load selected answer -->
 
-            <label th:for="'option_' + ${iterStat.index}" class="form-check-label d-flex align-items-center">
-                <span class="option-label"
-                      th:text="${(iterStat.index + 'A')} + '.'">A.</span>
+            <label th:for="'option_' + ${iterStat.index}" class="form-check-label">
+                <span th:text="${(iterStat.index)} + '.'">A.</span>
                 <span th:text="${answer.content}">Answer content</span>
             </label>
+
         </div>
     </div>
 
