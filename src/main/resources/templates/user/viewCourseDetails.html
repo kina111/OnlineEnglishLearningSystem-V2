@@ -257,8 +257,8 @@
                        th:text="${course.discount} + '% giảm giá'"></p>
 
                     <div class="d-grid gap-2 mb-3">
-                        <button class="btn btn-danger btn-lg">Thêm vào giỏ hàng</button>
-                        <button class="btn btn-outline-dark btn-lg">Mua ngay</button>
+                        <button class="btn btn-danger btn-lg">Quan tâm</button>
+                        <a th:href="@{/payment/checkout(courseId=${course.id})}" class="btn btn-success btn-lg">Mua ngay</a>
                     </div>
 
                     <div class="course-includes">
