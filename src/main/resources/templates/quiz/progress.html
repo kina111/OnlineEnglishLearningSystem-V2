@@ -16,7 +16,7 @@
      class="question"
 >
 
-    <div th:classappend="'answer'+(view.answered == true ? 'answered ' : '') + (view.bookmarked == true ? 'bookmarked' : '')">
+    <div th:classappend="'answer'+(view.answered ? 'answered ' : '') + (view.bookmarked ? 'bookmarked' : '')">
         <a th:href="@{/quiz/{quizId}/{questionIndex}(quizId=${quiz.id}, questionIndex=${iterStat.index})}">
             <p th:text="${iterStat.index+1}"></p>
         </a>

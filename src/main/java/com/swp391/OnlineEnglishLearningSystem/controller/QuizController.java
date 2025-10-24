@@ -108,6 +108,7 @@ public class QuizController {
         return "quiz/showQuestion";
     }
 
+    //Load question answer page
     @PostMapping("/{quizId}/{questionIndex}")
     public String getQuizQuestionAnswerPage(Model model,
                                             @PathVariable("quizId") long quizId,
@@ -184,26 +185,39 @@ public class QuizController {
         return "quiz/result";
     }
 
+    //Get quiz progress page
+//    @GetMapping("/{quizId}/progress")
+//    public String getQuizProgress(Model model,HttpSession session,@PathVariable("quizId") long quizId) {
+//        Lesson lesson = lessonService.findById(quizId);
+//        List<Question> questions = lesson.getQuestions();
+//        @SuppressWarnings("unchecked")
+//        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
+//
+//        List<QuestionView> questionViews = new ArrayList<>();
+//        for (Question q : questions) {
+//            AnsweredOption option = answers.get(q.getId());
+//            questionViews.add(new QuestionView(q, (option != null &&!option.getAnswerId().isEmpty()), (option != null && option.isBookmarked())));
+//        }
+//        model.addAttribute("questionViews", questionViews);
+//
+//
+//        model.addAttribute("questions",questions);
+//        model.addAttribute("answers",answers);
+//        model.addAttribute("quiz",lesson);
+//
+//        return "quiz/progress";
+//    }
     @GetMapping("/{quizId}/progress")
-    public String getQuizProgress(Model model,HttpSession session,@PathVariable("quizId") long quizId) {
+    public String showProgressPage(@PathVariable Long quizId, Model model, HttpSession session) {
         Lesson lesson = lessonService.findById(quizId);
         List<Question> questions = lesson.getQuestions();
-        @SuppressWarnings("unchecked")
+
+        model.addAttribute("quizId", quizId);
+        model.addAttribute("questions", questions);
+
         Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
-
-        List<QuestionView> questionViews = new ArrayList<>();
-        for (Question q : questions) {
-            AnsweredOption option = answers.get(q.getId());
-            questionViews.add(new QuestionView(q, (option != null &&!option.getAnswerId().isEmpty()), (option != null && option.isBookmarked())));
-        }
-        model.addAttribute("questionViews", questionViews);
-
-
-        model.addAttribute("questions",questions);
-        model.addAttribute("answers",answers);
-        model.addAttribute("quiz",lesson);
-
-        return "quiz/progress";
+        model.addAttribute("answers", answers != null ? answers : new HashMap<>());
+        return "/quiz/quiz-progress";
     }
 
 }
