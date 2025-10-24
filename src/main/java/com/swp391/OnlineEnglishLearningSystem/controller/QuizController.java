@@ -77,9 +77,6 @@ public class QuizController {
             answers = new HashMap<>();
             session.setAttribute(QUIZ_SESSION, answers);
         }
-        //?
-        model.addAttribute(QUIZ_SESSION,answers);
-//        model.addAttribute("answeredOption",quizId);
 
         Lesson quiz = lessonService.findById(quizId);
         List<Question> questions = quiz.getQuestions();
@@ -98,8 +95,7 @@ public class QuizController {
 
         if(answers.containsKey(question.getId())){
             model.addAttribute("answeredOptionId",answerOptionId);
-            model.addAttribute("answeredOption",answers);
-            model.addAttribute("isMarked",answers.get(question.getId()).isBookmarked());
+            model.addAttribute("answeredOption",answers.get(question.getId()));
         }
         model.addAttribute("quiz", quiz);
         model.addAttribute("question", question);
@@ -151,6 +147,7 @@ public class QuizController {
 
         return QUIZ_PATH + quizId + "/question/" + questionIndex;
     }
+
     @GetMapping("/{quizId}/result")
     public String getQuizResult(Model model,HttpSession session,@PathVariable("quizId") long quizId) {
         Lesson lesson = lessonService.findById(quizId);

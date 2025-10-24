@@ -92,9 +92,9 @@
             <i class="bi bi-hourglass-split"></i>
             <span id="quiz-timer">00:00:00</span>
         </div>
-        <div class="px-3 py-1 rounded" style="background-color: #e6f7ff;">
-            <p th:text="${answeredOption}"></p>
-        </div>
+<!--        <div class="px-3 py-1 rounded" style="background-color: #e6f7ff;">-->
+<!--            <p th:text="${answeredOption}"></p>-->
+<!--        </div>-->
     </div>
 
 
@@ -133,7 +133,7 @@
     <div class="d-flex justify-content-end mb-3 gap-2">
         <button type="button" class="btn btn-secondary">Peek at Answer</button>
         <input type="checkbox" class="btn btn-secondary " name="isMarked"
-               th:checked="${quizAnswers[question.id]?.bookmarked}">
+               th:checked="${answeredOption != null and answeredOption.isBookmarked()}">
         Mark for Review</input>
     </div>
 
@@ -150,7 +150,8 @@
             <button type="submit" class="btn" name="action" value="next"
                     th:if="${questionIndex < questionCount - 1}">Next</button>
             <button type="submit" class="btn" name="action" value="finish"
-                    th:if="${questionIndex == questionCount - 1}">Finish</button>
+                    th:if="${questionIndex == questionCount - 1}"
+                    onclick="return confirm('Are you sure you want to finish?');">Finish</button>
         </div>
     </div>
 
