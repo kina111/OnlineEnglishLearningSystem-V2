@@ -14,11 +14,11 @@ public class AnsweredOption implements Serializable {
     }
 
     // Getters and Setters
-    public String getAnswerId() {
+    public String getAnswer() {
         return answer;
     }
 
-    public void setAnswerId(String answerId) {
+    public void setAnswer(String answerId) {
         this.answer = answerId;
     }
 

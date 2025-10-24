@@ -90,7 +90,7 @@ public class QuizController {
         long answerOptionId = 0;
         if(answers.containsKey(question.getId())){
             try{
-                answerOptionId = Long.parseLong(answers.get(question.getId()).getAnswerId());
+                answerOptionId = Long.parseLong(answers.get(question.getId()).getAnswer());
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -168,7 +168,7 @@ public class QuizController {
                 AnsweredOption answeredOption =  answers.get(question.getId());
                 if(answeredOption != null){
                     try{
-                        long answerOptionId = Long.parseLong(answeredOption.getAnswerId());
+                        long answerOptionId = Long.parseLong(answeredOption.getAnswer());
                         if( answerOptionService.findByAnswerOptionId(answerOptionId).getCorrect()){
                             kq++;
                         }
