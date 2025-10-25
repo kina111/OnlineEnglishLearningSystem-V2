@@ -256,9 +256,21 @@
                     <p class="text-danger" th:if="${course.discount > 0}"
                        th:text="${course.discount} + '% giảm giá'"></p>
 
-                    <div class="d-grid gap-2 mb-3">
-                        <button class="btn btn-danger btn-lg">Thêm vào giỏ hàng</button>
-                        <button class="btn btn-outline-dark btn-lg">Mua ngay</button>
+                    <div class="d-grid gap-2 mb-3" id="course-action-buttons" th:data-course-id="${course.id}">
+                        <!-- Nút Wishlist -->
+                        <button type="button"
+                                id="wishlist-btn"
+                                th:classappend="${inWishlist} ? 'btn-outline-danger added' : 'btn-danger'"
+                                class="btn btn-lg"
+                                th:data-in-wishlist="${inWishlist}">
+                            <span th:if="${inWishlist}"> <i class="fas fa-heart"></i> Đã quan tâm </span>
+                            <span th:unless="${inWishlist}"> <i class="far fa-heart"></i> Quan tâm </span>
+                        </button>
+
+                        <!-- Các nút Mua/Vào học -->
+                        <a th:if="${isEnrolled}" href="#" class="btn btn-success btn-lg"> <i class="fas fa-play"></i> Vào học </a>
+                        <a th:unless="${isEnrolled}" th:href="@{/payment/checkout/{courseId}(courseId=${course.id})}" class="btn btn-primary btn-lg"> <i class="fas fa-shopping-cart"></i> Mua ngay </a>
+
                     </div>
 
                     <div class="course-includes">
@@ -277,6 +289,70 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const wishlistButton = document.getElementById('wishlist-btn');
+        const buttonContainer = document.getElementById('course-action-buttons');
+        const courseId = buttonContainer.dataset.courseId; // Lấy courseId từ data attribute của div cha
 
+        if (wishlistButton) {
+            wishlistButton.addEventListener('click', async function() {
+                // Đọc trạng thái hiện tại từ data attribute
+                const isInWishlist = this.dataset.inWishlist === 'true';
+
+                // Xác định hành động cần gửi lên API (ngược lại với trạng thái hiện tại)
+                const addToWishlistAction = !isInWishlist;
+
+                // Vô hiệu hóa nút tạm thời để tránh click nhiều lần
+                this.disabled = true;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...'; // Thêm spinner
+
+                try {
+                    // Gọi API bằng fetch
+                    const response = await fetch(`/courses/${courseId}/changeWishlist?add-to-wishlist=${addToWishlistAction}`, {
+                        method: 'POST',
+                        headers: {
+                            // Thêm các header cần thiết nếu API yêu cầu (ví dụ: CSRF token)
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    // Kiểm tra kết quả từ API
+                    if (!response.ok) {
+                        const errorData = await response.json(); // Đọc lỗi từ ApiResponse
+                        throw new Error(errorData.message || 'Thao tác thất bại!');
+                    }
+
+                    // --- CẬP NHẬT GIAO DIỆN NÚT KHI THÀNH CÔNG ---
+                    const newStatus = addToWishlistAction; // Trạng thái mới sau khi thao tác
+                    this.dataset.inWishlist = newStatus; // Cập nhật data attribute
+
+                    if (newStatus) { // Đã thêm vào wishlist
+                        this.classList.remove('btn-danger');
+                        this.classList.add('btn-outline-danger', 'added');
+                        this.innerHTML = '<i class="fas fa-heart"></i> Đã quan tâm';
+                    } else { // Đã xóa khỏi wishlist
+                        this.classList.remove('btn-outline-danger', 'added');
+                        this.classList.add('btn-danger');
+                        this.innerHTML = '<i class="far fa-heart"></i> Quan tâm';
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi cập nhật Wishlist:', error);
+                    alert('Đã xảy ra lỗi: ' + error.message);
+                    // Khôi phục lại trạng thái nút ban đầu nếu lỗi
+                    if (isInWishlist) {
+                        this.innerHTML = '<i class="fas fa-heart"></i> Đã quan tâm';
+                    } else {
+                        this.innerHTML = '<i class="far fa-heart"></i> Quan tâm';
+                    }
+                } finally {
+                    // Luôn kích hoạt lại nút sau khi xong
+                    this.disabled = false;
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
