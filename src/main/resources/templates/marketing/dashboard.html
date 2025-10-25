@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Dashboard - OELS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --secondary-color: #4ecdc4;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #fff;
+            --bg-light: #f8f9fa;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-color);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--danger-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.primary {
+            background: var(--primary-color);
+        }
+
+        .stat-icon.success {
+            background: var(--success-color);
+        }
+
+        .stat-icon.warning {
+            background: var(--warning-color);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border: none;
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .action-btn:hover .action-icon {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .action-text {
+            flex: 1;
+        }
+
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* Recent Sliders */
+        .recent-sliders {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .slider-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .slider-item:last-child {
+            border-bottom: none;
+        }
+
+        .slider-image {
+            width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .slider-info {
+            flex: 1;
+        }
+
+        .slider-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .slider-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .slider-status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .slider-status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .view-all-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <a href="/marketing" class="logo">📊 Marketing Dashboard</a>
+        <div class="user-info">
+            <div class="user-avatar">
+                <span th:text="${currentUser.fullName.substring(0,1).toUpperCase()}"></span>
+            </div>
+            <span th:text="${currentUser.fullName}"></span>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Chào mừng, <span th:text="${currentUser.fullName}"></span>!</h1>
+        <p class="page-subtitle">Quản lý nội dung marketing và slider cho hệ thống OELS</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="fas fa-images"></i>
+            </div>
+            <div class="stat-number" th:text="${totalSliders}">0</div>
+            <div class="stat-label">Tổng số Slider</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="fas fa-eye"></i>
+            </div>
+            <div class="stat-number" th:text="${activeSliders}">0</div>
+            <div class="stat-label">Slider đang hiển thị</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Lượt xem hôm nay</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2 class="section-title">Thao tác nhanh</h2>
+        <div class="actions-grid">
+            <a href="/marketing/sliders" class="action-btn">
+                <div class="action-icon">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <div class="action-text">
+                    <div class="action-title">Quản lý Slider</div>
+                    <div class="action-desc">Thêm, sửa, xóa slider</div>
+                </div>
+            </a>
+            <a href="/admin/sliders/create" class="action-btn">
+                <div class="action-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="action-text">
+                    <div class="action-title">Tạo Slider mới</div>
+                    <div class="action-desc">Thêm slider mới vào hệ thống</div>
+                </div>
+            </a>
+            <a href="/" class="action-btn">
+                <div class="action-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="action-text">
+                    <div class="action-title">Xem trang chủ</div>
+                    <div class="action-desc">Kiểm tra slider trên trang chủ</div>
+                </div>
+            </a>
+            <a href="/slider-demo" class="action-btn">
+                <div class="action-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="action-text">
+                    <div class="action-title">Demo Slider</div>
+                    <div class="action-desc">Xem demo slider hoạt động</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Sliders -->
+    <div class="recent-sliders">
+        <h2 class="section-title">Slider gần đây</h2>
+        <div th:if="${sliders != null and !sliders.empty}">
+            <div th:each="slider : ${sliders}" class="slider-item">
+                <img th:src="${slider.imageUrl}" th:alt="${slider.title}" class="slider-image">
+                <div class="slider-info">
+                    <div class="slider-title" th:text="${slider.title}">Slider Title</div>
+                    <div class="slider-status"
+                         th:classappend="${slider.status == 'SHOW'} ? 'active' : 'inactive'"
+                         th:text="${slider.status == 'SHOW'} ? 'Đang hiển thị' : 'Đã ẩn'">
+                        Status
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${sliders == null or sliders.empty}">
+            <p style="text-align: center; color: var(--text-light); padding: 2rem;">
+                Chưa có slider nào. <a href="/admin/sliders/create">Tạo slider đầu tiên</a>
+            </p>
+        </div>
+        <a href="/marketing/sliders" class="view-all-btn">Xem tất cả slider</a>
+    </div>
+</div>
+</body>
+</html>

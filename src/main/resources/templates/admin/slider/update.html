@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chỉnh sửa Slider</title>
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --secondary-color: #4ecdc4;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #fff;
+            --bg-light: #f8f9fa;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group label.required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: var(--bg-color);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .file-upload-label:hover {
+            border-color: var(--primary-color);
+            background: rgba(108, 99, 255, 0.05);
+        }
+
+        .file-upload-label.has-file {
+            border-color: var(--primary-color);
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .file-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .file-preview img {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: var(--radius);
+            border: 2px solid var(--border-color);
+        }
+
+        .current-image {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .current-image h4 {
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .current-image img {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: var(--radius);
+            border: 2px solid var(--border-color);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .image-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-options button {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-color);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .image-options button:hover {
+            background: var(--bg-light);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .image-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎠 Chỉnh sửa Slider</h1>
+        <a href="/marketing/sliders" class="btn btn-secondary" sec:authorize="hasRole('ROLE_MARKETING')">
+            ← Quay lại Marketing Dashboard
+        </a>
+        <a href="/admin/sliders" class="btn btn-secondary" sec:authorize="hasRole('ROLE_ADMIN')">
+            ← Quay lại danh sách
+        </a>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form th:action="@{/admin/sliders/update/{id}(id=${sliderId})}" th:object="${slider}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title" class="required">Tiêu đề</label>
+            <input type="text"
+                   id="title"
+                   th:field="*{title}"
+                   class="form-control"
+                   placeholder="Nhập tiêu đề slider..."
+                   required>
+            <div class="help-text">Tiêu đề sẽ hiển thị trên slider</div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Mô tả</label>
+            <textarea id="description"
+                      th:field="*{description}"
+                      class="form-control"
+                      placeholder="Nhập mô tả cho slider..."></textarea>
+            <div class="help-text">Mô tả ngắn gọn về nội dung slider</div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="orderNumber" class="required">Thứ tự hiển thị</label>
+                <input type="number"
+                       id="orderNumber"
+                       th:field="*{orderNumber}"
+                       class="form-control"
+                       placeholder="1"
+                       min="1"
+                       required>
+                <div class="help-text">Số càng nhỏ càng hiển thị trước</div>
+            </div>
+
+            <div class="form-group">
+                <label for="status" class="required">Trạng thái</label>
+                <select id="status" th:field="*{status}" class="form-control" required>
+                    <option value="HIDE">Ẩn</option>
+                    <option value="SHOW">Hiển thị</option>
+                </select>
+                <div class="help-text">Chọn trạng thái hiển thị của slider</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="linkUrl">Link URL</label>
+            <input type="url"
+                   id="linkUrl"
+                   th:field="*{linkUrl}"
+                   class="form-control"
+                   placeholder="https://example.com">
+            <div class="help-text">Link sẽ được mở khi người dùng click vào slider (tùy chọn)</div>
+        </div>
+
+        <div class="form-group">
+            <label>Hình ảnh</label>
+
+            <!-- Hiển thị hình ảnh hiện tại -->
+            <div th:if="${currentImageUrl}" class="current-image">
+                <h4>Hình ảnh hiện tại:</h4>
+                <img th:src="${currentImageUrl}" alt="Current Image">
+                <div class="image-options">
+                    <button type="button" onclick="showNewImageUpload()">Thay đổi hình ảnh</button>
+                    <button type="button" onclick="keepCurrentImage()">Giữ nguyên</button>
+                </div>
+            </div>
+
+            <!-- Upload hình ảnh mới -->
+            <div class="file-upload" id="newImageUpload" th:style="${currentImageUrl} ? 'display: none;' : 'display: block;'">
+                <input type="file"
+                       id="imageFile"
+                       th:field="*{imageFile}"
+                       accept="image/*"
+                       onchange="previewImage(this)">
+                <label for="imageFile" class="file-upload-label" id="fileLabel">
+                    <div>
+                        <div style="font-size: 24px; margin-bottom: 10px;">📷</div>
+                        <div>Click để chọn hình ảnh mới</div>
+                        <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                            Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB)
+                        </div>
+                    </div>
+                </label>
+            </div>
+            <div class="file-preview" id="imagePreview"></div>
+        </div>
+
+        <div class="form-actions">
+            <a href="/admin/sliders" class="btn btn-secondary">Hủy</a>
+            <button type="submit" class="btn btn-primary">Cập nhật Slider</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function showNewImageUpload() {
+        document.getElementById('newImageUpload').style.display = 'block';
+        document.getElementById('imageFile').required = true;
+    }
+
+    function keepCurrentImage() {
+        document.getElementById('newImageUpload').style.display = 'none';
+        document.getElementById('imageFile').required = false;
+        document.getElementById('imageFile').value = '';
+        document.getElementById('imagePreview').innerHTML = '';
+        document.getElementById('fileLabel').classList.remove('has-file');
+        document.getElementById('fileLabel').innerHTML = `
+            <div>
+                <div style="font-size: 24px; margin-bottom: 10px;">📷</div>
+                <div>Click để chọn hình ảnh mới</div>
+                <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                    Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB)
+                </div>
+            </div>
+        `;
+    }
+
+    function previewImage(input) {
+        const fileLabel = document.getElementById('fileLabel');
+        const imagePreview = document.getElementById('imagePreview');
+
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // Kiểm tra kích thước file (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File quá lớn! Vui lòng chọn file nhỏ hơn 5MB.');
+                input.value = '';
+                return;
+            }
+
+            // Kiểm tra loại file
+            if (!file.type.startsWith('image/')) {
+                alert('Vui lòng chọn file hình ảnh!');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fileLabel.classList.add('has-file');
+                fileLabel.innerHTML = `
+                    <div>
+                        <div style="font-size: 24px; margin-bottom: 10px;">✅</div>
+                        <div>Đã chọn: ${file.name}</div>
+                        <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                            Click để chọn file khác
+                        </div>
+                    </div>
+                `;
+
+                imagePreview.innerHTML = `
+                    <div style="margin-bottom: 10px; font-weight: 600;">Xem trước hình ảnh mới:</div>
+                    <img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; border: 2px solid var(--border-color);">
+                `;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            fileLabel.classList.remove('has-file');
+            fileLabel.innerHTML = `
+                <div>
+                    <div style="font-size: 24px; margin-bottom: 10px;">📷</div>
+                    <div>Click để chọn hình ảnh mới</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                        Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB)
+                    </div>
+                </div>
+            `;
+            imagePreview.innerHTML = '';
+        }
+    }
+
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const title = document.getElementById('title').value.trim();
+        const orderNumber = document.getElementById('orderNumber').value;
+        const imageFile = document.getElementById('imageFile');
+
+        if (!title) {
+            e.preventDefault();
+            alert('Vui lòng nhập tiêu đề!');
+            document.getElementById('title').focus();
+            return;
+        }
+
+        if (!orderNumber || orderNumber < 1) {
+            e.preventDefault();
+            alert('Vui lòng nhập thứ tự hiển thị hợp lệ!');
+            document.getElementById('orderNumber').focus();
+            return;
+        }
+
+        // Kiểm tra file nếu đang upload file mới
+        if (imageFile.style.display !== 'none' && imageFile.files.length > 0) {
+            const file = imageFile.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                e.preventDefault();
+                alert('File quá lớn! Vui lòng chọn file nhỏ hơn 5MB.');
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                e.preventDefault();
+                alert('Vui lòng chọn file hình ảnh!');
+                return;
+            }
+        }
+    });
+</script>
+</body>
+</html>
+

@@ -4,7 +4,7 @@
         <ul class="nav-links" style="margin-bottom: 0">
             <li><a href="/" id="home">Trang chủ</a></li>
             <li><a href="/courses/learner" id="courses">Khóa học</a></li>
-            <li><a href="#" id="posts">Bài viết</a></li>
+            <li><a href="#" id="posts" th:href="@{/marketing}">Bài viết</a></li>
         </ul>
         <div class="user-menu" sec:authorize="isAuthenticated()">
             <div class="user-icon" id="userIcon">

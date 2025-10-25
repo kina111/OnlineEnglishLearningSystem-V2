@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Slider - Marketing Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --secondary-color: #4ecdc4;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #fff;
+            --bg-light: #f8f9fa;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-color);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .nav-breadcrumb a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--danger-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .add-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Slider Grid */
+        .sliders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .slider-card {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .slider-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .slider-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .slider-content {
+            padding: 1.5rem;
+        }
+
+        .slider-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .slider-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .slider-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .slider-status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .slider-status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .slider-order {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .slider-views {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .slider-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .action-btn.edit {
+            background: var(--warning-color);
+            color: #212529;
+        }
+
+        .action-btn.edit:hover {
+            background: #e0a800;
+        }
+
+        .action-btn.toggle {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .action-btn.toggle:hover {
+            background: #218838;
+        }
+
+        .action-btn.toggle.inactive {
+            background: var(--danger-color);
+        }
+
+        .action-btn.toggle.inactive:hover {
+            background: #c82333;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .empty-state p {
+            margin-bottom: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .sliders-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <a href="/marketing" class="logo">📊 Marketing Dashboard</a>
+        <div class="nav-breadcrumb">
+            <a href="/marketing">Dashboard</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Quản lý Slider</span>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar">
+                <span th:text="${currentUser.fullName.substring(0,1).toUpperCase()}"></span>
+            </div>
+            <span th:text="${currentUser.fullName}"></span>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Quản lý Slider</h1>
+        <a href="/admin/sliders/create" class="add-btn">
+            <i class="fas fa-plus"></i> Thêm Slider mới
+        </a>
+    </div>
+
+    <!-- Sliders Grid -->
+    <div th:if="${sliders != null and !sliders.empty}" class="sliders-grid">
+        <div th:each="slider : ${sliders}" class="slider-card">
+            <img th:src="${slider.imageUrl}" th:alt="${slider.title}" class="slider-image">
+            <div class="slider-content">
+                <h3 class="slider-title" th:text="${slider.title}">Slider Title</h3>
+                <p class="slider-description" th:text="${slider.description}">Slider description goes here...</p>
+                <div class="slider-meta">
+                        <span class="slider-status"
+                              th:classappend="${slider.status == 'SHOW'} ? 'active' : 'inactive'"
+                              th:text="${slider.status == 'SHOW'} ? 'Đang hiển thị' : 'Đã ẩn'">
+                            Status
+                        </span>
+                    <span class="slider-order" th:text="'Thứ tự: ' + ${slider.orderNumber}">Order</span>
+                    <span class="slider-views" th:text="'👁️ ' + ${slider.viewCount} + ' lượt xem'">Views</span>
+                </div>
+                <div class="slider-actions">
+                    <a th:href="@{'/admin/sliders/edit/' + ${slider.id}}" class="action-btn edit">
+                        <i class="fas fa-edit"></i> Sửa
+                    </a>
+                    <button class="action-btn toggle"
+                            th:classappend="${slider.status == 'SHOW'} ? 'inactive' : ''"
+                            th:onclick="'toggleSlider(' + ${slider.id} + ')'">
+                        <i class="fas fa-eye" th:if="${slider.status == 'SHOW'}"></i>
+                        <i class="fas fa-eye-slash" th:if="${slider.status != 'SHOW'}"></i>
+                        <span th:text="${slider.status == 'SHOW'} ? 'Ẩn' : 'Hiện'">Toggle</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${sliders == null or sliders.empty}" class="empty-state">
+        <i class="fas fa-images"></i>
+        <h3>Chưa có slider nào</h3>
+        <p>Bắt đầu tạo slider đầu tiên để hiển thị trên trang chủ</p>
+        <a href="/admin/sliders/create" class="add-btn">
+            <i class="fas fa-plus"></i> Tạo slider đầu tiên
+        </a>
+    </div>
+</div>
+
+<script>
+    function toggleSlider(sliderId) {
+        if (confirm('Bạn có chắc chắn muốn thay đổi trạng thái slider này?')) {
+            // Gửi request để toggle status
+            fetch('/admin/sliders/toggle/' + sliderId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Có lỗi xảy ra khi cập nhật slider');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi cập nhật slider');
+            });
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,8 +1,6 @@
 package com.swp391.OnlineEnglishLearningSystem.model;
 
-
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -143,4 +141,3 @@ public class Slider {
         this.viewCount = viewCount;
     }
 }
-
