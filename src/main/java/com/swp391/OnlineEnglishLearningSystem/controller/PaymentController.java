@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import org.springframework.web.bind.annotation.PathVariable;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -37,8 +37,8 @@ public class PaymentController {
         this.enrollmentService = enrollmentService;
     }
 
-    @GetMapping("/payment/checkout")
-    public String showCheckoutPage(@RequestParam("courseId") Long courseId,
+    @GetMapping("/payment/checkout/{courseId}")
+    public String showCheckoutPage(@PathVariable("courseId") Long courseId,
                                    HttpSession session, Model model) {
 
         // 1. Kiểm tra đăng nhập

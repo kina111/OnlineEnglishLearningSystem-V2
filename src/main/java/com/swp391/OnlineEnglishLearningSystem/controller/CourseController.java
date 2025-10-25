@@ -7,8 +7,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.UpdateCourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseCategoryService;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
-import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
+import com.swp391.OnlineEnglishLearningSystem.service.impl.EnrollmentServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +31,15 @@ import java.util.Map;
 public class CourseController {
 
     private final CourseCategoryService courseCategoryService;
-    private final UploadService uploadService;
     private final CourseService courseService;
     private final UserService userService;
+    private final EnrollmentServiceImpl enrollmentService;
 
-    public CourseController(CourseCategoryService courseCategoryService, UploadService uploadService, CourseService courseService, UserService userService) {
+    public CourseController(CourseCategoryService courseCategoryService, CourseService courseService, UserService userService, EnrollmentServiceImpl enrollmentService) {
         this.courseCategoryService = courseCategoryService;
-        this.uploadService = uploadService;
         this.courseService = courseService;
         this.userService = userService;
+        this.enrollmentService = enrollmentService;
     }
 
     // ===================== GET COURSES =========================
@@ -61,10 +60,19 @@ public class CourseController {
         return "user/viewCourseList";
     }
 
+    //show course details for learner
     @GetMapping("/{courseId}/learner")
-    public String getCourseDetailsForLearner(@PathVariable("courseId") Long courseId, Model model){
+    public String getCourseDetailsForLearner(@PathVariable("courseId") Long courseId,
+                                             @RequestParam(required = false, defaultValue = "false") boolean inWishlist,
+                                             HttpSession session,
+                                             Model model){
         try{
             Course course = this.courseService.findById(courseId);
+            Long userId = (Long) session.getAttribute("currentUserId");
+            boolean isEnrolled = this.enrollmentService.isEnrolled(userId, courseId);
+
+            model.addAttribute("inWishlist", inWishlist);
+            model.addAttribute("isEnrolled", isEnrolled);
             model.addAttribute("course", course);
             return "user/viewCourseDetails";
         }catch (Exception e){
