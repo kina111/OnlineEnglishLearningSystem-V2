@@ -46,7 +46,7 @@ public class Lesson extends BaseEntity{
     private String htmlContent;
     //--- danh cho Lecture ---
     private String videoUrl;
-
+    private Long duration; // in milliseconds
 
     //---dành cho Quiz---
     @Column(name = "pass_rate")
@@ -189,5 +189,13 @@ public class Lesson extends BaseEntity{
 
     public void setNumberOfQuestions(Integer numberOfQuestions) {
         this.numberOfQuestions = numberOfQuestions;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 }
