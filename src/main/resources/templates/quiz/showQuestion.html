@@ -77,7 +77,7 @@
 </head>
 <body>
 
-<form th:action="@{/quiz/{quizId}/{questionIndex}(quizId=${quiz.id}, questionIndex=${questionIndex})}" method="post" class="container">
+<form action="" method="post" class="container">
 
 
 
@@ -92,9 +92,9 @@
             <i class="bi bi-hourglass-split"></i>
             <span id="quiz-timer">00:00:00</span>
         </div>
-<!--        <div class="px-3 py-1 rounded" style="background-color: #e6f7ff;">-->
-<!--            <p th:text="${answeredOption}"></p>-->
-<!--        </div>-->
+        <div class="px-3 py-1 rounded" style="background-color: #e6f7ff;">
+            <p th:text="${progress}"></p>
+        </div>
     </div>
 
 
@@ -117,8 +117,9 @@
                    name="answer"
                    th:value="${answer.id}"
                    th:id="'option_' + ${iterStat.index}"
-                   th:attr="checked=${answeredOptionId != null and answeredOptionId == answer.id} ? 'checked' : null" />
-<!--                   th:checked="${answeredOption != null and answeredOption == answer.id.toString()}" />-->
+                   th:checked="${answeredOptionId != null and answeredOptionId == answer.id}" />
+<!--                   th:attr="checked=${answeredOptionId != null and answeredOptionId == answer.id} ? 'checked' : null" />-->
+
 
 
             <label th:for="'option_' + ${iterStat.index}" class="form-check-label">

@@ -46,7 +46,7 @@ public class QuizController {
 
     @GetMapping("/{lessonId}/start")
     public String getQuizPage(@PathVariable("lessonId") long lessonId, Model model, HttpSession session) {
-        //Temp hardcode user
+        //Temp hardcode user------------------------------
         User user = userService.getUserById(4L);
         //Get a quiz by lesson id
         Lesson lesson = lessonService.findById(lessonId);
@@ -62,9 +62,10 @@ public class QuizController {
         session.setAttribute("quizAttemptId", quizAttempt.getId());
 
         model.addAttribute(QUIZ_SESSION,answers);
-        model.addAttribute("quiz", lesson);
+        //---check this
+//        model.addAttribute("quiz", quizAttempt.getLesson());
         model.addAttribute("questionIndex",0);
-        model.addAttribute("questionCount",lesson.getQuestions().size());
+        model.addAttribute("questionCount",quizAttempt.getQuestions().size());
         return QUIZ_PATH + lessonId + "/0";
     }
     //Get question page
@@ -75,17 +76,19 @@ public class QuizController {
                                         HttpSession session) {
         @SuppressWarnings("unchecked")
         Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
-
+        Long quizAttemptId = (Long) session.getAttribute("quizAttemptId");
+        if(quizAttemptId == null|| !quizAttemptService.existsById(quizAttemptId)){
+            return QUIZ_PATH + quizId + "/start";
+        }
         if (answers == null) {
             answers = new HashMap<>();
             session.setAttribute(QUIZ_SESSION, answers);
         }
+        QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
+        List<QuizAttemptQuestion> questions = quizAttempt.getQuestions();
 
-        Lesson quiz = lessonService.findById(quizId);
-        List<Question> questions = quiz.getQuestions();
-        Question question = questions.get(questionIndex);
-//        List<AnswerOption> answerOptions = question.getAnswerOptions();
-//        question.setAnswerOptions(answerOptions);
+        Question question = questions.get(questionIndex).getQuestion();
+
         //put answer option to
         long answerOptionId = 0;
         if(answers.containsKey(question.getId())&&!answers.get(question.getId()).getAnswer().isBlank()){
@@ -100,10 +103,11 @@ public class QuizController {
             model.addAttribute("answeredOptionId",answerOptionId);
             model.addAttribute("answeredOption",answers.get(question.getId()));
         }
-        model.addAttribute("quiz", quiz);
+
+        model.addAttribute("progress",answers);
         model.addAttribute("question", question);
         model.addAttribute("questionIndex", questionIndex);
-        model.addAttribute("questionCount", quiz.getQuestions().size());
+        model.addAttribute("questionCount", quizAttempt.getQuestions().size());
         return "quiz/showQuestion";
     }
 
@@ -116,12 +120,17 @@ public class QuizController {
                                             @RequestParam("action") String action,
                                             @RequestParam(name = "isMarked",defaultValue = "false",required = false) Boolean isBookmarked,
                                             HttpSession session) {
-        Lesson quiz = lessonService.findById(quizId);
-        List<Question> questions = quiz.getQuestions();
+
+        Long quizAttemptId = (Long) session.getAttribute("quizAttemptId");
+        if(quizAttemptId == null|| !quizAttemptService.existsById(quizAttemptId)){
+            return QUIZ_PATH + quizId + "/start";
+        }
+
+        QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
+        List<QuizAttemptQuestion> questions = quizAttempt.getQuestions();
 //        Question question = questions.get(questionIndex);
 
-        // Save selected answer to session or service
-//        quizService.saveAnswerProgress(quizId, questionId, answer, session);
+
 
         //Save answer to session
         @SuppressWarnings("unchecked")
@@ -132,7 +141,7 @@ public class QuizController {
         }
         if((answer!=null && !answer.isEmpty())||isBookmarked){
             AnsweredOption answeredOption = new AnsweredOption(answer, isBookmarked);
-            answers.put(quiz.getQuestions().get(questionIndex).getId(), answeredOption);
+            answers.put(quizAttempt.getQuestions().get(questionIndex).getQuestion().getId(), answeredOption);
         }
 
 
@@ -209,8 +218,15 @@ public class QuizController {
 //    }
     @GetMapping("/{quizId}/progress")
     public String showProgressPage(@PathVariable Long quizId, Model model, HttpSession session) {
-        Lesson lesson = lessonService.findById(quizId);
-        List<Question> questions = lesson.getQuestions();
+//        Lesson lesson = lessonService.findById(quizId);
+//        List<Question> questions = lesson.getQuestions();
+        Long quizAttemptId = (Long) session.getAttribute("quizAttemptId");
+        if(quizAttemptId == null|| !quizAttemptService.existsById(quizAttemptId)){
+            return QUIZ_PATH + quizId + "/start";
+        }
+        QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
+        List<Question> questions = quizAttemptService.getQuestionsList(quizAttemptId);
+
 
         model.addAttribute("quizId", quizId);
         model.addAttribute("questions", questions);

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,10 +17,11 @@ import java.util.stream.Collectors;
 public class QuizAttemptServiceImpl implements QuizAttemptService {
     @Autowired
     private QuizAttemptRepository quizAttemptRepository;
+    private final QuestionRepository questionRepository;
 
-
-    public QuizAttemptServiceImpl(QuizAttemptRepository quizAttemptRepository) {
+    public QuizAttemptServiceImpl(QuizAttemptRepository quizAttemptRepository, QuestionRepository questionRepository) {
         this.quizAttemptRepository = quizAttemptRepository;
+        this.questionRepository = questionRepository;
     }
 
 //    @Override
@@ -74,6 +76,22 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     @Override
     public QuizAttempt findQuizAttemptById(Long id) {
         return quizAttemptRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Quiz Attempt not found"));
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return quizAttemptRepository.existsById(id);
+    }
+
+    @Override
+    public List<Question> getQuestionsList(Long id) {
+        List<Question> questions = new ArrayList<>();
+        quizAttemptRepository.findById(id).ifPresent(quizAttempt -> {
+            quizAttempt.getQuestions().forEach(quizAttemptQuestion -> {
+                questions.add(quizAttemptQuestion.getQuestion());
+            });
+        });
+        return questions;
     }
 //
 //    @Override
