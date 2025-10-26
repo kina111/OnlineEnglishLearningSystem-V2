@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -170,8 +171,14 @@ public class QuizController {
 
         @SuppressWarnings("unchecked")
         Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
-
-
+        Long quizAttemptId = (Long) session.getAttribute("quizAttemptId");
+        if(quizAttemptId == null|| !quizAttemptService.existsById(quizAttemptId)){
+            return QUIZ_PATH + quizId + "/start";
+        }
+        QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
+        if(quizAttempt.getEndTime() == null){
+            return QUIZ_PATH + quizId + "/start";
+        }
 
         int kq = 0;
 
@@ -191,9 +198,15 @@ public class QuizController {
 
             }
         }
+
+
         model.addAttribute("kq",kq);
         model.addAttribute("total",questions.size());
-
+//
+//        quizAttempt.setCompletedTime(LocalDateTime.now());
+//        quizAttemptService.save(quizAttempt);
+        session.removeAttribute(QUIZ_SESSION);
+        session.removeAttribute("quizAttemptId");
         return "quiz/result";
     }
 

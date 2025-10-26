@@ -84,6 +84,16 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     @Override
+    public void save(QuizAttempt quizAttempt) {
+        quizAttemptRepository.save(quizAttempt);
+    }
+
+    @Override
+    public void delete(Long id) {
+        quizAttemptRepository.deleteById(id);
+    }
+
+    @Override
     public List<Question> getQuestionsList(Long id) {
         List<Question> questions = new ArrayList<>();
         quizAttemptRepository.findById(id).ifPresent(quizAttempt -> {
@@ -93,19 +103,5 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         });
         return questions;
     }
-//
-//    @Override
-//    public void save(Long quizId, Long userId) {
-//        quizAttemptRepository.
-//    }
 
-//    @Override
-//    public void delete(Long quizId, Long userId) {
-//        quizAttemptRepository
-//    }
-
-//    @Override
-//    public boolean isQuizAttemptExist(Lesson lesson, User user) {
-//        return quizAttemptRepository.findByUserIdAndQuizId(userId, quizId) != null;
-//    }
 }

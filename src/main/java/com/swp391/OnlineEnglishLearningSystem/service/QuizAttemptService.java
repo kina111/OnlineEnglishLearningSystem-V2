@@ -15,8 +15,8 @@ public interface QuizAttemptService {
     QuizAttempt startQuizAttempt(User user, Lesson lesson);
     QuizAttempt findQuizAttemptById(Long id);
     boolean existsById(Long id);
-//    void save(Long quizId, Long userId);
-//    void delete(Long quizId, Long userId);
+    void save(QuizAttempt quizAttempt);
+    void delete(Long id);
 //    boolean isQuizAttemptExist(Lesson lesson, User user);
     List<Question> getQuestionsList(Long id);
 }
