@@ -77,9 +77,9 @@ INSERT INTO lessons (
     html_content, video_url, chapter_id, number_of_questions
 ) VALUES
       -- Quiz cho chương "Giới thiệu về IELTS Speaking" (chapter_id = 1)
-      (1, N'Quiz 1: Tổng quan IELTS Speaking', 1, 'QUIZ', 15, 60, 10,
+      (1, N'Quiz 1: Tổng quan IELTS Speaking', 1, 'QUIZ', 15, 60, 1,
        N'<p>Bài kiểm tra tổng quan kiến thức cơ bản về cấu trúc và tiêu chí chấm điểm phần thi Speaking.</p>',
-       NULL, 1, 5),
+       NULL, 1, 15),
 
       -- Quiz cho chương "Chiến lược trả lời Part 1" (chapter_id = 2)
       (2, N'Quiz 2: Câu hỏi Part 1', 2, 'QUIZ', 20, 70, 15,

@@ -104,6 +104,7 @@ public class QuizController {
             model.addAttribute("answeredOption",answers.get(question.getId()));
         }
 
+        model.addAttribute("endTime", quizAttempt.getEndTime());
         model.addAttribute("progress",answers);
         model.addAttribute("question", question);
         model.addAttribute("questionIndex", questionIndex);
@@ -117,8 +118,9 @@ public class QuizController {
                                             @PathVariable("quizId") long quizId,
                                             @PathVariable("questionIndex") int questionIndex,
                                             @RequestParam(name = "answer", defaultValue = "",required = false) String answer,
-                                            @RequestParam("action") String action,
+                                            @RequestParam(value = "action",required = false) String action,
                                             @RequestParam(name = "isMarked",defaultValue = "false",required = false) Boolean isBookmarked,
+                                            @RequestParam(required = false, name = "autoAction") String autoAction,
                                             HttpSession session) {
 
         Long quizAttemptId = (Long) session.getAttribute("quizAttemptId");
@@ -146,6 +148,7 @@ public class QuizController {
 
 
         //Navigate
+        action = (autoAction != null && !autoAction.isEmpty()) ? autoAction : action.toLowerCase();
         if ("previous".equals(action)) {
             return QUIZ_PATH + quizId + "/" + (questionIndex - 1);
         } else if ("next".equals(action)) {
@@ -156,8 +159,8 @@ public class QuizController {
         } else if ("progress".equals(action)) {
             return QUIZ_PATH + quizId + "/progress";
         }
-
-        return QUIZ_PATH + quizId + "/question/" + questionIndex;
+        //show bug
+        return QUIZ_PATH + quizId + "/" + questionIndex;
     }
 
     @GetMapping("/{quizId}/result")

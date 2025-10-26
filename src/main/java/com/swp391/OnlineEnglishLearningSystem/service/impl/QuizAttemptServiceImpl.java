@@ -47,7 +47,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         attempt.setUser(user);
         attempt.setLesson(lesson);
         attempt.setStartTime(LocalDateTime.now());
-        attempt.setCompletedTime(LocalDateTime.now().plusMinutes(lesson.getTimeLimitInMinutes()));
+        attempt.setEndTime(LocalDateTime.now().plusMinutes(lesson.getTimeLimitInMinutes()));
 
         // 2️⃣ Get all questions for this lesson
         List<Question> allQuestions = lesson.getQuestions();
