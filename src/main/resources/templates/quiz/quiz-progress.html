@@ -67,7 +67,9 @@
 </div>
 
 <br/>
-<a th:href="@{'/quiz/' + ${quizId} + '/0'}">Back to Quiz</a>
-
+<!--<a th:href="@{'/quiz/' + ${quizId} + '/0'}">Back to Quiz</a>-->
+<button type="button" onclick="history.back()">⬅ Back</button>
+<!--<button type="button" onclick="window.location.href='/quiz/' + ${quizId} + '/result'">Finish</button>-->
+<a th:href="@{'/quiz/'+${quizId}+'/result'}">Finish</a>
 </body>
 </html>

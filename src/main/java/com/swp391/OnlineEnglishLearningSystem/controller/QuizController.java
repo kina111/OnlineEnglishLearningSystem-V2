@@ -1,14 +1,10 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
-import com.swp391.OnlineEnglishLearningSystem.model.AnswerOption;
-import com.swp391.OnlineEnglishLearningSystem.model.Lesson;
-import com.swp391.OnlineEnglishLearningSystem.model.Question;
+import com.swp391.OnlineEnglishLearningSystem.model.*;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.AnsweredOption;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.QuestionView;
 import com.swp391.OnlineEnglishLearningSystem.repository.AnswerOptionRepository;
-import com.swp391.OnlineEnglishLearningSystem.service.AnswerOptionService;
-import com.swp391.OnlineEnglishLearningSystem.service.LessonService;
-import com.swp391.OnlineEnglishLearningSystem.service.QuestionService;
+import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,11 +25,17 @@ public class QuizController {
     private final QuestionService questionService;
     private final LessonService lessonService;
     private final AnswerOptionService answerOptionService;
+    private final UserService userService;
+    private final QuizAttemptService quizAttemptService;
 
-    public QuizController(QuestionService questionService, LessonService lessonService, AnswerOptionService answerOptionService) {
+    public QuizController(QuestionService questionService, LessonService lessonService,
+                          AnswerOptionService answerOptionService, UserService userService,
+                          QuizAttemptService quizAttemptService) {
         this.questionService = questionService;
         this.lessonService = lessonService;
         this.answerOptionService = answerOptionService;
+        this.userService = userService;
+        this.quizAttemptService = quizAttemptService;
     }
 
 
@@ -42,21 +44,22 @@ public class QuizController {
         return "redirect:/";
     }
 
-    @GetMapping("/{lessonId}")
+    @GetMapping("/{lessonId}/start")
     public String getQuizPage(@PathVariable("lessonId") long lessonId, Model model, HttpSession session) {
+        //Temp hardcode user
+        User user = userService.getUserById(4L);
         //Get a quiz by lesson id
         Lesson lesson = lessonService.findById(lessonId);
         if (lesson == null) {
             return "redirect:/";
         }
+        //Start quizAttempt
+        QuizAttempt quizAttempt = quizAttemptService.startQuizAttempt(user, lesson);
         //Session to store answers
         @SuppressWarnings("unchecked")
-        Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
-
-        if (answers == null) {
-            answers = new HashMap<>();
-            session.setAttribute(QUIZ_SESSION, answers);
-        }
+        Map<Long, AnsweredOption> answers = new HashMap<>();
+        session.setAttribute(QUIZ_SESSION, answers);
+        session.setAttribute("quizAttemptId", quizAttempt.getId());
 
         model.addAttribute(QUIZ_SESSION,answers);
         model.addAttribute("quiz", lesson);
@@ -85,7 +88,7 @@ public class QuizController {
 //        question.setAnswerOptions(answerOptions);
         //put answer option to
         long answerOptionId = 0;
-        if(answers.containsKey(question.getId())){
+        if(answers.containsKey(question.getId())&&!answers.get(question.getId()).getAnswer().isBlank()){
             try{
                 answerOptionId = Long.parseLong(answers.get(question.getId()).getAnswer());
             } catch (NumberFormatException e) {
@@ -132,7 +135,7 @@ public class QuizController {
             answers.put(quiz.getQuestions().get(questionIndex).getId(), answeredOption);
         }
 
-        model.addAttribute(QUIZ_SESSION,answers);
+
         //Navigate
         if ("previous".equals(action)) {
             return QUIZ_PATH + quizId + "/" + (questionIndex - 1);
