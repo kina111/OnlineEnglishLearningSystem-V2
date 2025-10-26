@@ -91,10 +91,13 @@ public class QuizController {
         Question question = questions.get(questionIndex).getQuestion();
 
         //put answer option to
-        long answerOptionId = 0;
-        if(answers.containsKey(question.getId())&&!answers.get(question.getId()).getAnswer().isBlank()){
+        List<Long> answerOptionId = new ArrayList<>();
+        if(answers.containsKey(question.getId())&&!answers.get(question.getId()).getAnswer().isEmpty()){
             try{
-                answerOptionId = Long.parseLong(answers.get(question.getId()).getAnswer());
+
+                for(String answer : answers.get(question.getId()).getAnswer()){
+                    answerOptionId.add(Long.parseLong(answer));
+                }
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -118,7 +121,7 @@ public class QuizController {
     public String getQuizQuestionAnswerPage(Model model,
                                             @PathVariable("quizId") long quizId,
                                             @PathVariable("questionIndex") int questionIndex,
-                                            @RequestParam(name = "answer", defaultValue = "",required = false) String answer,
+                                            @RequestParam(name = "answer",required = false) List<String> answer,
                                             @RequestParam(value = "action",required = false) String action,
                                             @RequestParam(name = "isMarked",defaultValue = "false",required = false) Boolean isBookmarked,
                                             @RequestParam(required = false, name = "autoAction") String autoAction,
@@ -182,22 +185,22 @@ public class QuizController {
 
         int kq = 0;
 
-        if(answers != null && !answers.isEmpty()){
-            for(Question question : questions){
-                AnsweredOption answeredOption =  answers.get(question.getId());
-                if(answeredOption != null){
-                    try{
-                        long answerOptionId = Long.parseLong(answeredOption.getAnswer());
-                        if( answerOptionService.findByAnswerOptionId(answerOptionId).getCorrect()){
-                            kq++;
-                        }
-                    }catch (Exception e){
-                            e.printStackTrace();
-                    }
-                }
-
-            }
-        }
+//        if(answers != null && !answers.isEmpty()){
+//            for(Question question : questions){
+//                AnsweredOption answeredOption =  answers.get(question.getId());
+//                if(answeredOption != null){
+//                    try{
+//                        long answerOptionId = Long.parseLong(answeredOption.getAnswer());
+//                        if( answerOptionService.findByAnswerOptionId(answerOptionId).getCorrect()){
+//                            kq++;
+//                        }
+//                    }catch (Exception e){
+//                            e.printStackTrace();
+//                    }
+//                }
+//
+//            }
+//        }
 
 
         model.addAttribute("kq",kq);

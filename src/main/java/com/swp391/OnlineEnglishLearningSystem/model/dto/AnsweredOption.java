@@ -1,25 +1,27 @@
 package com.swp391.OnlineEnglishLearningSystem.model.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnsweredOption implements Serializable {
-    private String answer;
+    private List<String> answer = new ArrayList<>();
     private boolean bookmarked;
 
     public AnsweredOption() {}
 
-    public AnsweredOption(String answer, boolean bookmarked) {
-        this.answer = answer;
-        this.bookmarked = bookmarked;
+    public AnsweredOption(List<String> answer, boolean bookmarked) {
+        this.setAnswer(answer);
+        this.setBookmarked(bookmarked);
     }
 
     // Getters and Setters
-    public String getAnswer() {
+    public List<String> getAnswer() {
         return answer;
     }
 
-    public void setAnswer(String answerId) {
-        this.answer = answerId;
+    public void setAnswer(List<String> answer) {
+        this.answer = (answer != null) ? answer : new ArrayList<>();
     }
 
     public boolean isBookmarked() {

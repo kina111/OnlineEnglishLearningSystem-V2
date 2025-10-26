@@ -53,7 +53,7 @@
     <a th:each="q, iter : ${questions}"
        th:href="@{'/quiz/' + ${quizId} +'/'+ ${iter.index}}"
        th:class="${'question-btn ' +
-              ((#maps.containsKey(answers, q.id) and not #strings.isEmpty(answers[q.id].answer)) ? 'answered ' : 'unanswered ') +
+              ((#maps.containsKey(answers, q.id) and not answers[q.id].answer.isEmpty) ? 'answered ' : 'unanswered ') +
               ((#maps.containsKey(answers, q.id) and answers[q.id].bookmarked) ? 'bookmarked' : '')}"
        th:text="'Q' + ${iter.index + 1}">
     </a>

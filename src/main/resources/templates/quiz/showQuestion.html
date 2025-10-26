@@ -111,11 +111,11 @@
     <div class="mb-4">
         <div th:each="answer, iterStat : ${question.answerOptions}" class="answer-option">
 
-            <input type="radio"
+            <input type="checkbox"
                    name="answer"
                    th:value="${answer.id}"
                    th:id="'option_' + ${iterStat.index}"
-                   th:checked="${answeredOptionId != null and answeredOptionId == answer.id}" />
+                   th:checked="${answeredOptionId != null and answeredOptionId.contains(answer.id)}" />
 <!--                   th:attr="checked=${answeredOptionId != null and answeredOptionId == answer.id} ? 'checked' : null" />-->
 
 
@@ -160,20 +160,25 @@
 <script>
     // Highlight selected answer (client-side visual feedback)
     document.addEventListener('DOMContentLoaded', function () {
-        const answers = document.querySelectorAll('.answer-option input[type="radio"]');
-        answers.forEach(radio => {
-            radio.addEventListener('change', () => {
-                document.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
-                radio.closest('.answer-option').classList.add('selected');
+        const checkboxes = document.querySelectorAll('.answer-option input[type="checkbox"]');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    checkbox.closest('.answer-option').classList.add('selected');
+                } else {
+                    checkbox.closest('.answer-option').classList.remove('selected');
+                }
             });
         });
 
-        // Initial highlight
-        const selected = document.querySelector('.answer-option input[type="radio"]:checked');
-        if (selected) {
-            selected.closest('.answer-option').classList.add('selected');
-        }
+        // Initial highlight for any pre-checked boxes
+        document.querySelectorAll('.answer-option input[type="checkbox"]:checked')
+            .forEach(checkedBox => {
+                checkedBox.closest('.answer-option').classList.add('selected');
+            });
     });
+
 </script>
 <script th:inline="javascript">
     // Get endTime from model (Thymeleaf will render it as a string)
