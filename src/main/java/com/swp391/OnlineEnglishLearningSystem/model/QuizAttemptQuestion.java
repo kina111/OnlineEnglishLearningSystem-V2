@@ -9,8 +9,10 @@ public class QuizAttemptQuestion {
     @Id @GeneratedValue
     private Long id;
 
-    @ManyToOne private QuizAttempt quizAttempt;
-    @ManyToOne private Question question;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private QuizAttempt quizAttempt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Question question;
 
     private boolean bookmarked = false;
     private int questionOrder;

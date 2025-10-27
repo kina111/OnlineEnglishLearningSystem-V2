@@ -202,7 +202,7 @@ public class QuizController {
 //            }
 //        }
 
-
+        quizAttemptService.finishQuizAttempt(quizAttempt,answers);
         model.addAttribute("kq",kq);
         model.addAttribute("total",questions.size());
 //

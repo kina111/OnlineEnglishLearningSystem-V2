@@ -1,16 +1,16 @@
 package com.swp391.OnlineEnglishLearningSystem.service.impl;
 
 import com.swp391.OnlineEnglishLearningSystem.model.*;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.AnsweredOption;
 import com.swp391.OnlineEnglishLearningSystem.repository.QuestionRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.QuizAttemptRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.QuizAttemptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,4 +104,74 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         return questions;
     }
 
+    @Override
+    public QuizAttempt finishQuizAttempt(QuizAttempt attempt, Map<Long, AnsweredOption> answersMap) {
+        double totalScore = 0;
+        int totalQuestions = attempt.getQuestions().size();
+
+        for (QuizAttemptQuestion aq : attempt.getQuestions()) {
+            Long questionId = aq.getQuestion().getId();
+            AnsweredOption userAnswer = answersMap.get(questionId);
+            if (userAnswer == null) continue;
+
+            aq.setBookmarked(userAnswer.isBookmarked());
+            boolean isCorrect = false;
+
+            Question question = aq.getQuestion();
+            if (question.getQuestionType() == Question.QuestionType.MULTIPLE_CHOICE) {
+                // handle multiple choice (multiple correct answers)
+                List<AnswerOption> correctOptions = question.getAnswerOptions().stream()
+                        .filter(AnswerOption::getCorrect)
+                        .toList();
+
+                List<Long> correctIds = correctOptions.stream()
+                        .map(AnswerOption::getId)
+                        .toList();
+
+                // user’s selected answers (stored as String IDs)
+                List<Long> selectedIds = userAnswer.getAnswer()
+                        .stream()
+                        .map(Long::parseLong)
+                        .toList();
+
+                // save user selected options
+                for (Long selectedId : selectedIds) {
+                    AnswerOption selectedOption = question.getAnswerOptions().stream()
+                            .filter(opt -> opt.getId().equals(selectedId))
+                            .findFirst()
+                            .orElse(null);
+
+                    QuizAttemptSelectedOption sao = new QuizAttemptSelectedOption();
+                    sao.setAttemptQuestion(aq);
+                    sao.setOption(selectedOption);
+                    aq.getSelectedOptions().add(sao);
+                }
+
+                // correctness check — compare sets of IDs
+                isCorrect = new HashSet<>(selectedIds).equals(new HashSet<>(correctIds));
+            }
+//            else if (question.getQuestionType() == Question.QuestionType.SHORT_ANSWER) {
+//                String correct = question.getShortAnswerOption().getCorrectAnswer().trim().toLowerCase();
+//                String userVal = userAnswer.getAnswer().isEmpty() ? "" : userAnswer.getAnswer().get(0).trim().toLowerCase();
+//
+//                QuizAttemptSelectedOption sao = new QuizAttemptSelectedOption();
+//                sao.setAttemptQuestion(aq);
+//                sao.setSelectedValue(userVal);
+//                aq.getSelectedOptions().add(sao);
+//
+//                isCorrect = userVal.equalsIgnoreCase(correct);
+//            }
+
+            aq.setCorrect(isCorrect);
+            if (isCorrect) totalScore++;
+        }
+
+        double finalScore = (totalScore / totalQuestions) * 100;
+        attempt.setScore(finalScore);
+        attempt.setPassed(finalScore >= attempt.getLesson().getPassRate());
+        attempt.setCompletedTime(LocalDateTime.now());
+//        attempt.setTimeTaken(Duration.between(attempt.getStartedAt(), attempt.getFinishedAt()).toSeconds());
+
+        return quizAttemptRepository.save(attempt);
+    }
 }
