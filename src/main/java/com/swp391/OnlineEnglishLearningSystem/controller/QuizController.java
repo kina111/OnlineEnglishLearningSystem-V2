@@ -185,29 +185,9 @@ public class QuizController {
 
         int kq = 0;
 
-//        if(answers != null && !answers.isEmpty()){
-//            for(Question question : questions){
-//                AnsweredOption answeredOption =  answers.get(question.getId());
-//                if(answeredOption != null){
-//                    try{
-//                        long answerOptionId = Long.parseLong(answeredOption.getAnswer());
-//                        if( answerOptionService.findByAnswerOptionId(answerOptionId).getCorrect()){
-//                            kq++;
-//                        }
-//                    }catch (Exception e){
-//                            e.printStackTrace();
-//                    }
-//                }
-//
-//            }
-//        }
-
         quizAttemptService.finishQuizAttempt(quizAttempt,answers);
         model.addAttribute("kq",kq);
         model.addAttribute("total",questions.size());
-//
-//        quizAttempt.setCompletedTime(LocalDateTime.now());
-//        quizAttemptService.save(quizAttempt);
         session.removeAttribute(QUIZ_SESSION);
         session.removeAttribute("quizAttemptId");
         return "quiz/result";
