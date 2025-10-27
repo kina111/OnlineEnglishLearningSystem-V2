@@ -81,7 +81,7 @@ public class SliderController {
 
     // Hiển thị form chỉnh sửa slider
     @GetMapping("/update/{id}")
-    public String updateSliderForm(@PathVariable Integer id, Model model) {
+    public String updateSliderForm(@PathVariable Long id, Model model) {
         try {
             Slider slider = sliderService.getSliderById(id);
             SliderCreateUpdateDto dto = new SliderCreateUpdateDto();
@@ -102,7 +102,7 @@ public class SliderController {
 
     // Xử lý cập nhật slider
     @PostMapping("/update/{id}")
-    public String updateSlider(@PathVariable Integer id, @ModelAttribute SliderCreateUpdateDto dto, RedirectAttributes redirectAttributes) {
+    public String updateSlider(@PathVariable Long id, @ModelAttribute SliderCreateUpdateDto dto, RedirectAttributes redirectAttributes) {
         try {
             sliderService.updateSliderWithFile(id, dto);
             redirectAttributes.addFlashAttribute("success", "Cập nhật slider thành công!");
@@ -123,7 +123,7 @@ public class SliderController {
 
     // Xóa slider
     @PostMapping("/delete/{id}")
-    public String deleteSlider(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    public String deleteSlider(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             sliderService.deleteSlider(id);
             redirectAttributes.addFlashAttribute("success", "Xóa slider thành công!");
@@ -162,25 +162,25 @@ public class SliderController {
 
         // Lấy slider theo ID
         @GetMapping("/{id}")
-        public ResponseEntity<Slider> getSliderById(@PathVariable Integer id) {
+        public ResponseEntity<Slider> getSliderById(@PathVariable Long id) {
             return ResponseEntity.ok(sliderService.getSliderById(id));
         }
 
         // Chỉnh sửa slider
         @PutMapping("/{id}")
-        public ResponseEntity<Slider> updateSlider(@PathVariable Integer id, @RequestBody SliderDTO dto) {
+        public ResponseEntity<Slider> updateSlider(@PathVariable Long id, @RequestBody SliderDTO dto) {
             return ResponseEntity.ok(sliderService.updateSlider(id, dto));
         }
 
         // Ẩn/Hiện slider
         @PatchMapping("/{id}/status")
-        public ResponseEntity<Slider> toggleStatus(@PathVariable Integer id, @RequestParam String status) {
+        public ResponseEntity<Slider> toggleStatus(@PathVariable Long id, @RequestParam String status) {
             return ResponseEntity.ok(sliderService.toggleStatus(id, status));
         }
 
         // Tăng lượt xem slider
         @PostMapping("/{id}/view")
-        public ResponseEntity<Void> incrementViewCount(@PathVariable Integer id) {
+        public ResponseEntity<Void> incrementViewCount(@PathVariable Long id) {
             sliderService.incrementViewCount(id);
             return ResponseEntity.ok().build();
         }

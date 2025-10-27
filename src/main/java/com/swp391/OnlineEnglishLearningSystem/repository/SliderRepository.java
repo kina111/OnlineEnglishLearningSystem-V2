@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SliderRepository extends JpaRepository<Slider, Integer> {
+public interface SliderRepository extends JpaRepository<Slider, Long> {
 
     // Tìm kiếm theo tiêu đề hoặc linkUrl
     @Query("SELECT s FROM Slider s WHERE " +

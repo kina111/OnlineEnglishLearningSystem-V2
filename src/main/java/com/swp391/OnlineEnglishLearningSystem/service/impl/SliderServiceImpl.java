@@ -45,7 +45,7 @@ public class SliderServiceImpl implements SliderService {
     }
 
     @Override
-    public Slider getSliderById(Integer id) {
+    public Slider getSliderById(Long id) {
         return sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
     }
 
@@ -79,7 +79,7 @@ public class SliderServiceImpl implements SliderService {
     }
 
     @Override
-    public Slider updateSlider(Integer id, SliderDTO dto) {
+    public Slider updateSlider(Long id, SliderDTO dto) {
         Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
         slider.setTitle(dto.getTitle());
         slider.setDescription(dto.getDescription());
@@ -92,7 +92,7 @@ public class SliderServiceImpl implements SliderService {
     }
 
     @Override
-    public Slider updateSliderWithFile(Integer id, SliderCreateUpdateDto dto) {
+    public Slider updateSliderWithFile(Long id, SliderCreateUpdateDto dto) {
         Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
         slider.setTitle(dto.getTitle());
         slider.setDescription(dto.getDescription());
@@ -111,7 +111,7 @@ public class SliderServiceImpl implements SliderService {
     }
 
     @Override
-    public Slider toggleStatus(Integer id, String status) {
+    public Slider toggleStatus(Long id, String status) {
         Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
         slider.setStatus(status);
         slider.setUpdatedAt(LocalDateTime.now());
@@ -119,13 +119,13 @@ public class SliderServiceImpl implements SliderService {
     }
 
     @Override
-    public void deleteSlider(Integer id) {
+    public void deleteSlider(Long id) {
         Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
         sliderRepository.delete(slider);
     }
 
     @Override
-    public void incrementViewCount(Integer id) {
+    public void incrementViewCount(Long id) {
         Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
         slider.setViewCount(slider.getViewCount() + 1);
         sliderRepository.save(slider);

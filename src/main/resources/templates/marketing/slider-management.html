@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Slider - Marketing Dashboard</title>
+    <title>Slider Management - Marketing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #6c63ff;
-            --primary-hover: #5a54d6;
-            --secondary-color: #4ecdc4;
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
             --success-color: #28a745;
-            --warning-color: #ffc107;
+            --success-hover: #218838;
             --danger-color: #dc3545;
+            --danger-hover: #c82333;
+            --warning-color: #ffc107;
+            --warning-hover: #e0a800;
+            --info-color: #17a2b8;
             --text-color: #333;
             --text-light: #666;
             --bg-color: #fff;
             --bg-light: #f8f9fa;
-            --border-color: #e9ecef;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --radius: 12px;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --radius: 8px;
         }
 
         * {
@@ -29,372 +32,455 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
             color: var(--text-color);
-            background-color: var(--bg-light);
-        }
-
-        /* Header */
-        .header {
-            background: var(--bg-color);
-            box-shadow: var(--shadow);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .nav-breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-light);
-        }
-
-        .nav-breadcrumb a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .nav-breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        .logout-btn {
-            background: var(--danger-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: background 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-        }
-
-        /* Main Content */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .add-btn {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background 0.3s ease;
-        }
-
-        .add-btn:hover {
-            background: var(--primary-hover);
-        }
-
-        /* Slider Grid */
-        .sliders-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-
-        .slider-card {
-            background: var(--bg-color);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-        }
-
-        .slider-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .slider-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .slider-content {
-            padding: 1.5rem;
-        }
-
-        .slider-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-        }
-
-        .slider-description {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
             line-height: 1.5;
         }
 
-        .slider-meta {
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: var(--bg-color);
+            padding: 30px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .filter-section {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
         }
 
-        .slider-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: 600;
+            color: var(--text-color);
         }
 
-        .slider-status.active {
-            background: #d4edda;
-            color: #155724;
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: all 0.3s;
         }
 
-        .slider-status.inactive {
-            background: #f8d7da;
-            color: #721c24;
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
         }
 
-        .slider-order {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .slider-views {
-            color: var(--primary-color);
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .slider-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .action-btn {
-            padding: 0.5rem 1rem;
+        .btn {
+            padding: 10px 20px;
             border: none;
-            border-radius: 4px;
-            font-size: 0.85rem;
+            border-radius: var(--radius);
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
         }
 
-        .action-btn.edit {
-            background: var(--warning-color);
-            color: #212529;
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
         }
 
-        .action-btn.edit:hover {
-            background: #e0a800;
+        .btn-primary:hover {
+            background: var(--primary-hover);
         }
 
-        .action-btn.toggle {
+        .btn-success {
             background: var(--success-color);
             color: white;
         }
 
-        .action-btn.toggle:hover {
-            background: #218838;
+        .btn-success:hover {
+            background: var(--success-hover);
         }
 
-        .action-btn.toggle.inactive {
+        .btn-danger {
             background: var(--danger-color);
+            color: white;
         }
 
-        .action-btn.toggle.inactive:hover {
-            background: #c82333;
+        .btn-danger:hover {
+            background: var(--danger-hover);
         }
 
-        /* Empty State */
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: var(--warning-hover);
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            justify-content: center;
+        }
+
+        .table-container {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--bg-light);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .slider-image {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-visible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-hidden {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-draft {
+            background: #ffeaa7;
+            color: #5d4e37;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .pagination a:hover {
+            background: var(--bg-light);
+            border-color: var(--primary-color);
+        }
+
+        .pagination .active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 60px 20px;
             color: var(--text-light);
         }
 
         .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            color: var(--border-color);
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
         }
 
         .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            font-size: 20px;
+            margin-bottom: 10px;
             color: var(--text-color);
         }
 
-        .empty-state p {
-            margin-bottom: 2rem;
+        .alert {
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-weight: 500;
         }
 
-        /* Responsive */
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .page-header {
+            .filter-row {
                 flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
             }
 
-            .page-title {
-                font-size: 2rem;
+            .filter-group {
+                min-width: 100%;
             }
 
-            .sliders-grid {
-                grid-template-columns: 1fr;
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 800px;
             }
         }
     </style>
 </head>
 <body>
-<!-- Header -->
-<header class="header">
-    <div class="header-content">
-        <a href="/marketing" class="logo">📊 Marketing Dashboard</a>
-        <div class="nav-breadcrumb">
-            <a href="/marketing">Dashboard</a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Quản lý Slider</span>
-        </div>
-        <div class="user-info">
-            <div class="user-avatar">
-                <span th:text="${currentUser.fullName.substring(0,1).toUpperCase()}"></span>
-            </div>
-            <span th:text="${currentUser.fullName}"></span>
-            <form th:action="@{/logout}" method="post" style="display: inline;">
-                <button type="submit" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                </button>
-            </form>
-        </div>
-    </div>
-</header>
-
-<!-- Main Content -->
 <div class="container">
     <!-- Page Header -->
     <div class="page-header">
-        <h1 class="page-title">Quản lý Slider</h1>
-        <a href="/admin/sliders/create" class="add-btn">
-            <i class="fas fa-plus"></i> Thêm Slider mới
-        </a>
+        <h1 class="page-title">Slider Management</h1>
     </div>
 
-    <!-- Sliders Grid -->
-    <div th:if="${sliders != null and !sliders.empty}" class="sliders-grid">
-        <div th:each="slider : ${sliders}" class="slider-card">
-            <img th:src="${slider.imageUrl}" th:alt="${slider.title}" class="slider-image">
-            <div class="slider-content">
-                <h3 class="slider-title" th:text="${slider.title}">Slider Title</h3>
-                <p class="slider-description" th:text="${slider.description}">Slider description goes here...</p>
-                <div class="slider-meta">
-                        <span class="slider-status"
-                              th:classappend="${slider.status == 'SHOW'} ? 'active' : 'inactive'"
-                              th:text="${slider.status == 'SHOW'} ? 'Đang hiển thị' : 'Đã ẩn'">
-                            Status
-                        </span>
-                    <span class="slider-order" th:text="'Thứ tự: ' + ${slider.orderNumber}">Order</span>
-                    <span class="slider-views" th:text="'👁️ ' + ${slider.viewCount} + ' lượt xem'">Views</span>
+    <!-- Flash Messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form th:action="@{/marketing/sliders}" method="get" id="filterForm">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select name="status" id="statusFilter" onchange="applyFilters()">
+                        <option value="">All Status</option>
+                        <option value="SHOW" th:selected="${status == 'SHOW'}">VISIBLE</option>
+                        <option value="HIDE" th:selected="${status == 'HIDE'}">HIDDEN</option>
+                    </select>
                 </div>
-                <div class="slider-actions">
-                    <a th:href="@{'/admin/sliders/edit/' + ${slider.id}}" class="action-btn edit">
-                        <i class="fas fa-edit"></i> Sửa
-                    </a>
-                    <button class="action-btn toggle"
-                            th:classappend="${slider.status == 'SHOW'} ? 'inactive' : ''"
-                            th:onclick="'toggleSlider(' + ${slider.id} + ')'">
-                        <i class="fas fa-eye" th:if="${slider.status == 'SHOW'}"></i>
-                        <i class="fas fa-eye-slash" th:if="${slider.status != 'SHOW'}"></i>
-                        <span th:text="${slider.status == 'SHOW'} ? 'Ẩn' : 'Hiện'">Toggle</span>
-                    </button>
+                <div class="filter-group" style="flex: 2;">
+                    <label>Search</label>
+                    <input type="text"
+                           name="keyword"
+                           id="searchInput"
+                           th:value="${keyword}"
+                           placeholder="Search by title or backlink">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        <button type="button" onclick="resetFilters()" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <a th:href="@{/admin/sliders/create}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Create Slider
+                        </a>
+                    </div>
                 </div>
             </div>
+            <input type="hidden" name="size" th:value="${currentSize}">
+        </form>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container" th:if="${sliderPage != null and !sliderPage.content.empty}">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Backlink</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="slider : ${sliderPage.content}">
+                <td th:text="${slider.id}"></td>
+                <td>
+                    <img th:if="${slider.imageUrl != null and !slider.imageUrl.isEmpty()}"
+                         th:src="${slider.imageUrl}"
+                         class="slider-image"
+                         alt="Slider Image">
+                    <span th:if="${slider.imageUrl == null or slider.imageUrl.isEmpty()}"
+                          style="color: var(--text-light); font-size: 12px;">No image</span>
+                </td>
+                <td th:text="${slider.title}"></td>
+                <td>
+                    <span th:if="${slider.linkUrl != null}" th:text="${slider.linkUrl}"></span>
+                    <span th:if="${slider.linkUrl == null}" style="color: var(--text-light);">-</span>
+                </td>
+                <td>
+                            <span class="status-badge"
+                                  th:classappend="${slider.status == 'SHOW'} ? 'status-visible' :
+                                                  (${slider.status == 'HIDE'} ? 'status-hidden' : 'status-draft')"
+                                  th:text="${slider.status}"></span>
+                </td>
+                <td>
+                    <div class="actions">
+                        <button class="btn btn-success btn-sm btn-icon"
+                                th:if="${slider.status == 'HIDE'}"
+                                th:onclick="'toggleSlider(' + ${slider.id} + ', \\'SHOW\\')'"
+                                title="Show">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm btn-icon"
+                                th:if="${slider.status == 'SHOW'}"
+                                th:onclick="'toggleSlider(' + ${slider.id} + ', \\'HIDE\\')'"
+                                title="Hide">
+                            <i class="fas fa-eye-slash"></i>
+                        </button>
+                        <a th:href="@{/admin/sliders/update/{id}(id=${slider.id})}"
+                           class="btn btn-primary btn-sm btn-icon"
+                           title="Edit">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination" th:if="${sliderPage.totalPages > 0}">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/marketing/sliders(page=${currentPage - 1}, keyword=${keyword}, status=${status}, size=${currentSize})}">
+                Previous
+            </a>
+            <span th:each="pageNumber : ${#numbers.sequence(startPage + 1, endPage + 1)}">
+                    <a th:if="${pageNumber != (currentPage + 1)}"
+                       th:href="@{/marketing/sliders(page=${pageNumber - 1}, keyword=${keyword}, status=${status}, size=${currentSize})}"
+                       th:text="${pageNumber}"></a>
+                    <span th:if="${pageNumber == (currentPage + 1)}"
+                          class="active"
+                          th:text="${pageNumber}"></span>
+                </span>
+            <a th:if="${currentPage < (totalPages - 1)}"
+               th:href="@{/marketing/sliders(page=${currentPage + 1}, keyword=${keyword}, status=${status}, size=${currentSize})}">
+                Next
+            </a>
         </div>
     </div>
 
     <!-- Empty State -->
-    <div th:if="${sliders == null or sliders.empty}" class="empty-state">
-        <i class="fas fa-images"></i>
-        <h3>Chưa có slider nào</h3>
-        <p>Bắt đầu tạo slider đầu tiên để hiển thị trên trang chủ</p>
-        <a href="/admin/sliders/create" class="add-btn">
-            <i class="fas fa-plus"></i> Tạo slider đầu tiên
-        </a>
+    <div class="table-container" th:if="${sliderPage == null or sliderPage.content.empty}">
+        <div class="empty-state">
+            <i class="fas fa-images"></i>
+            <h3>No sliders found</h3>
+            <p>Create your first slider to get started</p>
+            <a th:href="@{/admin/sliders/create}" class="btn btn-success" style="margin-top: 20px;">
+                <i class="fas fa-plus"></i> Create Slider
+            </a>
+        </div>
     </div>
 </div>
 
 <script>
-    function toggleSlider(sliderId) {
-        if (confirm('Bạn có chắc chắn muốn thay đổi trạng thái slider này?')) {
-            // Gửi request để toggle status
-            fetch('/admin/sliders/toggle/' + sliderId, {
-                method: 'POST',
+    function applyFilters() {
+        document.getElementById('filterForm').submit();
+    }
+
+    function resetFilters() {
+        window.location.href = '/marketing/sliders';
+    }
+
+    function toggleSlider(id, newStatus) {
+        if (confirm('Are you sure you want to change the slider status?')) {
+            fetch('/api/sliders/' + id + '/status?status=' + newStatus, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -403,15 +489,23 @@
                 if (response.ok) {
                     location.reload();
                 } else {
-                    alert('Có lỗi xảy ra khi cập nhật slider');
+                    alert('An error occurred while updating the slider status');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Có lỗi xảy ra khi cập nhật slider');
+                alert('An error occurred while updating the slider status');
             });
         }
     }
+
+    // Auto-submit search on Enter key
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyFilters();
+        }
+    });
 </script>
 </body>
 </html>
