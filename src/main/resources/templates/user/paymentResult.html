@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kết quả thanh toán</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: grid; place-items: center; min-height: 80vh; background-color: #f4f4f4; }
+        .container {
+            padding: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background-color: #fff; text-align: center;
+        }
+        .success { border-top: 5px solid #28a745; }
+        .failed { border-top: 5px solid #dc3545; }
+        .icon { font-size: 50px; }
+        .success .icon { color: #28a745; }
+        .failed .icon { color: #dc3545; }
+    </style>
+</head>
+<body>
+
+<div th:switch="${params.status}" class="container">
+
+    <div th:case="'success'" class="success">
+        <div class="icon">✔</div>
+        <h2>Thanh toán thành công!</h2>
+        <p>Cảm ơn bạn đã mua khóa học.</p>
+    </div>
+
+    <div th:case="'failed'" class="failed">
+        <div class="icon">✖</div>
+        <h2>Thanh toán thất bại.</h2>
+        <p>Đơn hàng của bạn chưa được thanh toán.</p>
+        <p>Vui lòng thử lại sau.</p>
+    </div>
+
+    <div th:case="'invalid_signature'" class="failed">
+        <div class="icon">✖</div>
+        <h2>Lỗi xác thực!</h2>
+        <p>Vui lòng liên hệ hỗ trợ.</p>
+    </div>
+
+    <div th:case="*" class="failed">
+        <div class="icon">✖</div>
+        <h2>Đã xảy ra lỗi</h2>
+        <p>Đã có lỗi không xác định xảy ra.</p>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;"/>
+    <a href="/">Quay về trang chủ</a>
+</div>
+
+</body>
+</html>

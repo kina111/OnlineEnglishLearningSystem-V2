@@ -1,4 +1,4 @@
-<header th:fragment="header" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<header th:fragment="header" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
     <nav class="navbar">
         <a href="#" class="logo">OELS</a>
         <ul class="nav-links" style="margin-bottom: 0">
@@ -15,7 +15,7 @@
                     <i class="fas fa-user"></i>
                     Thông tin cá nhân
                 </a>
-                <a href="#" class="dropdown-item" sec:authorize="hasRole('ROLE_USER')">
+                <a th:href="'/users/' + ${session.currentUserId} + '/myCourses'" class="dropdown-item" sec:authorize="hasRole('ROLE_USER')">
                     <i class="fas fa-book"></i>
                     Khóa học của tôi
                 </a>
