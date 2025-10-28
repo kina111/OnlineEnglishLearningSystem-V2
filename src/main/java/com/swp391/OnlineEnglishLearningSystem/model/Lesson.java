@@ -43,6 +43,7 @@ public class Lesson extends BaseEntity{
     @Positive(message = "Lesson estimated time must be a positive number")
     private Integer estimatedTime;
 
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String htmlContent;
     //--- danh cho Lecture ---
     private String videoUrl;
