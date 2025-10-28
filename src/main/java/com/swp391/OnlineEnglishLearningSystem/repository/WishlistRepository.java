@@ -17,4 +17,6 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     List<Wishlist> findByUserWithCourse(@Param("user") User user);
 
     Optional<Wishlist> findByUserAndCourse(User user, Course course);
+    Optional<Wishlist> findByUserIdAndCourseId(Long userId, Long courseId);
+    List<Wishlist> findByUserId(Long userId);
 }
