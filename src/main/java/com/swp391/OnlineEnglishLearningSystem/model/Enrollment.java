@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "enrollments", uniqueConstraints = {
@@ -38,6 +40,9 @@ public class Enrollment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
+
+    @OneToMany(mappedBy = "enrollment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserLesson> userLessons = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "enrolled_at", nullable = false, updatable = false)
@@ -152,5 +157,13 @@ public class Enrollment {
 
     public void setStatus(EnrollmentStatus status) {
         this.status = status;
+    }
+
+    public List<UserLesson> getUserLessons() {
+        return userLessons;
+    }
+
+    public void setUserLessons(List<UserLesson> userLessons) {
+        this.userLessons = userLessons;
     }
 }

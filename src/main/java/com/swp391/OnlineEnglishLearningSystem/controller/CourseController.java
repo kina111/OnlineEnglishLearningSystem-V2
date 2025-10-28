@@ -8,6 +8,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.UpdateCourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseCategoryService;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
+import com.swp391.OnlineEnglishLearningSystem.service.WishlistService;
 import com.swp391.OnlineEnglishLearningSystem.service.impl.EnrollmentServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -34,12 +35,14 @@ public class CourseController {
     private final CourseService courseService;
     private final UserService userService;
     private final EnrollmentServiceImpl enrollmentService;
+    private final WishlistService wishlistService;
 
-    public CourseController(CourseCategoryService courseCategoryService, CourseService courseService, UserService userService, EnrollmentServiceImpl enrollmentService) {
+    public CourseController(CourseCategoryService courseCategoryService, CourseService courseService, UserService userService, EnrollmentServiceImpl enrollmentService, WishlistService wishlistService) {
         this.courseCategoryService = courseCategoryService;
         this.courseService = courseService;
         this.userService = userService;
         this.enrollmentService = enrollmentService;
+        this.wishlistService = wishlistService;
     }
 
     // ===================== GET COURSES =========================
@@ -70,6 +73,7 @@ public class CourseController {
             Course course = this.courseService.findById(courseId);
             Long userId = (Long) session.getAttribute("currentUserId");
             boolean isEnrolled = this.enrollmentService.isEnrolled(userId, courseId);
+            inWishlist = this.wishlistService.findByUserIdAndCourseId(userId, courseId).isPresent();
 
             model.addAttribute("inWishlist", inWishlist);
             model.addAttribute("isEnrolled", isEnrolled);

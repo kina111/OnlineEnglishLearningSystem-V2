@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WishlistService {
-    Wishlist createNew(User currentUser, Course currentCourse);
-    List<Wishlist> findByUser(User user);
+    Wishlist createNew(Long userId, Long courseId);
 
-    Optional<Wishlist> findByUserAndCourse(User currentUser, Course currentCourse);
+    List<Wishlist> findByUserId(Long userId);
 
-    void delete(Wishlist wishlist);
+    void delete(Long wishlistId);
+
+    Optional<Wishlist> findByUserIdAndCourseId(Long userId, Long courseId);
 }

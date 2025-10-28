@@ -26,7 +26,7 @@ public class Course extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(100)")
+    @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
     @NotBlank(message = "Course name is required")
     @Size(min = 5, max = 100, message = "Course name must be between 5-100 characters")
     private String name;
@@ -59,7 +59,6 @@ public class Course extends BaseEntity{
 
     private boolean featured;
     private CourseStatus status;
-    private int totalLesson;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
@@ -75,7 +74,6 @@ public class Course extends BaseEntity{
     // Constructors - ĐÃ ĐƯỢC TỐI ƯU
     public Course() {
         this.status = CourseStatus.DRAFT;
-        this.totalLesson = 0;
         this.featured = false;
         this.price = 0.0;
         this.discount = 0.0;
@@ -105,7 +103,6 @@ public class Course extends BaseEntity{
         this.discount = discount;
         this.featured = featured;
         this.status = status;
-        this.totalLesson = totalLesson;
         this.category = category;
     }
 
@@ -187,14 +184,6 @@ public class Course extends BaseEntity{
 
     public void setStatus(CourseStatus status) {
         this.status = status;
-    }
-
-    public int getTotalLesson() {
-        return totalLesson;
-    }
-
-    public void setTotalLesson(int totalLesson) {
-        this.totalLesson = totalLesson;
     }
 
     public CourseCategory getCategory() {

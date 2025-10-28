@@ -1,10 +1,7 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.config.VNPayConfig;
-import com.swp391.OnlineEnglishLearningSystem.model.Course;
-import com.swp391.OnlineEnglishLearningSystem.model.Enrollment;
-import com.swp391.OnlineEnglishLearningSystem.model.Order;
-import com.swp391.OnlineEnglishLearningSystem.model.User; // Import User
+import com.swp391.OnlineEnglishLearningSystem.model.*;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -28,13 +25,15 @@ public class PaymentController {
     private final UserService userService; // Để lấy thông tin user
     private final CourseService courseService;
     private final EnrollmentService enrollmentService;
+    private final UserLessonService userLessonService;
 
-    public PaymentController(VNPayService vnPayService, OrderService orderService, UserService userService, CourseService courseService, EnrollmentService enrollmentService) {
+    public PaymentController(VNPayService vnPayService, OrderService orderService, UserService userService, CourseService courseService, EnrollmentService enrollmentService, UserLessonService userLessonService) {
         this.vnPayService = vnPayService;
         this.orderService = orderService;
         this.userService = userService;
         this.courseService = courseService;
         this.enrollmentService = enrollmentService;
+        this.userLessonService = userLessonService;
     }
 
     @GetMapping("/payment/checkout/{courseId}")
@@ -131,8 +130,11 @@ public class PaymentController {
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
                 Order updatedOrder = this.orderService.update(fields);
+                //tạo enrollment mới
                 Enrollment newEnrollment = this.enrollmentService.createNew(updatedOrder);
 
+                //tạo 1 list các userLesson mới cho enrollment đó
+                this.userLessonService.createFullUserLesson(newEnrollment);
                 redirectAttributes.addAttribute("status", "success");
             } else {
                 redirectAttributes.addAttribute("status", "failed");

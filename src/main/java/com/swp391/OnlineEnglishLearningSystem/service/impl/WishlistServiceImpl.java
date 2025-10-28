@@ -3,6 +3,8 @@ package com.swp391.OnlineEnglishLearningSystem.service.impl;
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.Wishlist;
+import com.swp391.OnlineEnglishLearningSystem.repository.CourseRepository;
+import com.swp391.OnlineEnglishLearningSystem.repository.UserRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.WishlistRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.WishlistService;
 import org.springframework.stereotype.Service;
@@ -13,29 +15,34 @@ import java.util.Optional;
 @Service
 public class WishlistServiceImpl implements WishlistService {
     private final WishlistRepository wishlistRepository;
+    private final UserRepository userRepository;
+    private final CourseRepository courseRepository;
 
-    public WishlistServiceImpl(WishlistRepository wishlistRepository) {
+    public WishlistServiceImpl(WishlistRepository wishlistRepository, UserRepository userRepository, CourseRepository courseRepository) {
         this.wishlistRepository = wishlistRepository;
+        this.userRepository = userRepository;
+        this.courseRepository = courseRepository;
     }
 
     @Override
-    public Wishlist createNew(User currentUser, Course currentCourse) {
+    public Wishlist createNew(Long userId, Long courseId) {
+        User currentUser = this.userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Course currentCourse = this.courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("Course not found"));
         return this.wishlistRepository.save(new Wishlist(currentUser, currentCourse));
     }
 
     @Override
-    public List<Wishlist> findByUser(User user) {
-        if (user == null) throw new IllegalArgumentException("User not found");
-        return this.wishlistRepository.findByUserWithCourse(user);
+    public List<Wishlist> findByUserId(Long userId) {
+        return this.wishlistRepository.findByUserId(userId);
     }
 
     @Override
-    public Optional<Wishlist> findByUserAndCourse(User currentUser, Course currentCourse) {
-        return this.wishlistRepository.findByUserAndCourse(currentUser, currentCourse);
+    public void delete(Long wishlistId) {
+        this.wishlistRepository.deleteById(wishlistId);
     }
 
     @Override
-    public void delete(Wishlist wishlist) {
-        this.wishlistRepository.delete(wishlist);
+    public Optional<Wishlist> findByUserIdAndCourseId(Long userId, Long courseId) {
+        return this.wishlistRepository.findByUserIdAndCourseId(userId, courseId);
     }
 }
