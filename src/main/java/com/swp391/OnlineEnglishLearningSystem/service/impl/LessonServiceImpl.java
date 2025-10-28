@@ -8,6 +8,7 @@ import com.swp391.OnlineEnglishLearningSystem.repository.ChapterRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.LessonRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.LessonService;
 import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
+import com.swp391.OnlineEnglishLearningSystem.util.VideoDuration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,11 +53,13 @@ public class LessonServiceImpl implements LessonService {
 
         lecture.setEstimatedTime(request.getEstimatedTime());
         lecture.setHtmlContent(request.getHtmlContent());
-        if (request.getVideo() != null && !request.getVideo().isEmpty()){
+        try{
             String videoUrl = uploadService.uploadVideo(request.getVideo(), "lectures/videos");
+            long duration = VideoDuration.getVideoDuration(request.getVideo());
             lecture.setVideoUrl(videoUrl);
-        }else{
-            throw new IllegalArgumentException("Video file is empty");
+            lecture.setDuration(duration);
+        }catch (Exception e){
+            throw new IllegalArgumentException("Video file is error!");
         }
         return this.lessonRepository.save(lecture);
     }
@@ -84,9 +87,13 @@ public class LessonServiceImpl implements LessonService {
         lectureToUpdate.setTitle(request.getTitle());
         lectureToUpdate.setEstimatedTime(request.getEstimatedTime());
         lectureToUpdate.setHtmlContent(request.getHtmlContent());
-        if (request.getVideo() != null && !request.getVideo().isEmpty()){
+        try{
             String videoUrl = uploadService.uploadVideo(request.getVideo(), "lectures/videos");
+            long duration = VideoDuration.getVideoDuration(request.getVideo());
             lectureToUpdate.setVideoUrl(videoUrl);
+            lectureToUpdate.setDuration(duration);
+        }catch (Exception e){
+            throw new IllegalArgumentException("Video file is error!");
         }
         return this.lessonRepository.save(lectureToUpdate);
     }
