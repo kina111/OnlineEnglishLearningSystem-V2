@@ -48,6 +48,8 @@ public class QuizController {
     @GetMapping("/{lessonId}/start")
     public String getQuizPage(@PathVariable("lessonId") long lessonId, Model model, HttpSession session) {
         //Temp hardcode user------------------------------
+        Long userId = (Long) session.getAttribute("currentUserId");
+        
         User user = userService.getUserById(4L);
         //Get a quiz by lesson id
         Lesson lesson = lessonService.findById(lessonId);

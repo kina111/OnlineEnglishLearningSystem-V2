@@ -9,6 +9,6 @@
 
 <p>KQ: <span th:text="${kq}">[KQ]</span></p>
 <p>Total: <span th:text="${total}">[Total]</span></p>
-
+<a th:href="@{'review/'+${quizAttempt.id}}">Review</a>
 </body>
 </html>

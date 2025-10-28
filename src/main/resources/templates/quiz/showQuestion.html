@@ -138,7 +138,8 @@
         <div th:case="SHORT_ANSWER">
             <!-- Short Answer -->
             <div>
-               <input type="text" name="answer" placeholder="Nhập câu trả lời..." >
+               <input type="text" name="answer" placeholder="Nhập câu trả lời..."
+                      th:value="${answeredOption != null and !answeredOption.answer.isEmpty()} ? ${answeredOption.answer.get(0)} : ''">
             </div>
         </div>
     </div>
