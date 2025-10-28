@@ -150,17 +150,18 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 // correctness check — compare sets of IDs
                 isCorrect = new HashSet<>(selectedIds).equals(new HashSet<>(correctIds));
             }
-//            else if (question.getQuestionType() == Question.QuestionType.SHORT_ANSWER) {
-//                String correct = question.getShortAnswerOption().getCorrectAnswer().trim().toLowerCase();
-//                String userVal = userAnswer.getAnswer().isEmpty() ? "" : userAnswer.getAnswer().get(0).trim().toLowerCase();
-//
-//                QuizAttemptSelectedOption sao = new QuizAttemptSelectedOption();
-//                sao.setAttemptQuestion(aq);
-//                sao.setSelectedValue(userVal);
-//                aq.getSelectedOptions().add(sao);
-//
-//                isCorrect = userVal.equalsIgnoreCase(correct);
-//            }
+            else if (question.getQuestionType() == Question.QuestionType.SHORT_ANSWER) {
+                String userVal = userAnswer.getAnswer().isEmpty() ? "" : userAnswer.getAnswer().get(0).trim().toLowerCase();
+
+                QuizAttemptSelectedOption sao = new QuizAttemptSelectedOption();
+                sao.setAttemptQuestion(aq);
+                sao.setSelectedValue(userVal);
+                aq.getSelectedOptions().add(sao);
+                if(question.getShortAnswerOption()!=null) {
+                    String correct = question.getShortAnswerOption().getSolutionText().trim().toLowerCase();
+                    isCorrect = userVal.equalsIgnoreCase(correct);
+                }
+            }
 
             aq.setCorrect(isCorrect);
             if (isCorrect) totalScore++;

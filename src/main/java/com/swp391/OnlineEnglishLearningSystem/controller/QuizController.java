@@ -107,10 +107,16 @@ public class QuizController {
             model.addAttribute("answeredOptionId",answerOptionId);
             model.addAttribute("answeredOption",answers.get(question.getId()));
         }
+        String questionType = "SHORT_ANSWER";
+        if (question.getQuestionType() == Question.QuestionType.MULTIPLE_CHOICE){
+            questionType = "MULTIPLE_CHOICE";
+        }
+
 
         model.addAttribute("endTime", quizAttempt.getEndTime());
         model.addAttribute("progress",answers);
         model.addAttribute("question", question);
+        model.addAttribute("questionType", questionType);
         model.addAttribute("questionIndex", questionIndex);
         model.addAttribute("questionCount", quizAttempt.getQuestions().size());
         return "quiz/showQuestion";
@@ -188,6 +194,8 @@ public class QuizController {
         quizAttemptService.finishQuizAttempt(quizAttempt,answers);
         model.addAttribute("kq",kq);
         model.addAttribute("total",questions.size());
+        model.addAttribute("quizAttempt",quizAttempt);
+//        model.addAttribute("quizId",quizId);
         session.removeAttribute(QUIZ_SESSION);
         session.removeAttribute("quizAttemptId");
         return "quiz/result";
@@ -233,6 +241,20 @@ public class QuizController {
         Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
         model.addAttribute("answers", answers != null ? answers : new HashMap<>());
         return "/quiz/quiz-progress";
+    }
+
+    @GetMapping("/{quizId}/review/{attempId}")
+    public String getQuizReviewPage(@PathVariable Long quizId, @PathVariable Long attempId, Model model) {
+        QuizAttempt attempt = quizAttemptService.findQuizAttemptById(attempId);
+
+//        model.addAttribute("quizId", quizId);
+////        model.addAttribute("questions", questions);
+//        model.addAttribute("attempId", attempId);
+        model.addAttribute("attempt", attempt);
+        model.addAttribute("questions", attempt.getQuestions());
+        model.addAttribute("score", attempt.getScore());
+        model.addAttribute("totalQuestions", attempt.getQuestions().size());
+        return "/quiz/review";
     }
 
 }

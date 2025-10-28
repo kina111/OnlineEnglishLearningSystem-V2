@@ -110,7 +110,9 @@ VALUES  (N'What is the capital of France?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, 
         (N'What is the largest ocean on Earth?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
         (N'Who wrote "Romeo and Juliet"?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
         (N'What is the chemical symbol for water?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
-        (N'Which language is used for Android app development?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE());
+        (N'Which language is used for Android app development?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (N'Which language is used for Android app development?', 'SHORT_ANSWER', 'NONE', NULL, 1, GETDATE(), GETDATE());
+
 
 SET IDENTITY_INSERT lessons OFF;
 
@@ -121,6 +123,8 @@ VALUES (N'Paris', 1, N'Paris is the capital city of France.', 1, GETDATE(), GETD
        (N'London', 0, N'London is the capital of the UK, not France.', 1, GETDATE(), GETDATE()),
        (N'Rome', 0, N'Rome is the capital of Italy.', 1, GETDATE(), GETDATE()),
        (N'Madrid', 0, N'Madrid is the capital of Spain.', 1, GETDATE(), GETDATE()),
+       (N'Hanoi', 0, N'Madrid is the capital of Spain.', 1, GETDATE(), GETDATE()),
+
 
        (N'Mars', 1, N'Mars is called the Red Planet due to its reddish appearance.', 2, GETDATE(), GETDATE()),
        (N'Jupiter', 0, N'Jupiter is the largest planet but not red.', 2, GETDATE(), GETDATE()),
@@ -149,6 +153,10 @@ VALUES (N'Paris', 1, N'Paris is the capital city of France.', 1, GETDATE(), GETD
 
 
 SET IDENTITY_INSERT lessons OFF;
+SET IDENTITY_INSERT short_answer_options ON
+INSERT INTO short_answer_options (id,question_id,solution_text) values (1,7,'Java');
+SET IDENTITY_INSERT short_answer_options OFF;
+
 -- *** BỔ SUNG DỮ LIỆU ***
 
 -- Bổ sung Users (Experts)

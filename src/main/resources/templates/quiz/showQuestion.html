@@ -107,26 +107,43 @@
         Question content goes here...
     </div>
 
-    <!-- ✅ Answer Options -->
-    <div class="mb-4">
-        <div th:each="answer, iterStat : ${question.answerOptions}" class="answer-option">
+    <!-- Display media if exists -->
+    <div th:switch="${question.mediaType}">
+        <img th:case="'IMAGE'" th:src="${question.mediaUrl}" alt="Image" style="max-width:400px"/>
+        <audio th:case="'AUDIO'" controls th:src="${question.mediaUrl}"></audio>
+        <video th:case="'VIDEO'" controls th:src="${question.mediaUrl}" style="max-width:400px"></video>
+        <div th:case="'NONE'"></div>
+    </div>
 
-            <input type="checkbox"
-                   name="answer"
-                   th:value="${answer.id}"
-                   th:id="'option_' + ${iterStat.index}"
-                   th:checked="${answeredOptionId != null and answeredOptionId.contains(answer.id)}" />
-<!--                   th:attr="checked=${answeredOptionId != null and answeredOptionId == answer.id} ? 'checked' : null" />-->
+    <div th:switch="${questionType}">
+        <div th:case="MULTIPLE_CHOICE">
+            <!-- ✅ Answer Options -->
+            <div class="mb-4">
+                <div th:each="answer, iterStat : ${question.answerOptions}" class="answer-option">
 
+                    <input type="checkbox"
+                           name="answer"
+                           th:value="${answer.id}"
+                           th:id="'option_' + ${iterStat.index}"
+                           th:checked="${answeredOptionId != null and answeredOptionId.contains(answer.id)}" />
+                    <label th:for="'option_' + ${iterStat.index}" class="form-check-label">
+                        <span th:text="${(iterStat.index)} + '.'">A.</span>
+                        <span th:text="${answer.content}">Answer content</span>
+                    </label>
 
+                </div>
+            </div>
+        </div>
 
-            <label th:for="'option_' + ${iterStat.index}" class="form-check-label">
-                <span th:text="${(iterStat.index)} + '.'">A.</span>
-                <span th:text="${answer.content}">Answer content</span>
-            </label>
-
+        <div th:case="SHORT_ANSWER">
+            <!-- Short Answer -->
+            <div>
+               <input type="text" name="answer" placeholder="Nhập câu trả lời..." >
+            </div>
         </div>
     </div>
+
+
 
     <!-- ✅ Top Right Buttons -->
     <div class="d-flex justify-content-end mb-3 gap-2">
