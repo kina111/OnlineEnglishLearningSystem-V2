@@ -1,6 +1,9 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.*;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.ChapterLearningDTO;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.EnrollmentLearningDTO;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.LessonLearningDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -26,14 +29,20 @@ public class UserController {
     private final WishlistService wishlistService;
     private final EnrollmentService enrollmentService;
     private final WishlistService wishlistServiceImpl;
+    private final UserLessonService userLessonService;
+    private final LearningService learningService;
+    private final LessonService lessonService;
 
-    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl) {
+    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl, UserLessonService userLessonService, LearningService learningService, LessonService lessonService) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.courseSerive = courseSerive;
         this.wishlistService = wishlistService;
         this.enrollmentService = enrollmentService;
         this.wishlistServiceImpl = wishlistServiceImpl;
+        this.learningService = learningService;
+        this.userLessonService = userLessonService;
+        this.lessonService = lessonService;
     }
 
     //================================== Profile Management ================================//
@@ -110,10 +119,10 @@ public class UserController {
             User currentUser = this.userService.getUserById(userId);
             Course currentCourse = this.courseSerive.findById(courseId);
             if (!addToWishlist){
-                Optional<Wishlist> wishlist = this.wishlistServiceImpl.findByUserAndCourse(currentUser, currentCourse);
-                wishlist.ifPresent(this.wishlistService::delete);
+                Optional<Wishlist> wishlist = this.wishlistService.findByUserIdAndCourseId(userId, courseId);
+                wishlist.ifPresent(value -> this.wishlistService.delete(value.getId()));
             }else{
-                Wishlist newWishlist = this.wishlistService.createNew(currentUser, currentCourse);
+                Wishlist newWishlist = this.wishlistService.createNew(userId, courseId);
             }
             return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
                     "Update to wishlist successfully!", null, null), HttpStatus.OK);
@@ -128,8 +137,8 @@ public class UserController {
                                Model model){
         try{
             User user = this.userService.getUserById(userId);
-            List<Enrollment> enrollments = this.enrollmentService.findByUser(user);
-            List<Wishlist> wishlists = this.wishlistService.findByUser(user);
+            List<Enrollment> enrollments = this.enrollmentService.findByUserId(userId);
+            List<Wishlist> wishlists = this.wishlistService.findByUserId(userId);
 
             model.addAttribute("enrollments", enrollments);
             model.addAttribute("wishlists", wishlists);
@@ -138,5 +147,94 @@ public class UserController {
 
         }
         return "user/myCourses";
+    }
+
+    // ====================================== GET LEARNING VIEW ===========================================
+    //lấy thanh bar bên phải trên trang học bài
+    @GetMapping("/users/{userId}/enrollments/{enrollmentId}/navbar")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<List<ChapterLearningDTO>>> getLearningView(
+            @PathVariable("enrollmentId") long enrollmentId,
+            @PathVariable("userId") long userId
+            /* Bỏ HttpSession nếu không dùng trực tiếp ở đây nữa */
+    ) {
+        try {
+            List<ChapterLearningDTO> chapterLearningDTOS = learningService.prepareLearningViewData(userId, enrollmentId);
+
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Get learning view successfully!", chapterLearningDTOS, null), HttpStatus.OK);
+
+        } catch (IllegalArgumentException e) { // Bắt lỗi cụ thể
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.NOT_FOUND,
+                    e.getMessage(), null, null), HttpStatus.NOT_FOUND);
+        } catch (Exception e) { // Bắt lỗi chung
+            // Nên log lỗi chi tiết ở đây: log.error("...", e);
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, // Dùng 500
+                    "Get learning view failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //lấy thông tin cho lesson hiện tại trên trang học bài
+    @GetMapping("/users/{userId}/learning/lessons/{lessonId}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<LessonLearningDTO>> getLessonLearningView(@PathVariable("lessonId") long lessonId){
+        try{
+            Lesson lesson = this.lessonService.findById(lessonId);
+            LessonLearningDTO current = new LessonLearningDTO(lesson);
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Get lesson learning view successfully!", current, null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Get lesson learning view failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //lấy thông tin cho header trên trang học bài
+    @GetMapping("/api/enrollments/{enrollmentId}/progress")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<EnrollmentLearningDTO>> getHeaderEnrollmentLearningView(@PathVariable("enrollmentId") long enrollmentId){
+        try{
+            EnrollmentLearningDTO current = this.enrollmentService.createEnrollmentDTO(enrollmentId);
+
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Get header enrollment learning view successfully!", current, null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Get header enrollment learning view failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // api cập nhật isCompleted cho UserLesson
+    @PutMapping("/api/lessons/{lessonId}/complete")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> updateIsCompleted(@PathVariable("lessonId") long lessonId,
+                                                               HttpSession session){
+        try{
+            Long userId = (Long) session.getAttribute("currentUserId");
+            this.userLessonService.updateIsCompleted(userId, lessonId);
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Update isCompleted successfully!", null, null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Update isCompleted failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/enrollments/{enrollmentId}")
+    public String getLearningView(@PathVariable("enrollmentId") long enrollmentId,
+                                  HttpSession session, Model model){
+        try{
+            Long userId = (Long) session.getAttribute("currentUserId");
+            //thanh bên phải
+            List<ChapterLearningDTO> chapterLearningDTOS = learningService.prepareLearningViewData(userId, enrollmentId);
+            //header
+            EnrollmentLearningDTO enrollmentLearningDTO = this.enrollmentService.createEnrollmentDTO(enrollmentId);
+
+            model.addAttribute("chapterLearningDTOS", chapterLearningDTOS);
+            model.addAttribute("enrollmentLearningDTO", enrollmentLearningDTO);
+            return "user/learningView";
+        }catch (Exception e){
+            return "redirect:/login";
+        }
     }
 }
