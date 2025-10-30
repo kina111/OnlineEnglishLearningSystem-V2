@@ -25,4 +25,11 @@ public class AnswerOptionServiceImpl implements AnswerOptionService {
         List<AnswerOption> answerOptions = questionToUpdate.getAnswerOptions();
         this.answerOptionRepository.deleteAll(answerOptions);
     }
+
+    @Override
+    public AnswerOption findByAnswerOptionId(Long answerOptionId) {
+        return answerOptionRepository.findById(answerOptionId).orElseThrow(() -> new IllegalArgumentException("Answer option not found"));
+    }
+
+
 }

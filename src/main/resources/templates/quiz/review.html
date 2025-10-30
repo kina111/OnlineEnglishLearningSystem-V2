@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quiz Review</title>
+    <style>
+        .correct { color: green; font-weight: bold; }
+        .wrong { color: red; }
+        .selected { font-weight: bold; text-decoration: underline; }
+        .bookmark { color: orange; }
+        .question-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 15px 0;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Quiz Review</h1>
+<p th:text="'Score: ' + ${score} "></p>
+
+<div th:each="aq : ${questions}">
+    <h3 th:text="${aq.question.content}"></h3>
+
+    <div th:each="opt : ${aq.question.answerOptions}">
+        <label>
+            <input type="checkbox" disabled="true">
+<!--            th:checked="${aq.selectedOptions.contains(opt)}"-->
+<!--                   th:checked="${#lists.contains(aq.selectedOptions.![option.id], opt.id)}"-->
+
+<!--                   disabled="true" />-->
+            <span th:text="${opt.content}"></span>
+        </label>
+    </div>
+
+    <p>
+        <strong th:text="'Bookmarked: ' + ${aq.bookmarked}"></strong><br>
+        <strong th:text="'Correct: ' + ${aq.getCorrect()}"></strong>
+    </p>
+
+    <hr/>
+</div>
+
+<a th:href="@{/quiz/list}">Back to Quizzes</a>
+
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --text-color: #2d2d2d;
+            --text-light: #666;
+            --bg-page: #f2f3f8;
+            --bg-card: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 12px rgba(0,0,0,0.06);
+            --radius: 10px;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px 0;
+        }
+
+        .quiz-wrapper {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px 50px;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        /* Top bar */
+        .top-bar {
+            background-color: #f8f9ff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #timer {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        #message {
+            font-weight: 500;
+            color: #c0392b;
+            font-size: 15px;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            height: 14px;
+            background-color: #e5e7eb;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.4s ease;
+        }
+
+        /* Question header */
+        .question-header {
+            background: var(--primary-color);
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Answer options */
+        .answer-option {
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            background-color: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            transition: all 0.25s ease;
+        }
+
+        .answer-option:hover {
+            border-color: var(--primary-color);
+            background-color: #f3f2ff;
+        }
+
+        .answer-option input[type="checkbox"] {
+            transform: scale(1.3);
+            margin-right: 12px;
+            accent-color: var(--primary-color);
+        }
+
+        .answer-option.selected {
+            border-color: var(--primary-color);
+            background-color: #f2f1ff;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+        }
+
+        input[type="text"] {
+            border-radius: var(--radius);
+            border: 1.5px solid var(--border-color);
+            padding: 12px;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-buttons .btn {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1.5px solid var(--primary-color);
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .action-buttons .btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Footer */
+        .quiz-footer {
+            background: var(--primary-color);
+            border-radius: 0 0 var(--radius) var(--radius);
+            padding: 20px;
+            margin-top: 35px;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            align-items: center;
+            justify-items: center;
+            text-align: center;
+        }
+
+        .quiz-footer button {
+            background-color: transparent;
+            color: white;
+            font-weight: 600;
+            border: 2px solid white;
+            border-radius: var(--radius);
+            padding: 10px 22px;
+            transition: all 0.3s ease;
+            width: 140px;
+        }
+
+        .quiz-footer button:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+<div class="quiz-wrapper">
+    <form action="" method="post" id="quizForm">
+
+        <!-- ✅ Top Bar -->
+        <div class="top-bar">
+            <div><span th:text="${questionIndex + 1} + ' / ' + ${questionCount}">1 / 20</span></div>
+            <div><span id="timer">00:00</span></div>
+            <div><p id="message"></p></div>
+        </div>
+
+        <!-- ✅ Progress bar -->
+        <div class="progress-container">
+            <div class="progress-bar"
+                 th:style="'width:' + ((${questionIndex}+1) * 100 / ${questionCount}) + '%'"></div>
+        </div>
+
+        <!-- ✅ Question Header -->
+        <div class="question-header">
+            <div><strong th:text="${questionIndex + 1} + ')'">1)</strong></div>
+            <div>ID: <span th:text="${question.id}">Q1</span></div>
+        </div>
+
+        <!-- ✅ Question Text -->
+        <div class="mb-4 fs-5" th:text="${question.content}">
+            Question content goes here...
+        </div>
+
+        <!-- ✅ Media -->
+        <div th:switch="${question.mediaType}" class="mb-4">
+            <img th:case="'IMAGE'" th:src="${question.mediaUrl}" alt="Image" class="rounded" style="max-width: 400px">
+            <audio th:case="'AUDIO'" controls th:src="${question.mediaUrl}"></audio>
+            <video th:case="'VIDEO'" controls th:src="${question.mediaUrl}" class="rounded" style="max-width: 400px"></video>
+        </div>
+
+        <!-- ✅ Question Type -->
+        <div th:switch="${questionType}">
+            <div th:case="MULTIPLE_CHOICE">
+                <div class="mb-4">
+                    <div th:each="answer, iterStat : ${question.answerOptions}" class="answer-option">
+                        <input type="checkbox"
+                               name="answer"
+                               th:value="${answer.id}"
+                               th:id="'option_' + ${iterStat.index}"
+                               th:checked="${answeredOptionId != null and answeredOptionId.contains(answer.id)}" />
+                        <label th:for="'option_' + ${iterStat.index}" class="form-check-label">
+                            <span th:text="${(iterStat.index)} + '.'">A.</span>
+                            <span th:text="${answer.content}">Answer content</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div th:case="SHORT_ANSWER">
+                <input type="text" name="answer" placeholder="Nhập câu trả lời..."
+                       th:value="${answeredOption != null and !answeredOption.answer.isEmpty()} ? ${answeredOption.answer.get(0)} : ''">
+            </div>
+        </div>
+
+        <!-- ✅ Action Buttons -->
+        <div class="action-buttons">
+            <button type="button" class="btn">Peek Answer</button>
+            <label class="btn d-flex align-items-center gap-2">
+                <input type="checkbox" name="isMarked"
+                       th:checked="${answeredOption != null and answeredOption.isBookmarked()}">
+                Mark
+            </label>
+        </div>
+
+        <!-- ✅ Footer Buttons -->
+        <div class="quiz-footer">
+            <div>
+                <button type="submit" name="action" value="previous" th:if="${questionIndex > 0}">Previous</button>
+            </div>
+            <div>
+                <button type="submit" name="action" value="progress">Progress</button>
+            </div>
+            <div>
+                <button type="submit" name="action" value="next" th:if="${questionIndex < questionCount - 1}">Next</button>
+                <button type="submit" name="action" value="finish"
+                        th:if="${questionIndex == questionCount - 1}"
+                        onclick="return confirm('Finish quiz?');">Finish</button>
+            </div>
+        </div>
+
+        <input type="hidden" id="autoAction" name="autoAction" value="">
+    </form>
+</div>
+
+<!-- ✅ JS Timer -->
+<script th:inline="javascript">
+    const endTimeStr = /*[[${endTime}]]*/ ''; // e.g. "2025-10-30T22:10:00"
+    const endTime = new Date(endTimeStr.replace(' ', 'T'));
+    const timerEl = document.getElementById('timer');
+    const msgEl = document.getElementById('message');
+
+    function updateTimer() {
+        const now = new Date();
+        const diff = endTime - now;
+        if (diff <= 0) {
+            msgEl.textContent = '⏰ Time’s up!';
+            document.getElementById('autoAction').value = 'finish';
+            document.getElementById('quizForm').submit();
+            clearInterval(timerInterval);
+            return;
+        }
+
+        const m = Math.floor(diff / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        timerEl.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (diff <= 10000) msgEl.textContent = '⚠️ 10s left!';
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+</script>
+
+<script>
+    // Checkbox highlight
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.answer-option input').forEach(cb => {
+            if (cb.checked) cb.closest('.answer-option').classList.add('selected');
+            cb.addEventListener('change', () =>
+                cb.closest('.answer-option').classList.toggle('selected', cb.checked)
+            );
+        });
+    });
+</script>
+</body>
+</html>
