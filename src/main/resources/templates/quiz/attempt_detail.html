@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quiz Result Details</title>
+    <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet"/>
+
+    <style>
+        /* Wrapper toàn trang */
+        body{
+            background-color: #3786d8;
+        }
+
+        .page-wrapper {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Question Card Styling */
+        .question-card {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 0 auto 20px auto;
+            background-color: #ffffff;
+        }
+        .question-card.correct {
+            border-color: #28a745;
+            background-color: #e9fbee;
+        }
+        .question-card.incorrect {
+            border-color: #dc3545;
+            background-color: #fdecec;
+        }
+
+        /* Title Row */
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Answer List */
+        .answer-list li {
+            list-style: none;
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .answer-list li.correct {
+            border-color: #28a745;
+            font-weight: 600;
+        }
+        .answer-list li.selected:not(.correct) {
+            border-color: #dc3545;
+        }
+        .answer-list li.correct.selected {
+            border-color: #28a745;
+            background-color: #eefaf1;
+        }
+
+        /* Blank answer styled like answer-list */
+        .blank-answer {
+            list-style: none;
+            padding: 8px 12px;
+            border: 2px dashed #6c757d;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            background-color: #ffffff;
+        }
+        .blank-answer .label {
+            font-weight: bold;
+        }
+        .blank-answer .correct-label {
+            color: #28a745;
+        }
+        .blank-answer .input-label {
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body class="container my-4">
+
+<div class="page-wrapper">
+    <h1 class="text-center mb-4">Quiz Result Details</h1>
+
+    <div th:each="q : ${quizAttempt.questions}">
+        <div class="card question-card"
+             th:classappend="${q.getCorrect()} ? 'correct' : 'incorrect'">
+
+            <!-- Title and Badge in one row -->
+            <div class="title-row mb-3">
+                <h3 class="card-title mb-0">
+                    Câu <span th:text="${q.questionOrder}"></span>:
+                    <span th:text="${q.question.content}"></span>
+                </h3>
+                <span class="badge bg-success" th:if="${q.getCorrect()}">Correct</span>
+                <span class="badge bg-danger" th:if="${!q.getCorrect()}">Incorrect</span>
+            </div>
+
+            <ul class="answer-list">
+                <li th:each="opt : ${q.question.answerOptions}"
+                    th:class="${opt.correct} ? 'correct' : ''"
+                    th:classappend="${#lists.contains(q.selectedOptions.?[option != null].![option.id], opt.id)} ? ' selected' : ''">
+                    <span th:text="${opt.content}"></span>
+                    <span>
+                        <span th:if="${opt.correct}">✅</span>
+                        <span th:if="${!opt.correct and #lists.contains(q.selectedOptions.?[option != null].![option.id], opt.id)}">❌</span>
+                    </span>
+                </li>
+
+                <!-- Fill-in-the-blank styled same as answer-list -->
+                <li th:each="sel : ${q.selectedOptions}" th:if="${sel.selectedValue != null}" class="blank-answer">
+                    <span class="label input-label">Your Input: </span>
+                    <span th:text="${sel.selectedValue}"></span>
+                </li>
+                <li th:each="sel : ${q.selectedOptions}" th:if="${sel.selectedValue != null}" class="blank-answer">
+                    <span class="label correct-label">Correct Answer: </span>
+                    <span th:text="${q.question.shortAnswerOption.solutionText}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <button type="button" class="btn-primary" onclick="history.back()">⬅ Back</button>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

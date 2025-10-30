@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,7 +142,7 @@ public class QuizController {
         }
 
         QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
-        List<QuizAttemptQuestion> questions = quizAttempt.getQuestions();
+//        List<QuizAttemptQuestion> questions = quizAttempt.getQuestions();
 //        Question question = questions.get(questionIndex);
 
 
@@ -190,17 +191,38 @@ public class QuizController {
         if(quizAttempt.getEndTime() == null){
             return QUIZ_PATH + quizId + "/start";
         }
-
-        int kq = 0;
-
         quizAttemptService.finishQuizAttempt(quizAttempt,answers);
-        model.addAttribute("kq",kq);
-        model.addAttribute("total",questions.size());
-        model.addAttribute("quizAttempt",quizAttempt);
-//        model.addAttribute("quizId",quizId);
         session.removeAttribute(QUIZ_SESSION);
         session.removeAttribute("quizAttemptId");
-        return "quiz/result";
+        return QUIZ_PATH+"attempt/"+quizAttemptId+"/result";
+    }
+
+
+    @GetMapping("/attempt/{quizAttemptId}/result")
+    public String showQuizResult(@PathVariable Long quizAttemptId, Model model) {
+        QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
+
+        int totalQuestions = quizAttempt.getQuestions().size();
+        int correctAnswers = (int) quizAttempt.getQuestions().stream()
+                .filter(QuizAttemptQuestion::getCorrect)
+                .count();
+
+        // Độ chính xác (score làm tròn xuống theo yêu cầu)
+        int accuracy = (int) Math.floor((double) correctAnswers * 100 / totalQuestions);
+
+        // Tính thời gian làm bài (tính phút và giây)
+        Duration duration = Duration.between(quizAttempt.getStartTime(), quizAttempt.getCompletedTime());
+        long minutes = duration.toMinutes();
+        long seconds = duration.getSeconds() % 60;
+
+        model.addAttribute("quizAttempt", quizAttempt);
+        model.addAttribute("totalQuestions", totalQuestions);
+        model.addAttribute("correctAnswers", correctAnswers);
+        model.addAttribute("accuracy", accuracy);
+        model.addAttribute("minutes", minutes);
+        model.addAttribute("seconds", seconds);
+
+        return "quiz/quiz_result";
     }
 
     //Get quiz progress page
@@ -239,24 +261,28 @@ public class QuizController {
 
         model.addAttribute("quizId", quizId);
         model.addAttribute("questions", questions);
-
+        model.addAttribute("endTime", quizAttempt.getEndTime());
         Map<Long, AnsweredOption> answers = (Map<Long, AnsweredOption>) session.getAttribute(QUIZ_SESSION);
         model.addAttribute("answers", answers != null ? answers : new HashMap<>());
         return "/quiz/quiz-progress";
     }
 
-    @GetMapping("/{quizId}/review/{attempId}")
-    public String getQuizReviewPage(@PathVariable Long quizId, @PathVariable Long attempId, Model model) {
-        QuizAttempt attempt = quizAttemptService.findQuizAttemptById(attempId);
+    @GetMapping("/attempt/{attemptId}/review")
+    public String getQuizReviewPage( @PathVariable Long attemptId, Model model) {
+        QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(attemptId);
 
-//        model.addAttribute("quizId", quizId);
-////        model.addAttribute("questions", questions);
-//        model.addAttribute("attempId", attempId);
-        model.addAttribute("attempt", attempt);
-        model.addAttribute("questions", attempt.getQuestions());
-        model.addAttribute("score", attempt.getScore());
-        model.addAttribute("totalQuestions", attempt.getQuestions().size());
-        return "/quiz/review";
+        int totalQuestions = quizAttempt.getQuestions().size();
+        int correctAnswers = (int) quizAttempt.getQuestions().stream()
+                .filter(QuizAttemptQuestion::getCorrect)
+                .count();
+        int accuracy = (int) Math.floor((double) correctAnswers * 100 / totalQuestions);
+
+        model.addAttribute("quizAttempt", quizAttempt);
+        model.addAttribute("totalQuestions", totalQuestions);
+        model.addAttribute("correctAnswers", correctAnswers);
+        model.addAttribute("accuracy", accuracy);
+
+        return "quiz/attempt_detail";
     }
 
 }

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả Quiz</title>
+
+    <!-- Bootstrap CSS (webjars or CDN depending on your project) -->
+    <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet"/>
+
+    <style>
+        /* Page gradient background */
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6b8cff 0%, #9f7cfb 50%, #6f9cfb 100%);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            padding: 40px 0;
+        }
+
+        /* Main white card wrapper */
+        .panel {
+            max-width: 980px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 12px 30px rgba(2,6,23,0.18);
+        }
+
+        /* Header */
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .result-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        .result-sub {
+            color: #6b7280;
+        }
+
+        /* Score circle */
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+        }
+        .score-inner {
+            width: 104px;
+            height: 104px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+        }
+        .score-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #065f46; /* green */
+        }
+        .score-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        /* Stat cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 18px;
+            margin-bottom: 22px;
+        }
+        .stat {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        .stat .label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        /* Questions list */
+        .q-list {
+            margin-top: 8px;
+        }
+        .q-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .q-item.correct {
+            background: #ecfdf5; /* green-50 */
+            border-left: 6px solid #10b981; /* green-500 */
+        }
+        .q-item.incorrect {
+            background: #fff1f2; /* red-50 */
+            border-left: 6px solid #ef4444; /* red-500 */
+        }
+        .q-text {
+            color: #111827;
+            font-weight: 600;
+        }
+        .q-status {
+            font-weight: 700;
+        }
+
+        /* Action buttons */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+            justify-content: center;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 767px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .score-circle {
+                width: 120px;
+                height: 120px;
+            }
+            .score-inner { width: 88px; height: 88px; }
+        }
+    </style>
+</head>
+<body>
+<div class="panel">
+
+    <!-- Header -->
+    <div class="result-header">
+        <div th:if="${quizAttempt.passed}" style="font-size:40px;">🎉</div>
+        <div th:if="${!quizAttempt.passed}" style="font-size:40px;">😢</div>
+
+        <div class="result-title">Kết Quả Quiz</div>
+        <div class="result-sub">Kết quả bài kiểm tra của bạn</div>
+    </div>
+
+    <!-- Score and stats row -->
+    <div class="row align-items-center">
+        <div class="col-md-4 text-center">
+            <!-- Score circle: conic-gradient angle computed from accuracy -->
+            <div class="score-circle"
+                 th:style="'background: conic-gradient(from 0deg, #10b981 0deg, #10b981 ' + (${accuracy}*3.6) + 'deg, #e5e7eb ' + (${accuracy}*3.6) + 'deg, #e5e7eb 360deg);'">
+                <div class="score-inner">
+                    <div class="score-number" th:text="${correctAnswers} + '/' + ${totalQuestions}">8/10</div>
+                    <div class="score-label">điểm</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="value" th:text="${accuracy} + '%'">80%</div>
+                    <div class="label">Độ chính xác</div>
+                </div>
+                <div class="stat">
+                    <div class="value" th:text="${minutes} + ':' + (${seconds} < 10 ? '0' + ${seconds} : ${seconds})">5:32</div>
+                    <div class="label">Thời gian</div>
+                </div>
+                <div class="stat">
+                    <div th:if="${quizAttempt.passed}" class="value" style="color:#065f46" th:text="'PASS'">PASS</div>
+                    <div th:if="${!quizAttempt.passed}" class="value" style="color:#b91c1c" th:text="'FAIL'">FAIL</div>
+                    <div class="label">Kết quả</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed results list -->
+    <div class="mt-3">
+        <h4 class="mb-3">Chi tiết kết quả</h4>
+
+        <div class="q-list">
+            <div th:each="q : ${quizAttempt.questions}"
+                 th:class="'q-item ' + ${(q.getCorrect() ? 'correct' : 'incorrect')}">
+
+                <div class="q-text">
+                    <span th:text="'Câu ' + ${q.questionOrder} + ': '"></span>
+                    <span th:text="${q.question.content}"></span>
+                </div>
+
+                <div class="q-status">
+                    <span th:if="${q.getCorrect()}" style="color:#065f46">✓ Đúng</span>
+                    <span th:if="${!q.getCorrect()}" style="color:#b91c1c">✗ Sai</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="actions">
+            <a class="btn btn-primary btn-lg" href="review">📝 Xem lại chi tiết</a>
+            <a class="btn btn-outline-secondary btn-lg" th:href="@{'/quiz/'+${quizAttempt.lesson.id}+'/start'}" role="button">🔁 Làm lại quiz</a>
+            <a class="btn btn-outline-dark btn-lg" th:href="@{/}" role="button">🏠 Trang chủ</a>
+        </div>
+
+        <!-- Summary block -->
+        <div class="mt-4 p-3 rounded-3" style="background: linear-gradient(90deg,#eef2ff,#f0f9ff); border:1px solid rgba(99,102,241,0.12);">
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <div style="font-weight:700; font-size:1.25rem; color:#065f46" th:text="${correctAnswers}">8</div>
+                    <div style="color:#6b7280">Câu trả lời đúng</div>
+                </div>
+                <div class="col-md-4">
+                    <div style="font-weight:700; font-size:1.25rem; color:#b91c1c"
+                         th:text="${totalQuestions - correctAnswers}">2</div>
+                    <div style="color:#6b7280">Câu trả lời sai</div>
+                </div>
+                <div class="col-md-4">
+                    <div style="font-weight:700; font-size:1.25rem; color:#0ea5a4" th:text="${accuracy} + '%'">80%</div>
+                    <div style="color:#6b7280">Tỷ lệ chính xác</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

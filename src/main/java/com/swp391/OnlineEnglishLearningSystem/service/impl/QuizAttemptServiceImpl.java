@@ -60,7 +60,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 .collect(Collectors.toList());
 
         // 4️⃣ Map to attempt question
-        int index = 0;
+        int index = 1;
         for (Question q : selected) {
             QuizAttemptQuestion aq = new QuizAttemptQuestion();
             aq.setQuizAttempt(attempt);
