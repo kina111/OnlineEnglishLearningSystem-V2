@@ -43,10 +43,11 @@ public class Lesson extends BaseEntity{
     @Positive(message = "Lesson estimated time must be a positive number")
     private Integer estimatedTime;
 
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String htmlContent;
     //--- danh cho Lecture ---
     private String videoUrl;
-
+    private Long duration; // in milliseconds
 
     //---dành cho Quiz---
     @Column(name = "pass_rate")
@@ -189,5 +190,13 @@ public class Lesson extends BaseEntity{
 
     public void setNumberOfQuestions(Integer numberOfQuestions) {
         this.numberOfQuestions = numberOfQuestions;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 }

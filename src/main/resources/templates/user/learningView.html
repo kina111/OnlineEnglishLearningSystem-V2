@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<!--
+    Sử dụng Thymeleaf namespace.
+    Các DTO được truyền từ controller:
+    - enrollmentLearningDTO
+    - chapterLearningDTOS
+    - (Giả sử) session.currentUserId
+-->
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Học Bài</title>
+
+    <!-- Tải Heroicons/Ionicons (vẫn cần thiết cho icon) -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    <!-- CSS tùy chỉnh sử dụng Theme của bạn -->
+    <style>
+        /* 1. Theme Variables */
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --secondary-color: #4ecdc4;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #fff;
+            --bg-light: #f8f9fa;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
+        /* 2. Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        a:hover {
+            color: var(--primary-hover);
+        }
+
+        /* 3. Layout Wrapper */
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* 4. Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background-color: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .header-back-button {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-right: 1rem;
+        }
+        .header-course-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .header-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+        }
+        .header-progress-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            /* TODO: Thêm logic cho progress bar (nếu cần) */
+        }
+        .header-notes {
+            font-weight: 500;
+        }
+
+        /* 5. Main Container (Content + Sidebar) */
+        .main-container {
+            display: flex;
+            flex: 1; /* Quan trọng: lấp đầy không gian còn lại */
+            overflow: hidden; /* Quan trọng: ngăn overflow ở cấp này */
+        }
+
+        /* 6. Content Area */
+        .content-area {
+            flex: 1; /* Quan trọng: co giãn linh hoạt */
+            overflow-y: auto; /* Quan trọng: chỉ cuộn nội dung chính */
+            padding: 2.5rem;
+        }
+
+        .content-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            aspect-ratio: 16 / 9; /* Giữ tỷ lệ video */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            overflow: hidden; /* Đảm bảo video nằm gọn trong radius */
+        }
+
+        .content-wrapper video {
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius); /* Cho Safari */
+        }
+
+        .content-placeholder {
+            text-align: center;
+        }
+        .content-placeholder ion-icon {
+            font-size: 5rem;
+        }
+        .content-placeholder p {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .lesson-info-box {
+            max-width: 960px;
+            margin: 1.5rem auto 0;
+        }
+        .lesson-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .lesson-title-main {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .add-note-button {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 500;
+            white-space: nowrap;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+        }
+        .add-note-button:hover {
+            background-color: var(--bg-light);
+        }
+
+        .lesson-updated-time {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .lesson-html-content {
+            background-color: var(--bg-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem 2rem;
+            margin-top: 1.5rem;
+        }
+        .lesson-html-content h3 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        /* CSS cho nội dung HTML được chèn vào */
+        .lesson-html-content .prose {
+            /* Thêm style cho các thẻ p, ul, code... nếu cần */
+        }
+        .lesson-html-content .prose p {
+            margin-bottom: 1rem;
+        }
+        .lesson-html-content .prose button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .lesson-html-content .prose button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* 7. Sidebar Area */
+        .sidebar-area {
+            width: 340px; /* Tăng nhẹ độ rộng */
+            flex-shrink: 0; /* Quan trọng: không bị co lại */
+            background-color: var(--bg-color);
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto; /* Quan trọng: chỉ cuộn sidebar */
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-title {
+            padding: 1.25rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        #sidebar-chapter-list {
+            flex-grow: 1;
+        }
+
+        .chapter-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .chapter-button {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+        }
+        .chapter-button.open {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .chapter-button:hover {
+            background-color: var(--bg-light);
+        }
+        .chapter-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .chapter-info span {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        .chapter-icon {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            transition: transform 0.3s ease;
+        }
+        /* Style khi chapter mở */
+        .chapter-button.open .chapter-icon {
+            transform: rotate(180deg);
+        }
+
+        .lesson-list {
+            list-style: none;
+            background-color: var(--bg-light);
+            padding: 0.5rem 0.5rem 0.5rem 0; /* Thụt lề trái */
+        }
+        .lesson-list.hidden {
+            display: none;
+        }
+
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+            transition: background-color 0.2s;
+        }
+        .lesson-item:hover {
+            background-color: var(--border-color);
+        }
+        /* Style khi lesson được CHỌN (active) */
+        .lesson-item.active {
+            background-color: #edeefc; /* Màu nền nhạt của primary */
+        }
+        .lesson-item.active .lesson-title {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .lesson-item-status {
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        .lesson-item-status.completed {
+            color: var(--secondary-color);
+        }
+        .lesson-item-status.pending {
+            color: #ccc;
+        }
+
+        .lesson-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .lesson-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        .lesson-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        .lesson-meta ion-icon {
+            font-size: 0.9rem;
+        }
+
+        /* 8. Footer */
+        .footer {
+            padding: 1rem;
+            text-align: center;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        /* 9. Loading Spinner */
+        .loading-spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+
+<!--
+    Lưu trữ userId và enrollmentId vào data attributes
+    để JavaScript có thể dễ dàng truy cập và gọi API.
+-->
+<body th:data-user-id="${session.currentUserId}"
+th:data-enrollment-id="${enrollmentLearningDTO.id}">
+
+
+<div class="page-wrapper">
+
+    <!-- 1. Header (Render bằng Thymeleaf) -->
+    <header class="header">
+        <div class="header-left">
+            <a th:href="'/users/' + ${session.currentUserId} + '/myCourses'" class="header-back-button">
+                <ion-icon name="arrow-back-outline"></ion-icon>
+            </a>
+            <h1 class="header-course-name"
+                th:text="${enrollmentLearningDTO.title}">
+                Tên khóa học
+            </h1>
+        </div>
+        <div class="header-right">
+            <div class="header-progress">
+                <div class="header-progress-icon"></div>
+                <span
+                        th:text="|${enrollmentLearningDTO.completedLessons}/${enrollmentLearningDTO.totalLessons} bài học|">
+                        ??/?? bài học
+                    </span>
+            </div>
+            <a href="#" class="header-notes">Ghi chú</a>
+        </div>
+    </header>
+
+    <!-- 2. Main Container -->
+    <div class="main-container">
+
+        <!-- 2.1. Main Content (Nội dung bài học) -->
+        <main class="content-area">
+
+            <!-- Vùng chứa nội dung (Video/HTML/Quiz) -->
+            <div class="content-wrapper" id="lesson-content-wrapper">
+                <!-- Nội dung ban đầu: Chờ tải... -->
+                <div class="content-placeholder">
+                    <ion-icon name="play-circle-outline"></ion-icon>
+                    <p>Chọn một bài học từ danh sách để bắt đầu.</p>
+                </div>
+            </div>
+
+            <!-- Thông tin bài học (sẽ được JS cập nhật) -->
+            <div class="lesson-info-box">
+                <div class="lesson-info-header">
+                    <h2 class="lesson-title-main" id="lesson-title-main">...</h2>
+                    <button class="add-note-button">
+                        <ion-icon name="add-outline"></ion-icon>
+                        <span>Thêm ghi chú</span>
+                    </button>
+                </div>
+                <p class="lesson-updated-time" id="lesson-updated-time">...</p>
+
+                <!-- Nội dung HTML (cho Quiz/Lecture) -->
+                <div class="lesson-html-content">
+                    <h3>Nội dung bài học:</h3>
+                    <div class="prose" id="lesson-html-content">
+                        <p>...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 2.2. Sidebar (Nội dung khóa học) (Render bằng Thymeleaf) -->
+        <aside class="sidebar-area">
+            <h3 class="sidebar-title">Nội dung khóa học</h3>
+
+            <div id="sidebar-chapter-list">
+                <!-- Loop qua các Chapter -->
+                <div class="chapter-item" th:each="chapter : ${chapterLearningDTOS}">
+
+                    <!-- Nút bấm để mở/đóng Chapter -->
+                    <button class="chapter-button" onclick="handleChapterClick(this)">
+                        <div class="chapter-info">
+                            <h4 th:text="${chapter.orderInCourse} + '. ' + ${chapter.title}">Stt. Tên chapter</h4>
+                            <span th:text="|${chapter.numberOfCompletedLesson}/${chapter.numberOfLesson} bài học|">Số lesson</span>
+                        </div>
+                        <ion-icon name="chevron-down-outline" class="chapter-icon"></ion-icon>
+                    </button>
+
+                    <!-- Danh sách Lesson (ẩn ban đầu) -->
+                    <ul class="lesson-list hidden">
+                        <!-- Loop qua các Lesson -->
+                        <li class="lesson-item"
+                            th:each="lesson : ${chapter.userLessonLearningDTOS}"
+                            th:data-lesson-id="${lesson.lessonId}"
+                            onclick="handleLessonClick(this)">
+
+                            <div class="lesson-details">
+                                <span class="lesson-title" th:text="${chapter.orderInCourse} + '.' + ${lesson.orderInChapter} + ' ' + ${lesson.title}">2.1 Ten lesson</span>
+                                <span class="lesson-meta">
+                                        <ion-icon th:name="${lesson.lessonType == 'LECTURE' ? 'videocam-outline' : 'document-text-outline'}"></ion-icon>
+                                        <span th:text="${lesson.duration/60} + ':' + ${lesson.duration % 60}">Thời gian</span>
+                                    </span>
+                            </div>
+
+                            <ion-icon
+                                    class="lesson-item-status"
+                                    th:classappend="${lesson.isCompleted ? 'completed' : 'pending'}"
+                                    th:name="${lesson.isCompleted ? 'checkbox' : 'square-outline'}">
+                            </ion-icon>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 3. Footer -->
+    <footer class="footer">
+        © 2025 OELS. Giữ toàn bộ bản quyền.
+    </footer>
+</div>
+
+
+<!-- JavaScript chính của trang -->
+<script>
+    // --- BIẾN TOÀN CỤC ---
+    let editor; // For CKEditor in modals (if used elsewhere, otherwise remove)
+    let currentActiveLessonElement = null; // Sidebar element
+    let currentVideoElement = null; // <video> element currently displayed
+    let completionApiCalledForCurrentVideo = false; // Flag for API call status
+
+    const userId = document.body.dataset.userId;
+    const enrollmentId = document.body.dataset.enrollmentId; // Lấy nếu cần gửi lên API
+
+    // --- DOM ELEMENTS ---
+    const contentWrapper = document.getElementById('lesson-content-wrapper');
+    const lessonTitleEl = document.getElementById('lesson-title-main');
+    const lessonTimeEl = document.getElementById('lesson-updated-time');
+    const lessonHtmlWrapper = document.getElementById('lesson-html-content'); // Container for HTML content
+
+    // --- UTILITY FUNCTIONS ---
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container') || document.createElement('div');
+        if (!container.id) {
+            container.id = 'toast-container';
+            container.style.position = 'fixed'; container.style.top = '20px'; container.style.right = '20px'; container.style.zIndex = '9999';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+        toast.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+        container.appendChild(toast);
+        setTimeout(() => bootstrap.Alert.getOrCreateInstance(toast)?.close(), 4000);
+    }
+
+    // --- MAIN SCRIPT ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tự động tải bài học đầu tiên
+        const firstLessonEl = document.querySelector('.lesson-item');
+        if (firstLessonEl) {
+            handleLessonClick(firstLessonEl);
+        }
+    });
+
+    // --- SIDEBAR INTERACTION ---
+    function handleChapterClick(chapterButton) {
+        const lessonList = chapterButton.nextElementSibling;
+        lessonList.classList.toggle('hidden');
+        chapterButton.classList.toggle('open');
+    }
+
+    function handleLessonClick(lessonElement) {
+        const lessonId = lessonElement.dataset.lessonId;
+        if (!lessonId || lessonElement.classList.contains('active')) return; // Không làm gì nếu click vào lesson đang active
+
+        if (currentActiveLessonElement) {
+            currentActiveLessonElement.classList.remove('active');
+        }
+        lessonElement.classList.add('active');
+        currentActiveLessonElement = lessonElement;
+
+        fetchLessonContent(lessonId);
+    }
+
+    // --- FETCH & RENDER LESSON CONTENT ---
+    async function fetchLessonContent(lessonId) {
+        showLoadingState();
+        const apiUrl = `/users/${userId}/learning/lessons/${lessonId}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error(`Lỗi ${response.status}: Không thể tải bài học.`);
+
+            const apiResponse = await response.json();
+            if (apiResponse.status === 'success' && apiResponse.data) {
+                renderMainContent(apiResponse.data);
+            } else {
+                throw new Error(apiResponse.message || 'Dữ liệu bài học không hợp lệ.');
+            }
+        } catch (error) {
+            console.error('Fetch lesson content failed:', error);
+            renderMainContentError(error.message);
+        }
+    }
+
+    function showLoadingState() {
+        // Gỡ listener video cũ trước khi hiển thị loading
+        removeVideoListeners();
+        contentWrapper.innerHTML = `
+            <div class="loading-spinner" style="margin: auto;"></div>
+            <p style="text-align: center; margin-top: 1rem; color: var(--text-light);">Đang tải bài học...</p>`;
+        lessonTitleEl.textContent = 'Đang tải...';
+        lessonTimeEl.textContent = '...';
+        lessonHtmlWrapper.innerHTML = '<p>...</p>';
+    }
+
+    function renderMainContent(lessonData) {
+        lessonTitleEl.textContent = lessonData.title;
+        lessonTimeEl.textContent = lessonData.lastUpdatedDate
+            ? `Cập nhật: ${new Date(lessonData.lastUpdatedDate).toLocaleString('vi-VN')}` : '';
+        lessonHtmlWrapper.innerHTML = lessonData.htmlContent || '<p>Không có mô tả.</p>';
+
+        // Gỡ listener cũ (đề phòng trường hợp lỗi trước đó)
+        removeVideoListeners();
+
+        let contentHtml = '';
+        if (lessonData.lessonType === 'LECTURE' && lessonData.videoUrl) {
+            contentHtml = createVideoHtml(lessonData.videoUrl, lessonData.id);
+            contentWrapper.innerHTML = contentHtml;
+            // Gắn listener SAU KHI render
+            attachVideoListeners(lessonData.id);
+        } else if (lessonData.lessonType === 'QUIZ') {
+            contentHtml = createQuizPlaceholderHtml(lessonData.title);
+            contentWrapper.innerHTML = contentHtml;
+        } else {
+            contentHtml = createGenericPlaceholderHtml();
+            contentWrapper.innerHTML = contentHtml;
+        }
+    }
+
+    function renderMainContentError(errorMessage) {
+        removeVideoListeners(); // Gỡ listener nếu có lỗi
+        contentWrapper.innerHTML = createErrorHtml(errorMessage);
+        lessonTitleEl.textContent = 'Lỗi';
+        lessonTimeEl.textContent = 'Không thể tải bài học';
+        lessonHtmlWrapper.innerHTML = `<p class="text-danger">${errorMessage}</p>`;
+    }
+
+    // --- HTML RENDER FUNCTIONS ---
+    function createVideoHtml(videoUrl, lessonId) {
+        return `
+            <video controls class="lesson-video" data-lesson-id="${lessonId}" style="width:100%; height:auto; border-radius: var(--radius);">
+                <source src="/uploads/${videoUrl}" type="video/mp4">
+                Trình duyệt của bạn không hỗ trợ video này.
+            </video>`;
+    }
+    function createQuizPlaceholderHtml(title) {
+        return `
+            <div class="content-placeholder">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <p>Bài kiểm tra: ${title}</p>
+                </div>`;
+    }
+    function createGenericPlaceholderHtml() {
+        return `
+            <div class="content-placeholder">
+                <ion-icon name="book-outline"></ion-icon>
+                <p>Nội dung bài học</p>
+            </div>`;
+    }
+    function createErrorHtml(errorMessage) {
+        return `
+            <div class="content-placeholder text-danger">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                <p>Đã xảy ra lỗi: ${errorMessage}</p>
+            </div>`;
+    }
+
+
+    // --- VIDEO COMPLETION LOGIC ---
+    function attachVideoListeners(lessonId) {
+        currentVideoElement = contentWrapper.querySelector(`video[data-lesson-id="${lessonId}"]`);
+        if (currentVideoElement) {
+            completionApiCalledForCurrentVideo = false; // Reset cờ khi video mới load
+            currentVideoElement.addEventListener('timeupdate', handleTimeUpdate);
+            currentVideoElement.addEventListener('ended', handleVideoEnded); // Xử lý khi video kết thúc hẳn
+            console.log("Attached listeners for lesson " + lessonId);
+        } else {
+            console.warn(`Video element not found for lesson ${lessonId} after render.`);
+        }
+    }
+
+    function removeVideoListeners() {
+        if (currentVideoElement) {
+            currentVideoElement.removeEventListener('timeupdate', handleTimeUpdate);
+            currentVideoElement.removeEventListener('ended', handleVideoEnded);
+            currentVideoElement = null;
+            completionApiCalledForCurrentVideo = false; // Reset cờ
+            console.log("Removed old video listeners");
+        }
+    }
+
+    function handleTimeUpdate(event) {
+        const video = event.target;
+        const lessonId = video.dataset.lessonId;
+        const currentTime = video.currentTime;
+        const duration = video.duration;
+
+        if (!duration || !lessonId || completionApiCalledForCurrentVideo) return;
+
+        const completionThreshold = 0.90; // 90%
+        if (currentTime / duration >= completionThreshold) {
+            completionApiCalledForCurrentVideo = true;
+            callCompleteApi(lessonId);
+        }
+    }
+
+    // Xử lý khi video kết thúc hẳn (đảm bảo gọi API nếu ngưỡng 90% bị bỏ lỡ)
+    function handleVideoEnded(event) {
+        const video = event.target;
+        const lessonId = video.dataset.lessonId;
+        if (lessonId && !completionApiCalledForCurrentVideo) {
+            console.log(`Video ended, marking lesson ${lessonId} complete.`);
+            completionApiCalledForCurrentVideo = true;
+            callCompleteApi(lessonId);
+        }
+    }
+
+    async function callCompleteApi(lessonId) {
+        console.log(`Calling complete API for lesson ${lessonId}`);
+        const apiUrl = `/api/lessons/${lessonId}/complete`; // Đảm bảo URL này đúng
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json'},
+            });
+
+            if (!response.ok) {
+                let errorMsg = `Lỗi API hoàn thành bài học (${response.status})`;
+                try { const errorData = await response.json(); errorMsg = errorData.message || errorMsg; } catch (e) {}
+                throw new Error(errorMsg);
+            }
+
+            console.log(`Lesson ${lessonId} marked complete.`);
+            updateSidebarLessonStatus(lessonId, true);
+            // Cập nhật progress header (nếu cần, gọi API khác để lấy % mới)
+            updateHeaderProgress();
+
+        } catch (error) {
+            console.error(`Failed to mark lesson ${lessonId} complete:`, error);
+            showToast('Lỗi đánh dấu hoàn thành!', 'error');
+            // Không reset cờ ở đây, để tránh gọi lại liên tục nếu API lỗi
+        }
+    }
+
+    function updateSidebarLessonStatus(lessonId, isCompleted) {
+        const lessonItem = document.querySelector(`.lesson-item[data-lesson-id="${lessonId}"]`);
+        if (lessonItem) {
+            const statusIcon = lessonItem.querySelector('.lesson-item-status');
+            if (statusIcon) {
+                if (isCompleted) {
+                    statusIcon.setAttribute('name', 'checkbox');
+                    statusIcon.classList.remove('pending');
+                    statusIcon.classList.add('completed');
+                } else { /* Logic reset nếu cần */ }
+            }
+        }
+    }
+
+    async function updateHeaderProgress() {
+        // Make sure 'enrollmentId' has the correct value before this call
+        if (!enrollmentId) {
+            console.error("Enrollment ID is missing, cannot update header progress.");
+            return;
+        }
+
+        try {
+            console.log("Calling progress API for enrollmentId:", enrollmentId); // Debugging
+            const res = await fetch(`/api/enrollments/${enrollmentId}/progress`);
+            if (!res.ok) {
+                throw new Error(`API error! status: ${res.status}`);
+            }
+            const apiResponse = await res.json();
+            const progressSpan = document.querySelector('.header-progress span');
+
+            // Access properties inside the 'data' object
+            if (progressSpan && apiResponse.data) {
+                progressSpan.textContent = `${apiResponse.data.completedLessons}/${apiResponse.data.totalLessons} bài học`; // Use apiResponse.data.xxx
+                console.log("Header progress updated:", `${apiResponse.data.completedLessons}/${apiResponse.data.totalLessons}`);
+            } else {
+                console.error("Invalid or incomplete progress data received:", apiResponse.data);
+                if (progressSpan) progressSpan.textContent = "?/? bài học"; // Display placeholder on error
+            }
+        } catch(err) {
+            console.error("Failed to update header progress:", err);
+            const progressSpan = document.querySelector('.header-progress span');
+            if (progressSpan) progressSpan.textContent = "|Lỗi tải|"; // Display error
+        }
+    }
+
+</script>
+
+</body>
+</html>
+
