@@ -9,11 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class CreateLectureRequest {
     @NotBlank(message = "Vui lòng nhập tên bài học")
-    @Size(min = 5, max = 200, message = "Lesson title must be between 5-200 characters")
+    @Size(min = 5, max = 200, message = "Tên bài học trong khoảng 5-200 kí tự")
     private String title;
 
     // --- Lecture fields ---
-    @NotNull(message = "Vui lòng chọn loại bài học")
+    @NotNull(message = "Vui lòng nhập thời lượng ước tính")
     @Positive(message = "Vui lòng nhập thời lượng ước tính hợp lệ")
     private Integer estimatedTime;
 
