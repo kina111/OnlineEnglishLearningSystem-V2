@@ -3,240 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <title>Quiz</title>
-
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        body {
-            background-color: #ffffff;
-            margin: 40px;
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --text-color: #2d2d2d;
+            --text-light: #666;
+            --bg-page: #f2f3f8;
+            --bg-card: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 12px rgba(0,0,0,0.06);
+            --radius: 10px;
         }
 
-        .question-header {
-            background-color: #3a3a3a;
-            color: white;
-            padding: 10px 20px;
-            font-size: 18px;
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px 0;
+        }
+
+        .quiz-wrapper {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px 50px;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        /* Top bar */
+        .top-bar {
+            background-color: #f8f9ff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
         }
 
+        #timer {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        #message {
+            font-weight: 500;
+            color: #c0392b;
+            font-size: 15px;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            height: 14px;
+            background-color: #e5e7eb;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.4s ease;
+        }
+
+        /* Question header */
+        .question-header {
+            background: var(--primary-color);
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Answer options */
         .answer-option {
-            padding: 15px;
+            padding: 14px 18px;
             margin-bottom: 10px;
-            background-color: #f8f9fa;
-            border: 2px solid transparent;
-            border-radius: 5px;
+            background-color: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius);
             display: flex;
             align-items: center;
-            transition: border-color 0.3s ease;
+            transition: all 0.25s ease;
         }
 
-        .answer-option input[type="radio"] {
-            transform: scale(1.4);
-            margin-right: 15px;
+        .answer-option:hover {
+            border-color: var(--primary-color);
+            background-color: #f3f2ff;
+        }
+
+        .answer-option input[type="checkbox"] {
+            transform: scale(1.3);
+            margin-right: 12px;
+            accent-color: var(--primary-color);
         }
 
         .answer-option.selected {
-            border-color: #66c280;
-            background-color: #e8f5e9;
+            border-color: var(--primary-color);
+            background-color: #f2f1ff;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
         }
 
-        .option-label {
-            font-weight: bold;
-            margin-right: 10px;
+        input[type="text"] {
+            border-radius: var(--radius);
+            border: 1.5px solid var(--border-color);
+            padding: 12px;
+            width: 100%;
+            transition: border-color 0.3s;
         }
 
-        .green-footer {
-            background-color: #66c280;
-            padding: 20px;
-            margin-top: 30px;
-            text-align: right;
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
         }
 
-        .green-footer button {
-            background-color: #66c280;
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-buttons .btn {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1.5px solid var(--primary-color);
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .action-buttons .btn:hover {
+            background-color: var(--primary-color);
             color: white;
-            border: 2px solid #66c280;
-            font-weight: bold;
         }
 
-        .green-footer button:hover {
-            background-color: #e8f5e9;
-            border-color: white;
+        /* Footer */
+        .quiz-footer {
+            background: var(--primary-color);
+            border-radius: 0 0 var(--radius) var(--radius);
+            padding: 20px;
+            margin-top: 35px;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            align-items: center;
+            justify-items: center;
+            text-align: center;
         }
 
-        .progress-text {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
+        .quiz-footer button {
+            background-color: transparent;
+            color: white;
+            font-weight: 600;
+            border: 2px solid white;
+            border-radius: var(--radius);
+            padding: 10px 22px;
+            transition: all 0.3s ease;
+            width: 140px;
+        }
+
+        .quiz-footer button:hover {
+            background-color: white;
+            color: var(--primary-color);
         }
     </style>
 </head>
+
 <body>
+<div class="quiz-wrapper">
+    <form action="" method="post" id="quizForm">
 
-<form action="" method="post" class="container" id="quizForm">
-
-    <!-- ✅ Top Progress & Timer Bar -->
-    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-geo-alt"></i>
-            <span th:text="${questionIndex + 1} + ' / ' + ${questionCount}">1 / 20</span>
+        <!-- ✅ Top Bar -->
+        <div class="top-bar">
+            <div><span th:text="${questionIndex + 1} + ' / ' + ${questionCount}">1 / 20</span></div>
+            <div><span id="timer">00:00</span></div>
+            <div><p id="message"></p></div>
         </div>
 
-        <div class="px-3 py-1 rounded" style="background-color: #cfe2ff;">
-            <i class="bi bi-hourglass-split"></i>
-            <span id="timer">00:00:00</span>
+        <!-- ✅ Progress bar -->
+        <div class="progress-container">
+            <div class="progress-bar"
+                 th:style="'width:' + ((${questionIndex}+1) * 100 / ${questionCount}) + '%'"></div>
         </div>
-        <div class="px-3 py-1 rounded" style="background-color: #e6f7ff;">
-            <p id="message" >
-<!--               th:text="${progress}">-->
 
-            </p>
+        <!-- ✅ Question Header -->
+        <div class="question-header">
+            <div><strong th:text="${questionIndex + 1} + ')'">1)</strong></div>
+            <div>ID: <span th:text="${question.id}">Q1</span></div>
         </div>
-    </div>
 
+        <!-- ✅ Question Text -->
+        <div class="mb-4 fs-5" th:text="${question.content}">
+            Question content goes here...
+        </div>
 
-    <!-- ✅ Question Header -->
-    <div class="question-header mb-4">
-        <div><strong th:text="${questionIndex + 1} + ')'">1)</strong></div>
-        <div>Question ID: <span th:text="${question.id}">643</span></div>
-    </div>
+        <!-- ✅ Media -->
+        <div th:switch="${question.mediaType}" class="mb-4">
+            <img th:case="'IMAGE'" th:src="${question.mediaUrl}" alt="Image" class="rounded" style="max-width: 400px">
+            <audio th:case="'AUDIO'" controls th:src="${question.mediaUrl}"></audio>
+            <video th:case="'VIDEO'" controls th:src="${question.mediaUrl}" class="rounded" style="max-width: 400px"></video>
+        </div>
 
-    <!-- ✅ Question Text -->
-    <div class="mb-4 fs-5" th:text="${question.content}">
-        Question content goes here...
-    </div>
-
-    <!-- Display media if exists -->
-    <div th:switch="${question.mediaType}">
-        <img th:case="'IMAGE'" th:src="${question.mediaUrl}" alt="Image" style="max-width:400px"/>
-        <audio th:case="'AUDIO'" controls th:src="${question.mediaUrl}"></audio>
-        <video th:case="'VIDEO'" controls th:src="${question.mediaUrl}" style="max-width:400px"></video>
-        <div th:case="'NONE'"></div>
-    </div>
-
-    <div th:switch="${questionType}">
-        <div th:case="MULTIPLE_CHOICE">
-            <!-- ✅ Answer Options -->
-            <div class="mb-4">
-                <div th:each="answer, iterStat : ${question.answerOptions}" class="answer-option">
-
-                    <input type="checkbox"
-                           name="answer"
-                           th:value="${answer.id}"
-                           th:id="'option_' + ${iterStat.index}"
-                           th:checked="${answeredOptionId != null and answeredOptionId.contains(answer.id)}" />
-                    <label th:for="'option_' + ${iterStat.index}" class="form-check-label">
-                        <span th:text="${(iterStat.index)} + '.'">A.</span>
-                        <span th:text="${answer.content}">Answer content</span>
-                    </label>
-
+        <!-- ✅ Question Type -->
+        <div th:switch="${questionType}">
+            <div th:case="MULTIPLE_CHOICE">
+                <div class="mb-4">
+                    <div th:each="answer, iterStat : ${question.answerOptions}" class="answer-option">
+                        <input type="checkbox"
+                               name="answer"
+                               th:value="${answer.id}"
+                               th:id="'option_' + ${iterStat.index}"
+                               th:checked="${answeredOptionId != null and answeredOptionId.contains(answer.id)}" />
+                        <label th:for="'option_' + ${iterStat.index}" class="form-check-label">
+                            <span th:text="${(iterStat.index)} + '.'">A.</span>
+                            <span th:text="${answer.content}">Answer content</span>
+                        </label>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div th:case="SHORT_ANSWER">
-            <!-- Short Answer -->
-            <div>
-               <input type="text" name="answer" placeholder="Nhập câu trả lời..."
-                      th:value="${answeredOption != null and !answeredOption.answer.isEmpty()} ? ${answeredOption.answer.get(0)} : ''">
+            <div th:case="SHORT_ANSWER">
+                <input type="text" name="answer" placeholder="Nhập câu trả lời..."
+                       th:value="${answeredOption != null and !answeredOption.answer.isEmpty()} ? ${answeredOption.answer.get(0)} : ''">
             </div>
         </div>
-    </div>
 
-
-
-    <!-- ✅ Top Right Buttons -->
-    <div class="d-flex justify-content-end mb-3 gap-2">
-        <button type="button" class="btn btn-secondary">Peek at Answer</button>
-        <input type="checkbox" class="btn btn-secondary " name="isMarked"
-               th:checked="${answeredOption != null and answeredOption.isBookmarked()}">
-        Mark for Review</input>
-    </div>
-
-
-    <!-- ✅ Navigation Buttons in Green Footer -->
-    <div class="green-footer d-flex justify-content-between">
-        <div>
-            <button type="submit" class="btn" name="action" value="previous"
-                    th:if="${questionIndex > 0}">Previous</button>
+        <!-- ✅ Action Buttons -->
+        <div class="action-buttons">
+            <button type="button" class="btn">Peek Answer</button>
+            <label class="btn d-flex align-items-center gap-2">
+                <input type="checkbox" name="isMarked"
+                       th:checked="${answeredOption != null and answeredOption.isBookmarked()}">
+                Mark
+            </label>
         </div>
-        <div>
-            <button type="submit" class="btn" name="action" value="progress">Review Progress</button>
+
+        <!-- ✅ Footer Buttons -->
+        <div class="quiz-footer">
+            <div>
+                <button type="submit" name="action" value="previous" th:if="${questionIndex > 0}">Previous</button>
+            </div>
+            <div>
+                <button type="submit" name="action" value="progress">Progress</button>
+            </div>
+            <div>
+                <button type="submit" name="action" value="next" th:if="${questionIndex < questionCount - 1}">Next</button>
+                <button type="submit" name="action" value="finish"
+                        th:if="${questionIndex == questionCount - 1}"
+                        onclick="return confirm('Finish quiz?');">Finish</button>
+            </div>
         </div>
-        <div>
-            <button type="submit" class="btn" name="action" value="next"
-                    th:if="${questionIndex < questionCount - 1}">Next</button>
-            <button type="submit" class="btn" name="action" value="finish"
-                    th:if="${questionIndex == questionCount - 1}"
-                    onclick="return confirm('Are you sure you want to finish?');">Finish</button>
-        </div>
-    </div>
-    <input type="hidden" id="autoAction" name="autoAction" value="">
-</form>
 
-<script>
-    // Highlight selected answer (client-side visual feedback)
-    document.addEventListener('DOMContentLoaded', function () {
-        const checkboxes = document.querySelectorAll('.answer-option input[type="checkbox"]');
+        <input type="hidden" id="autoAction" name="autoAction" value="">
+    </form>
+</div>
 
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                if (checkbox.checked) {
-                    checkbox.closest('.answer-option').classList.add('selected');
-                } else {
-                    checkbox.closest('.answer-option').classList.remove('selected');
-                }
-            });
-        });
-
-        // Initial highlight for any pre-checked boxes
-        document.querySelectorAll('.answer-option input[type="checkbox"]:checked')
-            .forEach(checkedBox => {
-                checkedBox.closest('.answer-option').classList.add('selected');
-            });
-    });
-
-</script>
+<!-- ✅ JS Timer -->
 <script th:inline="javascript">
-    // Get endTime from model (Thymeleaf will render it as a string)
-    const endTimeStr = /*[[${endTime}]]*/ '';
-    // Parse into JS Date object
-    const endTime = new Date(endTimeStr.replace(' ', 'T')); // e.g. "2025-10-26T15:45:00"
+    const endTimeStr = /*[[${endTime}]]*/ ''; // e.g. "2025-10-30T22:10:00"
+    const endTime = new Date(endTimeStr.replace(' ', 'T'));
+    const timerEl = document.getElementById('timer');
+    const msgEl = document.getElementById('message');
 
     function updateTimer() {
         const now = new Date();
-        const diffMs = endTime - now;
-        const diffSec = Math.floor(diffMs / 1000);
-
-        if (diffSec === 10) document.getElementById("message").innerText = "⚠️ 10 seconds remaining!";
-
-        if (diffSec <= 0) {
+        const diff = endTime - now;
+        if (diff <= 0) {
+            msgEl.textContent = '⏰ Time’s up!';
+            document.getElementById('autoAction').value = 'finish';
+            document.getElementById('quizForm').submit();
             clearInterval(timerInterval);
-
-            // Set the form action to "finish"
-            document.getElementById("autoAction").value = "finish";
-            document.getElementById("message").innerText = "⏰ Time’s up! Your quiz will now be submitted."
-            // alert("⏰ Time’s up! Your quiz will now be submitted.");
-            document.getElementById("quizForm").submit();
             return;
         }
 
-        const minutes = Math.floor(diffSec / 60);
-        const seconds = diffSec % 60;
-
-        document.getElementById("timer").textContent =
-            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const m = Math.floor(diff / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        timerEl.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (diff <= 10000) msgEl.textContent = '⚠️ 10s left!';
     }
 
-    updateTimer();
     const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
 </script>
 
-<!-- Bootstrap JS (optional) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Checkbox highlight
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.answer-option input').forEach(cb => {
+            if (cb.checked) cb.closest('.answer-option').classList.add('selected');
+            cb.addEventListener('change', () =>
+                cb.closest('.answer-option').classList.toggle('selected', cb.checked)
+            );
+        });
+    });
+</script>
 </body>
 </html>

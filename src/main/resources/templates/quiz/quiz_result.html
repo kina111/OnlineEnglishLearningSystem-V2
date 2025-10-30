@@ -10,9 +10,21 @@
 
     <style>
         /* Page gradient background */
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --text-color: #2d2d2d;
+            --text-light: #666;
+            --bg-page: #f2f3f8;
+            --bg-card: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 12px rgba(0,0,0,0.06);
+            --radius: 10px;
+        }
+
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #6b8cff 0%, #9f7cfb 50%, #6f9cfb 100%);
+            background: var(--bg-page);
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
             padding: 40px 0;
         }

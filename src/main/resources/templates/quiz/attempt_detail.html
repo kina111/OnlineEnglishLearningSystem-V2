@@ -5,9 +5,20 @@
     <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet"/>
 
     <style>
-        /* Wrapper toàn trang */
-        body{
-            background-color: #3786d8;
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --text-color: #2d2d2d;
+            --text-light: #666;
+            --bg-page: #f2f3f8;
+            --bg-card: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 12px rgba(0,0,0,0.06);
+            --radius: 10px;
+        }
+
+        body {
+            background-color: var(--bg-page);
         }
 
         .page-wrapper {
@@ -44,6 +55,10 @@
         }
 
         /* Answer List */
+        .answer-list {
+            margin: 0;
+            padding: 0;
+        }
         .answer-list li {
             list-style: none;
             padding: 8px 12px;
@@ -67,6 +82,20 @@
             background-color: #eefaf1;
         }
 
+        /* Explanation Box */
+        .explain-box {
+            background-color: #f8f9fa;
+            /*border-left: 4px solid #0d6efd;*/
+            padding: 8px 12px;
+            margin: -4px 0 10px 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        .explain-box span {
+            display: inline-block;
+        }
+
         /* Blank answer styled like answer-list */
         .blank-answer {
             list-style: none;
@@ -83,7 +112,13 @@
             color: #28a745;
         }
         .blank-answer .input-label {
-            color: #0d6efd;
+            color: #6c63ff;
+        }
+
+        button.btn-primary {
+            margin-top: 20px;
+            display: block;
+            width: 150px;
         }
     </style>
 </head>
@@ -107,15 +142,24 @@
             </div>
 
             <ul class="answer-list">
-                <li th:each="opt : ${q.question.answerOptions}"
-                    th:class="${opt.correct} ? 'correct' : ''"
-                    th:classappend="${#lists.contains(q.selectedOptions.?[option != null].![option.id], opt.id)} ? ' selected' : ''">
-                    <span th:text="${opt.content}"></span>
-                    <span>
+                <div th:each="opt : ${q.question.answerOptions}">
+                    <li th:class="${opt.correct} ? 'correct' : ''"
+                        th:classappend="${#lists.contains(q.selectedOptions.?[option != null].![option.id], opt.id)} ? ' selected' : ''">
+                        <span th:text="${opt.content}"></span>
+                        <span>
                         <span th:if="${opt.correct}">✅</span>
                         <span th:if="${!opt.correct and #lists.contains(q.selectedOptions.?[option != null].![option.id], opt.id)}">❌</span>
                     </span>
-                </li>
+                    </li>
+
+                    <!-- Explanation moved BELOW each chosen answer -->
+                    <div th:if="${#lists.contains(q.selectedOptions.?[option != null].![option.id], opt.id)}"
+                         class="explain-box"
+                         th:style="'border-left: 4px solid ' + (${opt.correct} ? '#28a745' : '#dc3545')" >
+                        <span class="fw-bold text-primary">Giải thích:</span>
+                        <span th:text="${opt.explanation}"></span>
+                    </div>
+                </div>
 
                 <!-- Fill-in-the-blank styled same as answer-list -->
                 <li th:each="sel : ${q.selectedOptions}" th:if="${sel.selectedValue != null}" class="blank-answer">
@@ -129,7 +173,8 @@
             </ul>
         </div>
     </div>
-    <button type="button" class="btn-primary" onclick="history.back()">⬅ Back</button>
+
+    <button type="button" class="btn btn-primary" onclick="history.back()">⬅ Back</button>
 </div>
 
 <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
