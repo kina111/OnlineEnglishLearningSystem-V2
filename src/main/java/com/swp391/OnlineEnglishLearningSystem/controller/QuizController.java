@@ -50,11 +50,13 @@ public class QuizController {
     public String getQuizPage(@PathVariable("lessonId") long lessonId, Model model, HttpSession session) {
         //Temp hardcode user------------------------------
         Long userId = (Long) session.getAttribute("currentUserId");
-        
-        User user = userService.getUserById(4L);
+        if(userId == null){
+            return "redirect:/";
+        }
+        User user = userService.getUserById(userId);
         //Get a quiz by lesson id
         Lesson lesson = lessonService.findById(lessonId);
-        if (lesson == null) {
+        if (lesson == null||user == null) {
             return "redirect:/";
         }
         //Start quizAttempt
