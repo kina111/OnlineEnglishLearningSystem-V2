@@ -21,4 +21,5 @@ public interface LessonService {
     Lesson updateQuizById(Long quizId, @Valid CreateQuizRequest request);
 
     void deleteAndReorder(Long chapterId, Long lessonId);
+
 }

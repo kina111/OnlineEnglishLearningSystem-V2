@@ -32,6 +32,7 @@ INSERT INTO course_categories (id, name, description, active) VALUES
 SET IDENTITY_INSERT course_categories OFF;
 
 -- 4. Bảng COURSES (Phụ thuộc vào COURSE_CATEGORIES và USERS (author_id))
+-- author_id = 2 là của user 'expert@example.com'
 SET IDENTITY_INSERT courses ON;
 INSERT INTO courses (id, name, short_description, description, prerequisite, thumbnail, price, discount, featured, status, category_id, author_id, created_at, updated_at) VALUES
                                                                                                                                                                                (1, N'IELTS Speaking Masterclass: Band 8.0+', N'Nâng cao kỹ năng nói IELTS từ cơ bản đến nâng cao, tập trung vào sự trôi chảy và từ vựng học thuật.', N'Đây là khóa học toàn diện giúp bạn chinh phục band điểm 8.0+ trong phần thi IELTS Speaking...', N' * Yêu cầu trình độ tiếng Anh tương đương 5.0 IELTS...', 'courses/thumbnails/ielts_speaking.png', 2000000.0, 15.0, 1, 1, 2, 2, GETDATE(), GETDATE()),
@@ -49,6 +50,7 @@ INSERT INTO courses (id, name, short_description, description, prerequisite, thu
 SET IDENTITY_INSERT courses OFF;
 
 -- 5. Bảng CHAPTERS (Phụ thuộc vào COURSES)
+-- Chương cho khóa học "IELTS Speaking Masterclass" (course_id = 1)
 SET IDENTITY_INSERT chapters ON;
 INSERT INTO chapters (id, name, short_description, order_number, course_id) VALUES
 -- Course 1 (IELTS Speaking)
@@ -94,7 +96,7 @@ INSERT INTO lessons (
     id, title, order_number, lesson_type, estimated_time, pass_rate, time_limit_in_minutes,
     html_content, video_url, chapter_id, number_of_questions, duration
 ) VALUES
-      (1, N'Quiz 1: Tổng quan IELTS Speaking', 2, 'QUIZ', 15, 60, 10, N'<p>Bài kiểm tra tổng quan...</p>', NULL, 1, 15, NULL),
+      (1, N'Quiz 1: Tổng quan IELTS Speaking', 2, 'QUIZ', 15, 60, 1, N'<p>Bài kiểm tra tổng quan...</p>', NULL, 1, 15, NULL),
       (2, N'Quiz 2: Câu hỏi Part 1', 2, 'QUIZ', 20, 70, 15, N'<p>Kiểm tra khả năng phản xạ...</p>', NULL, 2, 20, NULL),
       (3, N'Quiz 3: Topic Development', 2, 'QUIZ', 25, 75, 20, N'<p>Đánh giá khả năng phát triển...</p>', NULL, 3, 25, NULL),
       (4, N'Quiz 4: Email chuyên nghiệp', 2, 'QUIZ', 10, 60, 8, N'<p>Bài kiểm tra chọn câu đúng...</p>', NULL, 4, 30, NULL),
@@ -171,4 +173,60 @@ INSERT INTO wishlist (id, user_id, course_id, added_date) VALUES
 (1, 4, 2, DATEADD(day, -2, GETDATE())),
 (2, 4, 7, DATEADD(day, -1, GETDATE()));
 SET IDENTITY_INSERT wishlist OFF;
+
+----
+SET IDENTITY_INSERT questions ON
+INSERT INTO questions (id,content, question_type, media_type, media_url, lesson_id, created_at, updated_at)
+VALUES  (1,N'What is the capital of France?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (2,N'Which planet is known as the Red Planet?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (3,N'What is the largest ocean on Earth?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (4,N'Who wrote "Romeo and Juliet"?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (5,N'What is the chemical symbol for water?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (6,N'Which language is used for Android app development?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+        (7,N'Which language is used for Android app development?', 'SHORT_ANSWER', 'NONE', NULL, 1, GETDATE(), GETDATE());
+
+SET IDENTITY_INSERT questions OFF
+
+--Answer option
+SET IDENTITY_INSERT answer_options ON
+INSERT INTO answer_options (id,content, correct, explanation, question_id, created_at, updated_at)
+VALUES (1,N'Paris', 1, N'Paris is the capital city of France.', 1, GETDATE(), GETDATE()),
+-- Incorrect answers
+       (2,N'London', 0, N'London is the capital of the UK, not France.', 1, GETDATE(), GETDATE()),
+       (3,N'Rome', 0, N'Rome is the capital of Italy.', 1, GETDATE(), GETDATE()),
+       (4,N'Madrid', 0, N'Madrid is the capital of Spain.', 1, GETDATE(), GETDATE()),
+       (5,N'Hanoi', 0, N'Madrid is the capital of Spain.', 1, GETDATE(), GETDATE()),
+
+
+       (6,N'Mars', 1, N'Mars is called the Red Planet due to its reddish appearance.', 2, GETDATE(), GETDATE()),
+       (7,N'Jupiter', 0, N'Jupiter is the largest planet but not red.', 2, GETDATE(), GETDATE()),
+       (8,N'Venus', 0, N'Venus is often called Earth’s sister planet.', 2, GETDATE(), GETDATE()),
+       (9,N'Mercury', 0, N'Mercury is the closest to the sun.', 2, GETDATE(), GETDATE()),
+
+       (10,N'Pacific Ocean', 1, N'The Pacific Ocean is the largest and deepest ocean.', 3, GETDATE(), GETDATE()),
+       (11,N'Atlantic Ocean', 0, N'The Atlantic is the second-largest ocean.', 3, GETDATE(), GETDATE()),
+       (12,N'Indian Ocean', 0, N'The Indian Ocean is third in size.', 3, GETDATE(), GETDATE()),
+       (13,N'Arctic Ocean', 0, N'The Arctic Ocean is the smallest.', 3, GETDATE(), GETDATE()),
+
+       (14,N'William Shakespeare', 1, N'Shakespeare wrote this famous tragedy.', 4, GETDATE(), GETDATE()),
+       (15,N'Jane Austen', 0, N'Jane Austen wrote "Pride and Prejudice".', 4, GETDATE(), GETDATE()),
+       (16,N'Charles Dickens', 0, N'Dickens is known for "Oliver Twist".', 4, GETDATE(), GETDATE()),
+       (17,N'Mark Twain', 0, N'Mark Twain wrote "Huckleberry Finn".', 4, GETDATE(), GETDATE()),
+
+       (18,N'H₂O', 1, N'This is the molecular formula for water.', 5, GETDATE(), GETDATE()),
+       (19,N'O₂', 0, N'This represents oxygen gas.', 5, GETDATE(), GETDATE()),
+       (20,N'CO₂', 0, N'This is carbon dioxide.', 5, GETDATE(), GETDATE()),
+       (21,N'NaCl', 0, N'This is table salt.', 5, GETDATE(), GETDATE()),
+
+       (22,N'Java', 1, N'Java has been the primary language for Android for many years.', 6, GETDATE(), GETDATE()),
+       (23,N'Python', 0, N'Python is not commonly used for native Android development.', 6, GETDATE(), GETDATE()),
+       (24,N'PHP', 0, N'PHP is used for web development.', 6, GETDATE(), GETDATE()),
+       (25,N'C#', 0, N'C# is used for Windows and Xamarin apps.', 6, GETDATE(), GETDATE());
+
+
+SET IDENTITY_INSERT answer_options OFF;
+SET IDENTITY_INSERT short_answer_options ON
+INSERT INTO short_answer_options (id,question_id,solution_text) values (1,7,'Java');
+SET IDENTITY_INSERT short_answer_options OFF;
+
 
