@@ -26,12 +26,12 @@ public class ChapterController {
     }
 
     public static class CreateChapterRequest {
-        @NotBlank(message = "Chapter name is required")
-        @Size(min = 5, max = 100, message = "Chapter name must be between 5-100 characters")
+        @NotBlank(message = "Vui lòng nhập tên chương")
+        @Size(min = 5, max = 100, message = "Độ dài tên chương phải từ 5-100 kí tự")
         private String name;
 
-        @NotBlank(message = "Short description is required")
-        @Size(min = 10, max = 200, message = "Short description must be between 10-200 characters")
+        @NotBlank(message = "Vui lòng nhập mô tả")
+        @Size(min = 10, max = 200, message = "Độ dài mô tả phải từ 10-200 kí tự")
         private String shortDescription;
 
        public String getName() {
@@ -99,7 +99,7 @@ public class ChapterController {
 
     @PostMapping("/api/courses/{courseId}/chapters")
     public ResponseEntity<ApiResponse<ChapterResponse>> createChapter(@PathVariable("courseId") Long courseId,
-                                                     @RequestBody CreateChapterRequest request
+                                                     @Valid @RequestBody CreateChapterRequest request
                                                          ){
 
         Chapter newChapter = chapterService.createChapterForCourse(courseId, request);

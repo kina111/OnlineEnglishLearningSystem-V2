@@ -4,22 +4,22 @@ import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.NumberFormat;
 
 public class CreateQuizRequest {
-    @NotBlank(message = "Lesson title is required")
-    @Size(min = 5, max = 200, message = "Lesson title must be between 5-200 characters")
+    @NotBlank(message = "Vui lòng nhập tên bài học")
+    @Size(min = 5, max = 200, message = "Tên bài học trong khoảng từ 5-200 kí tự")
     private String title;
 
-    @NotNull(message = "Pass score is required")
-    @Min(value = 0, message = "Pass score must be positive or zero")
-    @Max(value = 100, message = "Pass score must be less than or equal to 100")
+    @NotNull(message = "Vui lòng nhập phần trăm để qua")
+    @Min(value = 0, message = "Phần trăm qua phải trong khoảng 0-100")
+    @Max(value = 100, message = "Phần trăm qua phải trong khoảng 0-100")
     private Integer passRate;
 
     @NotNull(message = "Thời gian làm bài không được để trống")
-    @Positive(message = "Time limit must be a positive number")
+    @Positive(message = "Vui lòng nhập thời gian làm bài hợp lệ")
     private Integer timeLimitInMinutes;
 
     @NotNull(message = "Số câu hỏi không được để trống")
-    @Min(value = 1, message = "Number of questions must be greater than or equal to 1")
-    @Max(value = 100, message = "Number of questions must be less than or equal to 100")
+    @Min(value = 1, message = "Số câu hỏi trong khoảng 1-100")
+    @Max(value = 100, message = "Số câu hỏi trong khoảng 1-100")
     private Integer numberOfQuestions;
 
     public String getTitle() {

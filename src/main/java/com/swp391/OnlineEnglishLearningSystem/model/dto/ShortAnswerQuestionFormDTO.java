@@ -14,15 +14,15 @@ import java.util.List;
 
 @ValidMediaType
 public class ShortAnswerQuestionFormDTO {
-    @NotBlank(message = "Question content is required")
+    @NotBlank(message = "Vui lòng nhập nội dung câu hỏi")
     private String content;
 
-    @NotNull(message = "Media type must be specified (e.g., NONE)")
+    @NotNull(message = "Vui lòng chọn loại media kèm theo")
     private Question.MediaType mediaType;
 
     private MultipartFile media;
 
-    @NotBlank(message = "Solution text is required")
+    @NotBlank(message = "Vui lòng nhập đáp án cho câu hỏi")
     private String solutionText;
 
     public ShortAnswerQuestionFormDTO() {

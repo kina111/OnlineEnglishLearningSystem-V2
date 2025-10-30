@@ -36,21 +36,21 @@ public class Question extends BaseEntity{
     private Long id;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
-    @NotBlank(message = "Question content is required")
+    @NotBlank(message = "Nội dung câu hỏi không được để trống.")
     private String content; // Nội dung text của câu hỏi
 
     @Column(nullable = false)
-    @NotNull(message = "Question order number is required")
+    @NotNull(message = "Loại câu hỏi không được để trống.")
     @Enumerated(EnumType.STRING)
-    private QuestionType questionType; // **Cột quyết định loại câu hỏi**
+    private QuestionType questionType; // Loại câu hỏi (ví dụ: trắc nghiệm, tự luận...)
 
     // --- Phần dành cho Media ---
-    @NotNull(message = "Media type must be specified (e.g., NONE)")
+    @NotNull(message = "Loại phương tiện (media) không được để trống, ví dụ: NONE.")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MediaType mediaType; // Loại media đính kèm (nếu có)
 
-    @Size(max = 2048, message = "Media URL is too long")
+    @Size(max = 2048, message = "Đường dẫn media không được vượt quá 2048 ký tự.")
     @Column(length = 2048, columnDefinition = "NVARCHAR(255)") // Giới hạn độ dài trong CSDL
     private String mediaUrl; // Đường dẫn tới file media
 

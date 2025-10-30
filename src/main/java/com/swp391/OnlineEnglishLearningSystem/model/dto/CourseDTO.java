@@ -5,35 +5,35 @@ import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
 public class CourseDTO {
-    @NotBlank(message = "Course name is required")
-    @Size(min = 5, max = 100, message = "Course name must be between 5-100 characters")
+    @NotBlank(message = "Vui lòng nhập tên khóa học")
+    @Size(min = 5, max = 100, message = "Tên khóa học phải từ 5-100 kí tự")
     private String name;
 
-    @NotBlank(message = "Short description is required")
-    @Size(min = 10, message = "Short description must be between 10-200 characters")
+    @NotBlank(message = "Vui lòng nhập mô tả ngắn")
+    @Size(min = 10, message = "Mô tả ngắn phải từ 10-200 kí tự")
     private String shortDescription;
 
-    @NotBlank(message = "Description is required")
+    @NotBlank(message = "Vui lòng nhập mô tả")
     @Size(min = 10, message = "Description must be between 10-1000 characters")
     private String description;
 
-    @NotBlank(message = "Prerequisite is required")
+    @NotBlank(message = "Vui lòng nhập yêu cầu tiên quyết")
     @Size(min = 10, message = "Prerequisite must be between 10-10000 characters")
     private String prerequisite;
 
-    @NotNull(message = "Price is required")
+    @NotNull(message = "Vui lòng nhập giá")
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private Double price;
 
-    @NotNull(message = "Discount is required")
-    @DecimalMin(value = "0.0", message = "Discount cannot be negative")
-    @DecimalMax(value = "100.0", message = "Discount cannot exceed 100%")
+    @NotNull(message = "Vui lòng nhập giảm giá")
+    @DecimalMin(value = "0.0", message = "Giảm giá phải từ 0-100")
+    @DecimalMax(value = "100.0", message = "Giảm giá phải từ 0-100")
     private Double discount;
 
-    @NotNull(message = "Course category is required")
+    @NotNull(message = "Vui lòng chọn danh mục")
     private Long categoryId;
 
-    @NotNull(message = "Course thumbnail is required")
+    @NotNull(message = "Vui lòng chọn thumbnail")
     private MultipartFile thumbnailFile;
 
     private Course.CourseStatus status;

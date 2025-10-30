@@ -26,41 +26,42 @@ public class Lesson extends BaseEntity{
     private Long id;
 
     @Column(nullable = false, length = 200, columnDefinition = "NVARCHAR(200)")
-    @NotBlank(message = "Lesson title is required")
-    @Size(min = 5, max = 200, message = "Lesson title must be between 5-200 characters")
+    @NotBlank(message = "Tiêu đề bài học không được để trống.")
+    @Size(min = 5, max = 200, message = "Tiêu đề bài học phải có độ dài từ 5 đến 200 ký tự.")
     private String title;
 
     @Column(nullable = false)
-    @PositiveOrZero(message = "Lesson order number must be positive or zero")
-    @NotNull(message = "Lesson order number is required")
+    @NotNull(message = "Thứ tự bài học không được để trống.")
+    @PositiveOrZero(message = "Thứ tự bài học phải là số không âm.")
     private Integer orderNumber;
 
     @Column(nullable = false)
-    @NotNull(message = "Lesson type is required")
+    @NotNull(message = "Loại bài học không được để trống.")
     @Enumerated(EnumType.STRING)
     private LessonType lessonType;
 
-    @Positive(message = "Lesson estimated time must be a positive number")
+    @Positive(message = "Thời lượng ước tính của bài học phải là số dương.")
     private Integer estimatedTime;
 
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String htmlContent;
-    //--- danh cho Lecture ---
-    private String videoUrl;
-    private Long duration; // in milliseconds
 
-    //---dành cho Quiz---
+    // --- Dành cho bài giảng ---
+    private String videoUrl;
+    private Long duration; // tính bằng milliseconds
+
+    // --- Dành cho bài kiểm tra ---
     @Column(name = "pass_rate")
-    @Min(value = 0, message = "Pass score must be positive or zero")
-    @Max(value = 100, message = "Pass score must be less than or equal to 100")
+    @Min(value = 0, message = "Điểm đạt yêu cầu phải lớn hơn hoặc bằng 0.")
+    @Max(value = 100, message = "Điểm đạt yêu cầu phải nhỏ hơn hoặc bằng 100.")
     private Integer passRate;
 
-    @Positive(message = "Time limit must be a positive number")
+    @Positive(message = "Giới hạn thời gian phải là số dương.")
     private Integer timeLimitInMinutes;
 
     @Column(name = "number_of_questions")
-    @Min(value = 1, message = "Number of questions must be greater than or equal to 1")
-    @Max(value = 100, message = "Number of questions must be less than or equal to 100")
+    @Min(value = 1, message = "Số lượng câu hỏi phải lớn hơn hoặc bằng 1.")
+    @Max(value = 100, message = "Số lượng câu hỏi phải nhỏ hơn hoặc bằng 100.")
     private Integer numberOfQuestions;
 
     @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
