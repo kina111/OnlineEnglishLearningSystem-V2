@@ -11,8 +11,8 @@ public class ShortAnswerOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Solution text cannot be empty")
-    @Size(max = 255, message = "Solution text is too long")
+    @NotBlank(message = "Đáp án không được để trống.")
+    @Size(max = 255, message = "Đáp án không được vượt quá 255 ký tự.")
     @Column(nullable = false, length = 255)
     private String solutionText; // Nội dung đáp án đúng
 

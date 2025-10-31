@@ -4,16 +4,16 @@ import com.swp391.OnlineEnglishLearningSystem.util.PasswordMatches;
 import com.swp391.OnlineEnglishLearningSystem.util.ValidEmail;
 import jakarta.validation.constraints.NotBlank;
 
-@PasswordMatches
+@PasswordMatches(message = "Mật khẩu nhập lại không giống")
 public class UserDTO {
-    @NotBlank
+    @NotBlank(message = "Vui lòng nhập tên đầy đủ")
     private String fullName;
 
-    @ValidEmail
-    @NotBlank
+    @ValidEmail(message = "Email không hợp lệ")
+    @NotBlank(message = "Email không được để trống")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Vui lòng nhập mật khẩu")
     private String password;
     private String confirmedPassword;
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChapterLearningDTO {
+    private Long id;
     private int orderInCourse;
     private String title;
     private int numberOfLesson;
@@ -15,12 +16,21 @@ public class ChapterLearningDTO {
     private List<UserLessonLearningDTO> userLessonLearningDTOS = new ArrayList<>();
 
     public ChapterLearningDTO(Chapter chapter, List<UserLessonLearningDTO> userLessonLearningDTOS) {
+        this.id = chapter.getId();
         this.orderInCourse = chapter.getOrderNumber();
         this.title = chapter.getName();
         this.numberOfLesson = chapter.getLessons().size();
         this.numberOfCompletedLesson = (int) userLessonLearningDTOS.stream().filter(UserLessonLearningDTO::isCompleted).count();
         this.totalDuration = userLessonLearningDTOS.stream().mapToLong(UserLessonLearningDTO::getDuration).sum();
         this.userLessonLearningDTOS = userLessonLearningDTOS;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public int getOrderInCourse() {

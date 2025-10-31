@@ -8,13 +8,13 @@ import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 public class CreateLectureRequest {
-    @NotBlank(message = "Lesson title is required")
-    @Size(min = 5, max = 200, message = "Lesson title must be between 5-200 characters")
+    @NotBlank(message = "Vui lòng nhập tên bài học")
+    @Size(min = 5, max = 200, message = "Tên bài học trong khoảng 5-200 kí tự")
     private String title;
 
     // --- Lecture fields ---
-    @NotNull(message = "Lesson type is required")
-    @Positive(message = "Lesson estimated time must be a positive number")
+    @NotNull(message = "Vui lòng nhập thời lượng ước tính")
+    @Positive(message = "Vui lòng nhập thời lượng ước tính hợp lệ")
     private Integer estimatedTime;
 
     @NotBlank(message = "Nội dung bài giảng không được để trống")
