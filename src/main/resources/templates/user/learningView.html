@@ -15,8 +15,9 @@
     <!-- Tải Heroicons/Ionicons (vẫn cần thiết cho icon) -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-
-    <!-- CSS tùy chỉnh sử dụng Theme của bạn -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- CSS tùy chỉnh sử dụng Theme  -->
     <style>
         /* 1. Theme Variables */
         :root {
@@ -399,7 +400,40 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
                         ??/?? bài học
                     </span>
             </div>
-            <a href="#" class="header-notes">Ghi chú</a>
+            <button class="btn btn-primary header-notes" id="showNotesBtn" type="button" data-bs-toggle="offcanvas" data-bs-target="#showNotes" aria-controls="offcanvasRight">Ghi chú</button>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" data-bs-scroll="true" id="showNotes" aria-labelledby="offcanvasRightLabel" style="width: 40%">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Ghi chú của tôi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="offcanvas-body">
+                        <select id="currentChapterId" class="form-select" aria-label="Default select example" onChange="handleShowNotes()">
+                            <option th:each="chapter : ${chapterLearningDTOS}"
+                                    th:value="${chapter.id}"
+                                    th:text="${chapter.title}">
+                                Chương 1
+                            </option>
+                        </select>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="isNewest" id="isNewest1" value="true" checked onchange="handleShowNotes()">
+                            <label class="form-check-label" for="isNewest1">Mới nhất</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="isNewest" id="isNewest2" value="false" onchange="handleShowNotes()">
+                            <label class="form-check-label" for="isNewest2">Cũ nhất</label>
+                        </div>
+                    </div>
+
+                    <div id="notes-container" class="notes-container">
+
+                    </div>
+
+                </div>
+            </div>
         </div>
     </header>
 
@@ -422,7 +456,9 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
             <div class="lesson-info-box">
                 <div class="lesson-info-header">
                     <h2 class="lesson-title-main" id="lesson-title-main">...</h2>
-                    <button class="add-note-button">
+                    <button class="add-note-button" id="add-note-button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#notesModal">
                         <ion-icon name="add-outline"></ion-icon>
                         <span>Thêm ghi chú</span>
                     </button>
@@ -462,6 +498,7 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
                         <li class="lesson-item"
                             th:each="lesson : ${chapter.userLessonLearningDTOS}"
                             th:data-lesson-id="${lesson.lessonId}"
+                            th:data-lesson-type="${lesson.lessonType}"
                             onclick="handleLessonClick(this)">
 
                             <div class="lesson-details">
@@ -488,6 +525,30 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
     <footer class="footer">
         © 2025 OELS. Giữ toàn bộ bản quyền.
     </footer>
+
+    <div class="modal" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ghi chú:</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Thời gian: <span id="time-for-note">...</span></p>
+                    <form id="noteForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nội dung ghi chú</label>
+                            <textarea class="form-control" id="noteTextarea" rows="8" placeholder="Nhập ghi chú ..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" id="saveNotesBtn" class="btn btn-primary" >Lưu ghi chú</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -498,6 +559,7 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
     let currentActiveLessonElement = null; // Sidebar element
     let currentVideoElement = null; // <video> element currently displayed
     let completionApiCalledForCurrentVideo = false; // Flag for API call status
+    let notesModalInstance = null;
 
     const userId = document.body.dataset.userId;
     const enrollmentId = document.body.dataset.enrollmentId; // Lấy nếu cần gửi lên API
@@ -507,6 +569,9 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
     const lessonTitleEl = document.getElementById('lesson-title-main');
     const lessonTimeEl = document.getElementById('lesson-updated-time');
     const lessonHtmlWrapper = document.getElementById('lesson-html-content'); // Container for HTML content
+
+    const notesModalEl = document.getElementById('notesModal');
+    const noteTextarea = document.getElementById('noteTextarea');
 
     // --- UTILITY FUNCTIONS ---
     function showToast(message, type = 'success') {
@@ -523,14 +588,189 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
         setTimeout(() => bootstrap.Alert.getOrCreateInstance(toast)?.close(), 4000);
     }
 
+    function getModalInstance(modalElement) {
+        return bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    }
+
     // --- MAIN SCRIPT ---
     document.addEventListener('DOMContentLoaded', () => {
         // Tự động tải bài học đầu tiên
+        notesModalInstance = getModalInstance(notesModalEl);
         const firstLessonEl = document.querySelector('.lesson-item');
         if (firstLessonEl) {
             handleLessonClick(firstLessonEl);
         }
+
+        document.getElementById('add-note-button').addEventListener('click', handleShowAddNote);
+        document.getElementById('saveNotesBtn').addEventListener('click', handleSaveNotes);
+        document.getElementById('showNotesBtn').addEventListener('click', handleShowNotes);
     });
+
+    // --- xem các notes ---
+    async function handleShowNotes() {
+        const chapterSelectId = document.getElementById('currentChapterId');
+        const isNewest = document.querySelector('input[name="isNewest"]:checked').value;
+        const chapterId = chapterSelectId.value;
+        const currentEnrollmentId = document.body.dataset.enrollmentId;
+
+        const apiUrl = `/api/enrollments/${currentEnrollmentId}/chapters/${chapterId}/notes?isNewest=${isNewest}`;
+        try{
+            const res = await fetch(apiUrl);
+            const apiResponse = await res.json();
+
+            if (res.ok && apiResponse.status === 'success'){
+                renderNotesAsCards(apiResponse.data);
+            }else{
+                throw new Error(apiResponse.message || `Lỗi ${res.status}`)
+            }
+        }catch(e){
+
+        }
+    }
+
+    // --- render notes as cards ---
+    function renderNotesAsCards(notes) {
+        const notesContainer = document.getElementById('notes-container');
+        if (!notes || notes.length === 0){
+            notesContainer.innerHTML = '<p class="p-3 text-muted">Bạn chưa có ghi chú nào.</p>';
+        }else{
+            notesContainer.innerHTML = '';
+            notes.forEach(note => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.id = `note-${note.id}`;
+                card.innerHTML = `
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>${note.timeAtLesson || '00:00'} - ${note.lessonTitle || 'Ghi chú'}</span>
+                    <div>
+                        <a href="#" class="btn btn-sm btn-outline-primary"
+                           onclick="event.preventDefault(); handleEditNoteClick(${note.id})">Sửa</a>
+                        <a href="#" class="btn btn-sm btn-outline-danger"
+                           onclick="event.preventDefault(); handleDeleteNoteClick(${note.id})">Xóa</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p id="note-text-${note.id}" class="card-text">${note.content || 'Không có nội dung.'}</p>
+
+                    <div id="note-edit-${note.id}" class="d-none">
+                        <textarea class="form-control mb-2" id="note-textarea-${note.id}" rows="4">${note.content || ''}</textarea>
+                        <button class="btn btn-sm btn-secondary" onclick="cancelEdit(${note.id})">Hủy</button>
+                        <button class="btn btn-sm btn-primary" onclick="saveEdit(${note.id})">Lưu</button>
+                    </div>
+                </div>
+                `;
+                notesContainer.appendChild(card);
+            })
+        }
+    }
+
+    // --- xóa note ---
+    async function handleDeleteNoteClick(noteId) {
+        const deleteNote = document.getElementById(`note-${noteId}`);
+        if (deleteNote){
+            alert("Bạn chắc chắn muốn xóa ghi chú này?")
+            deleteNote.remove();
+            const apiUrl = `/api/notes/${noteId}`;
+            const res = await fetch(apiUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!res.ok){
+                showToast("Xóa ghi chú thất bại!", "error");
+            }else {
+                const apiResponse = await res.json();
+                if (apiResponse.status === 'success'){
+                    showToast("Xóa ghi chú thành công!", "success");
+                }
+            }
+        }
+    }
+    // --- tạo note mới ---
+    function handleShowAddNote() {
+        if (currentVideoElement){
+            //chuẩn bị dữ liệu
+            const timeForNote = currentVideoElement.currentTime;
+            const timeForNoteEl = document.getElementById('time-for-note');
+
+            const totalSeconds = Math.floor(timeForNote);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            timeForNoteEl.textContent = (hours > 0
+                    ? `${String(hours).padStart(2, '0')}:`
+                    : '') +
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            //hiện modal ra
+            notesModalInstance.show();
+        }
+    }
+
+    async function handleSaveNotes() {
+        const timeAtLesson = document.getElementById('time-for-note').textContent;
+        const content = noteTextarea.value;
+        const lessonId = currentActiveLessonElement.dataset.lessonId;
+
+        const apiUrl = await fetch(`/api/lessons/${lessonId}/notes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                timeAtLesson,
+                content,
+            }),
+        })
+        const res = await apiUrl.json();
+        if (!apiUrl.ok) {
+            showToast(res.message, "error");
+        }else{
+            showToast("Thêm ghi chú thành công", "success");
+        }
+        notesModalInstance.hide();
+    }
+
+    // --- chỉnh sửa note ---
+    function handleEditNoteClick(noteId) {
+        const noteTextEl = document.getElementById(`note-text-${noteId}`);
+        const noteEditEl = document.getElementById(`note-edit-${noteId}`);
+        noteTextEl.classList.toggle('d-none');
+        noteEditEl.classList.toggle('d-none');
+    }
+
+    function cancelEdit(noteId) {
+        const noteTextEl = document.getElementById(`note-text-${noteId}`);
+        const noteEditEl = document.getElementById(`note-edit-${noteId}`);
+        noteTextEl.classList.remove('d-none');
+        noteEditEl.classList.add('d-none');
+    }
+
+    async function saveEdit(noteId) {
+        const noteTextareaEl = document.getElementById(`note-textarea-${noteId}`);
+        const apiUrl = `/api/notes/${noteId}`;
+        const res = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(noteTextareaEl.value)
+        })
+        const apiResponse = await res.json();
+        if (!res.ok){
+            showToast(apiResponse.message, "error");
+        }else{
+            const noteTextEl = document.getElementById(`note-text-${noteId}`);
+            const noteEditEl = document.getElementById(`note-edit-${noteId}`);
+            noteTextEl.classList.remove('d-none');
+            noteEditEl.classList.add('d-none');
+            noteTextEl.textContent = apiResponse.data;
+            showToast(apiResponse.message, "success");
+        }
+    }
+
 
     // --- SIDEBAR INTERACTION ---
     function handleChapterClick(chapterButton) {
@@ -541,6 +781,12 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
 
     function handleLessonClick(lessonElement) {
         const lessonId = lessonElement.dataset.lessonId;
+        const lessonType = lessonElement.dataset.lessonType;
+
+        if (lessonType === 'QUIZ') {
+            window.location.href = `/quiz/${lessonId}/start`;
+            return;
+        }
         if (!lessonId || lessonElement.classList.contains('active')) return; // Không làm gì nếu click vào lesson đang active
 
         if (currentActiveLessonElement) {
@@ -559,7 +805,10 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
 
         try {
             const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error(`Lỗi ${response.status}: Không thể tải bài học.`);
+            if (!response.ok){
+                showToast("Không thể tải bài học!", "error");
+                return;
+            }
 
             const apiResponse = await response.json();
             if (apiResponse.status === 'success' && apiResponse.data) {
@@ -706,9 +955,8 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
             });
 
             if (!response.ok) {
-                let errorMsg = `Lỗi API hoàn thành bài học (${response.status})`;
-                try { const errorData = await response.json(); errorMsg = errorData.message || errorMsg; } catch (e) {}
-                throw new Error(errorMsg);
+                showToast("Lỗi đánh dấu hoàn thành bài học!", "error");
+                return;
             }
 
             console.log(`Lesson ${lessonId} marked complete.`);
@@ -748,7 +996,8 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
             console.log("Calling progress API for enrollmentId:", enrollmentId); // Debugging
             const res = await fetch(`/api/enrollments/${enrollmentId}/progress`);
             if (!res.ok) {
-                throw new Error(`API error! status: ${res.status}`);
+                showToast("Lỗi cập nhật header!", "error");
+                return;
             }
             const apiResponse = await res.json();
             const progressSpan = document.querySelector('.header-progress span');
