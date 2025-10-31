@@ -58,6 +58,8 @@ public class Course extends BaseEntity{
     private Double discount;
 
     private boolean featured;
+
+    @Enumerated(EnumType.STRING)
     private CourseStatus status;
 
     @ManyToOne(fetch = FetchType.EAGER)
