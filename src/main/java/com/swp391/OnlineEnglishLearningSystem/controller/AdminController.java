@@ -1,6 +1,7 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
+import com.swp391.OnlineEnglishLearningSystem.model.Order;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
@@ -30,14 +31,16 @@ public class AdminController {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final CourseCategoryService courseCategoryService;
+    private final OrderService orderService;
 
-    public AdminController(UserService userService, UploadService uploadService, RoleService roleService, PasswordEncoder passwordEncoder, EmailService emailService, CourseCategoryService courseCategoryService) {
+    public AdminController(UserService userService, UploadService uploadService, RoleService roleService, PasswordEncoder passwordEncoder, EmailService emailService, CourseCategoryService courseCategoryService, OrderService orderService) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.courseCategoryService = courseCategoryService;
+        this.orderService = orderService;
     }
 
     //===================== DASHBOARD ========================
@@ -46,6 +49,13 @@ public class AdminController {
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "admin/dashboard";
+    }
+
+    @GetMapping("/orders")
+    public String orderManagement(Model model){
+        List<Order> orders = orderService.getAllOrders();
+        model.addAttribute("orders", orders);
+        return "admin/orderDashboard";
     }
 
     @GetMapping("/users")

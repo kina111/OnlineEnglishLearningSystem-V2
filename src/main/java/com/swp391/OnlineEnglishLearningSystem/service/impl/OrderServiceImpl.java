@@ -8,6 +8,7 @@ import com.swp391.OnlineEnglishLearningSystem.repository.OrderRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.OrderService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -152,5 +153,10 @@ public class OrderServiceImpl implements OrderService {
         order.setVnpResponseCode("00");
         order.setVnpTransactionNo(fields.get("vnp_TransactionNo").toString());
         return this.orderRepository.save(order);
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 }

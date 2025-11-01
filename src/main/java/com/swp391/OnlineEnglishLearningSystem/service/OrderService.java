@@ -4,6 +4,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.Order;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 
+import java.util.List;
 import java.util.Map;
 
 public interface OrderService {
@@ -15,4 +16,5 @@ public interface OrderService {
     Order processReturn(Map<String, String> vnpParams);*/
 
     Order update(Map fields);
+    List<Order> getAllOrders();
 }
