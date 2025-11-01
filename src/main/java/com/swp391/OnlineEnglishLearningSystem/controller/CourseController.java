@@ -173,8 +173,7 @@ public class CourseController {
             Long authorId = (Long) session.getAttribute("currentUserId");
             Course newCourse = courseService.buildNewCourse(courseDTO, authorId);
 
-            model.addAttribute("course", newCourse);
-            return "course/viewAndUpdateChapter";
+            return "redirect:/courses/" + newCourse.getId();
         }catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/courses/create";
