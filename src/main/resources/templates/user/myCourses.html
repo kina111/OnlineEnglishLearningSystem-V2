@@ -9,6 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 2. Thư viện Icon cho ngôi sao (Ionicons) -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <style>
         :root {
             --primary-color: #6c63ff;
@@ -215,6 +218,70 @@
             color: var(--text-color); text-decoration: none; transition: all 0.3s ease;
         }
         .social-link:hover { background: var(--primary-color); color: white; }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse; /* Đảo ngược để CSS :hover hoạt động đúng */
+            justify-content: center;
+            font-size: 2.5rem; /* Kích thước sao */
+        }
+
+        .star-rating input[type="radio"] {
+            display: none; /* Ẩn radio button gốc */
+        }
+
+        .star-rating label {
+            color: #ccc; /* Màu sao mặc định */
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0 0.25rem; /* Thêm khoảng cách nhỏ giữa các sao */
+        }
+
+        /* Khi hover vào một sao, tất cả sao bên trái nó (do đã reverse) sẽ sáng lên */
+        .star-rating:not(:hover) input[type="radio"]:checked ~ label,
+        .star-rating:hover input[type="radio"] ~ label:hover,
+        .star-rating:hover input[type="radio"] ~ label:hover ~ label {
+            color: #ffc107; /* Màu sao được chọn hoặc hover (Bootstrap warning color) */
+        }
+
+        /* Tùy chỉnh Modal */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            border-bottom: none;
+            padding: 1.5rem 1.5rem 0.5rem;
+        }
+
+        .modal-body {
+            padding: 0.5rem 1.5rem 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 1.5rem;
+        }
+
+        /* Nút Lưu và Tiếp tục (Giống trong ảnh) */
+        .btn-purple {
+            background-color: #6c63ff; /* Màu tím tùy chỉnh */
+            border-color: #6c63ff;
+            color: white;
+            font-weight: 500;
+        }
+        .btn-purple:hover {
+            background-color: #5a54d6;
+            border-color: #5a54d6;
+            color: white;
+        }
+
+        /* Placeholder cho textarea */
+        #reviewTextarea::placeholder {
+            color: #999;
+        }
     </style>
     <!-- Link CSS cho header và footer -->
     <link rel="stylesheet" th:href="@{/css/header.css}">
@@ -223,6 +290,9 @@
 <body>
 <!-- Header -->
 <div th:replace="~{components/header :: header}"></div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
 
 <!-- Main Content -->
 <div class="container">
@@ -252,17 +322,17 @@
                         <div class="course-card" th:each="enrollment : ${enrollments}">
                             <div class="course-thumbnail">
                                 <!-- Kiểm tra xem khóa học có ảnh thumbnail không -->
-                                <img th:if="${enrollment.course.thumbnail != null}" th:src="@{'/uploads/' + ${enrollment.course.thumbnail}}" alt="Course thumbnail" class="course-thumbnail-img">
+                                <img th:if="${enrollment.courseThumbnailUrl != null}" th:src="@{'/uploads/' + ${enrollment.courseThumbnailUrl}}" alt="Course thumbnail" class="course-thumbnail-img">
                                 <!-- Ảnh placeholder nếu không có -->
-                                <div th:if="${enrollment.course.thumbnail == null}" class="course-thumbnail-placeholder">
+                                <div th:if="${enrollment.courseThumbnailUrl == null}" class="course-thumbnail-placeholder">
                                     <i class="fas fa-image"></i>
                                 </div>
                             </div>
                             <div class="course-content">
                                 <div class="course-details">
-                                    <h5 th:text="${enrollment.course.name}">Course Title</h5>
-                                    <p th:text="${enrollment.course.shortDescription}">Course description goes here...</p>
-                                    <p>Giảng viên: <span th:text="${enrollment.course.author.fullName}">Instructor Name</span></p>
+                                    <h5 th:text="${enrollment.courseTitle}">Course Title</h5>
+                                    <p th:text="${enrollment.courseShortDescription}">Course description goes here...</p>
+                                    <p>Lần cuối truy cập: <span th:text="${enrollment.lastAccessAt}">...</span></p>
 
                                     <!-- Hiển thị thanh tiến trình, sử dụng 'enrollment.progress' -->
                                     <div class="course-progress" th:if="${enrollment.progress >= 0}">
@@ -272,8 +342,62 @@
                                     </div>
                                 </div>
                                 <div class="course-actions">
-                                    <!-- Nút "Vào học" -->
-                                    <a th:href="@{'/enrollments/' + ${enrollment.id}}" class="btn btn-primary btn-course-action">Vào học</a>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Nút "Vào học" -->
+                                        <a th:href="@{'/enrollments/' + ${enrollment.id}}" class="btn btn-primary btn-course-action">Vào học</a>
+                                        <!-- nút thêm feedback -->
+                                        <button type="button" class="btn btn-primary btn-course-action"
+                                                data-bs-toggle="modal" th:data-bs-target="'#feedbackModal-' + ${enrollment.id}">
+                                            Gửi đánh giá
+                                        </button>
+
+                                    </div>
+                                    <div class="modal fade" th:id="'feedbackModal-' + ${enrollment.id}" th:data-enrollment-id="${enrollment.id}" data-bs-backdrop="static" data-bs-keyboard="false"
+                                         tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+
+                                                <div class="modal-header border-0 pb-0">
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body text-center pt-0">
+                                                    <h1 class="modal-title fs-4 fw-bold mb-2" th:text="'Đánh giá: ' + ${enrollment.courseTitle}">Trải nghiệm của bạn?</h1>
+
+                                                    <!-- SỬA: Bỏ ID, dùng class "js-rating-label" -->
+                                                    <p class="fs-6 text-muted mb-3 js-rating-label" style="min-height: 1.5rem;">Hãy chọn đánh giá của bạn</p>
+
+                                                    <form>
+                                                        <div class="mb-4">
+                                                            <!--
+                                                              SỬA: Thêm enrollment.id vào 'id' và 'for' của sao
+                                                              để làm cho chúng DUY NHẤT trên trang.
+                                                            -->
+                                                            <div class="star-rating">
+                                                                <input type="radio" th:id="'star5-' + ${enrollment.id}" name="rating" value="5" /><label th:for="'star5-' + ${enrollment.id}" title="Tuyệt vời"><ion-icon name="star"></ion-icon></label>
+                                                                <input type="radio" th:id="'star4-' + ${enrollment.id}" name="rating" value="4" /><label th:for="'star4-' + ${enrollment.id}" title="Tốt"><ion-icon name="star"></ion-icon></label>
+                                                                <input type="radio" th:id="'star3-' + ${enrollment.id}" name="rating" value="3" /><label th:for="'star3-' + ${enrollment.id}" title="Bình thường"><ion-icon name="star"></ion-icon></label>
+                                                                <input type="radio" th:id="'star2-' + ${enrollment.id}" name="rating" value="2" /><label th:for="'star2-' + ${enrollment.id}" title="Tệ"><ion-icon name="star"></ion-icon></label>
+                                                                <input type="radio" th:id="'star1-' + ${enrollment.id}" name="rating" value="1" /><label th:for="'star1-' + ${enrollment.id}" title="Rất tệ"><ion-icon name="star"></ion-icon></label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-3 text-start">
+                                                            <!-- SỬA: Bỏ ID, dùng class "js-review-textarea" -->
+                                                            <textarea class="form-control js-review-textarea" name="review_content" rows="5"
+                                                                      placeholder="Hãy cho chúng tôi biết trải nghiệm cá nhân của riêng bạn..."></textarea>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                <div class="modal-footer border-0 justify-content-center pt-0 pb-3">
+                                                    <!-- SỬA: Bỏ ID, dùng class "js-submit-feedback" -->
+                                                    <button type="button" class="btn btn-purple btn-lg w-100 js-submit-feedback">Lưu và tiếp tục</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- === HẾT MODAL === -->
                                 </div>
                             </div>
                         </div>
@@ -391,7 +515,180 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Bootstrap tabs đã tự động xử lý việc chuyển tab, không cần thêm JS
+    // Hàm hiển thị thông báo
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container') || document.createElement('div');
+        if (!container.id) {
+            container.id = 'toast-container';
+            container.style.position = 'fixed';
+            container.style.top = '20px';
+            container.style.right = '20px';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+        toast.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+        container.appendChild(toast);
+        setTimeout(() => bootstrap.Alert.getOrCreateInstance(toast)?.close(), 4000);
+    }
+
+    // Hàm gọi API lưu feedback
+    async function handleSaveFeedback(modal, ratingValue, reviewContent) {
+        const enrollmentId = modal.dataset.enrollmentId;
+        if (!enrollmentId) {
+            showToast('Lỗi: Không tìm thấy ID đăng ký.', 'error');
+            return;
+        }
+
+        const apiUrl = `/api/enrollments/${enrollmentId}/feedback`;
+        const submitBtn = modal.querySelector('.js-submit-feedback');
+        const originalBtnContent = submitBtn.innerHTML;
+
+        // Vô hiệu hóa nút và hiển thị spinner
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang lưu...`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    rating: parseInt(ratingValue, 10),
+                    review: reviewContent
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Tạo feedback thất bại.');
+            }
+
+            const result = await response.json();
+            if (result.status === 'success') {
+                showToast("Cảm ơn bạn đã đánh giá!", 'success');
+
+                // Đóng modal ĐÚNG CÁCH và dọn dẹp
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
+                // Reset form sau khi đóng
+                resetModalForm(modal);
+            }
+        } catch (error) {
+            console.error('Failed to save feedback:', error);
+            showToast(error.message, 'error');
+
+            // Khôi phục nút nếu có lỗi
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnContent;
+        }
+    }
+
+    /**
+     * Hàm chính để khởi tạo TẤT CẢ các modal feedback trên trang
+     */
+    function initializeFeedbackModals() {
+        const ratingMessages = {
+            '1': 'Rất tệ',
+            '2': 'Tệ',
+            '3': 'Bình thường',
+            '4': 'Tốt',
+            '5': 'Tuyệt vời'
+        };
+
+        const allModals = document.querySelectorAll('.modal[id^="feedbackModal-"]');
+
+        allModals.forEach(modal => {
+            const submitBtn = modal.querySelector('.js-submit-feedback');
+            const reviewTextarea = modal.querySelector('.js-review-textarea');
+            const ratingLabel = modal.querySelector('.js-rating-label');
+            const starInputs = modal.querySelectorAll('.star-rating input[type="radio"]');
+
+            // Gắn sự kiện cho các sao
+            starInputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    const selectedValue = input.value;
+                    if (ratingLabel) {
+                        ratingLabel.textContent = ratingMessages[selectedValue] || 'Hãy chọn đánh giá';
+                        ratingLabel.style.fontWeight = 'bold';
+                        ratingLabel.style.color = '#ffc107';
+                    }
+                });
+            });
+
+            // Gắn sự kiện cho nút "Lưu"
+            if (submitBtn) {
+                submitBtn.addEventListener('click', () => {
+                    const ratingInput = modal.querySelector('input[name="rating"]:checked');
+                    const ratingValue = ratingInput ? ratingInput.value : null;
+                    const reviewContent = reviewTextarea ? reviewTextarea.value : '';
+
+                    if (!ratingValue) {
+                        alert('Vui lòng chọn số sao đánh giá.');
+                        return;
+                    }
+                    if (reviewContent.trim() === '') {
+                        alert('Vui lòng nhập nội dung đánh giá.');
+                        return;
+                    }
+
+                    // Gọi hàm xử lý
+                    handleSaveFeedback(modal, ratingValue, reviewContent);
+                });
+            }
+
+            // Xử lý sự kiện khi modal được đóng (bất kể cách nào)
+            modal.addEventListener('hidden.bs.modal', () => {
+                // Chỉ reset form, KHÔNG xóa backdrop
+                resetModalForm(modal);
+
+                // Kiểm tra xem có backdrop bị kẹt không (sau 300ms)
+                setTimeout(() => {
+                    const openModals = document.querySelectorAll('.modal.show');
+                    if (openModals.length === 0) {
+                        // Không có modal nào đang mở, nhưng vẫn còn backdrop
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        if (backdrops.length > 0) {
+                            backdrops.forEach(backdrop => backdrop.remove());
+                            document.body.classList.remove('modal-open');
+                            document.body.style.overflow = '';
+                            document.body.style.paddingRight = '';
+                        }
+                    }
+                }, 300);
+            });
+        });
+    }
+
+    // Hàm reset form trong modal
+    function resetModalForm(modal) {
+        const form = modal.querySelector('form');
+        if (form) {
+            form.reset();
+        }
+
+        // Reset label về mặc định
+        const ratingLabel = modal.querySelector('.js-rating-label');
+        if (ratingLabel) {
+            ratingLabel.textContent = 'Hãy chọn đánh giá của bạn';
+            ratingLabel.style.fontWeight = '';
+            ratingLabel.style.color = '';
+        }
+
+        // Reset nút submit về trạng thái ban đầu
+        const submitBtn = modal.querySelector('.js-submit-feedback');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Lưu và tiếp tục';
+        }
+    }
+
+    // Chạy hàm khởi tạo sau khi trang đã tải xong
+    document.addEventListener('DOMContentLoaded', initializeFeedbackModals);
 </script>
 </body>
 </html>
