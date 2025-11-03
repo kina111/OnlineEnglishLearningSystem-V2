@@ -32,8 +32,9 @@ public class UserController {
     private final LearningService learningService;
     private final LessonService lessonService;
     private final NoteService noteService;
+    private final FeedbackService feedbackService;
 
-    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl, UserLessonService userLessonService, LearningService learningService, LessonService lessonService, NoteService noteService) {
+    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl, UserLessonService userLessonService, LearningService learningService, LessonService lessonService, NoteService noteService, FeedbackService feedbackService) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.courseSerive = courseSerive;
@@ -44,6 +45,7 @@ public class UserController {
         this.userLessonService = userLessonService;
         this.lessonService = lessonService;
         this.noteService = noteService;
+        this.feedbackService = feedbackService;
     }
 
     //================================== Profile Management ================================//
@@ -138,7 +140,7 @@ public class UserController {
                                Model model){
         try{
             User user = this.userService.getUserById(userId);
-            List<Enrollment> enrollments = this.enrollmentService.findByUserId(userId);
+            List<EnrollmentInfoDTO> enrollments = this.enrollmentService.createEnrollmentInfoDTO(userId);
             List<Wishlist> wishlists = this.wishlistService.findByUserId(userId);
 
             model.addAttribute("enrollments", enrollments);
@@ -314,5 +316,20 @@ public class UserController {
             return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Update note failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-                                                        }
+    }
+
+    // ----- FEEDBACK CHO COURSE -----
+    @PostMapping("/api/enrollments/{enrollmentId}/feedback")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> createFeedback(@PathVariable("enrollmentId") long enrollmentId,
+                                                            @RequestBody FeedbackRequest feedbackRequest){
+        try{
+            this.feedbackService.handleSave(enrollmentId, feedbackRequest);
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Create feedback successfully!", null, null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Update note failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

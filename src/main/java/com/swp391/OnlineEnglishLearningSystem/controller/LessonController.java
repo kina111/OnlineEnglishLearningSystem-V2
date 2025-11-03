@@ -253,7 +253,7 @@ public class LessonController {
             newQuestion.setContent(shortAnswerQuestionFormDTO.getContent());
 
             if (shortAnswerQuestionFormDTO.getMedia() != null && !shortAnswerQuestionFormDTO.getMedia().isEmpty()){
-                String fileName = this.uploadService.uploadImage(shortAnswerQuestionFormDTO.getMedia(), "quizzes/media");
+                String fileName = this.uploadService.uploadFile(shortAnswerQuestionFormDTO.getMedia(), "quizzes/media", null);
                 newQuestion.setMediaUrl(fileName);
             }else{
                 newQuestion.setMediaType(Question.MediaType.NONE);

@@ -705,7 +705,7 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
             //hiện modal ra
-            notesModalInstance.show();
+            //notesModalInstance.show();
         }
     }
 
@@ -724,11 +724,14 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
                 content,
             }),
         })
-        const res = await apiUrl.json();
+
         if (!apiUrl.ok) {
-            showToast(res.message, "error");
+            showToast("Thêm ghi chú thất bại.", "error");
         }else{
-            showToast("Thêm ghi chú thành công", "success");
+            const apiResponse = await apiUrl.json();
+            if (apiResponse.status === 'success'){
+                showToast("Thêm ghi chú thành công", "success");
+            }
         }
         notesModalInstance.hide();
     }
