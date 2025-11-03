@@ -139,10 +139,10 @@ SET IDENTITY_INSERT lessons OFF;
 
 -- 7. Bảng ENROLLMENTS (Phụ thuộc vào USERS và COURSES)
 SET IDENTITY_INSERT enrollments ON;
-INSERT INTO enrollments (id, user_id, course_id, enrolled_at, progress, status) VALUES
+INSERT INTO enrollments (id, user_id, course_id, enrolled_at, status) VALUES
 -- User 4 (Alice) đăng ký khóa 1 (IELTS Speaking) và khóa 3 (Phát âm)
-(1, 4, 1, DATEADD(day, -10, GETDATE()), 33, 'ENROLLED'), -- Cập nhật progress (2/6 lessons ~ 33%)
-(2, 4, 3, DATEADD(day, -5, GETDATE()), 75, 'ENROLLED');  -- Cập nhật progress (3/4 lessons = 75%)
+(1, 4, 1, DATEADD(day, -10, GETDATE()), 'ENROLLED'), -- Cập nhật progress (2/6 lessons ~ 33%)
+(2, 4, 3, DATEADD(day, -5, GETDATE()), 'ENROLLED');  -- Cập nhật progress (3/4 lessons = 75%)
 SET IDENTITY_INSERT enrollments OFF;
 
 -- 8. Bảng USER_LESSON_PROGRESS (Phụ thuộc vào USERS, LESSONS, ENROLLMENTS)
@@ -266,3 +266,83 @@ INSERT INTO notes (id, time_at_lesson, content, user_lesson_id) VALUES
 (19, '10:20', N'Khi kể chuyện (Part 2), phải dùng thì quá khứ (Past Simple, Past Continuous).', 6),
 (20, '15:00', N'Hoàn thành quiz, điểm chưa cao lắm, cần luyện thêm Part 2.', 6);
 SET IDENTITY_INSERT notes OFF;
+
+
+-- 1. Bảng USERS (Bổ sung 19 học viên mới)
+-- Mật khẩu mặc định: "password123" ($2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W)
+SET IDENTITY_INSERT users ON;
+INSERT INTO users (id, email, password, full_name, gender, mobile, address, avatar, dob, enabled, role_id) VALUES
+                                                                                                               (7, 'user2@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Binh Le', 'MALE', '0900000001', '1 Nguyen Trai, Hanoi', 'avatars/default_user.png', '1995-02-10', 1, 4),
+                                                                                                               (8, 'user3@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Chi Phan', 'FEMALE', '0900000002', '2 Ba Trieu, HCMC', 'avatars/default_user.png', '1998-07-20', 1, 4),
+                                                                                                               (9, 'user4@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Dung Tran', 'MALE', '0900000003', '3 Le Loi, Danang', 'avatars/default_user.png', '2000-01-01', 1, 4),
+                                                                                                               (10, 'user5@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Giang Hoang', 'FEMALE', '0900000004', '4 Quang Trung, Hai Phong', 'avatars/default_user.png', '1997-11-30', 1, 4),
+                                                                                                               (11, 'user6@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Hieu Nguyen', 'MALE', '0900000005', '5 Tran Phu, Can Tho', 'avatars/default_user.png', '1996-04-15', 1, 4),
+                                                                                                               (12, 'user7@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Khanh Vu', 'FEMALE', '0900000006', '6 Ly Thuong Kiet, Hanoi', 'avatars/default_user.png', '2001-08-25', 1, 4),
+                                                                                                               (13, 'user8@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Linh Pham', 'FEMALE', '0900000007', '7 Vo Thi Sau, HCMC', 'avatars/default_user.png', '1999-03-05', 1, 4),
+                                                                                                               (14, 'user9@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Minh Dang', 'MALE', '0900000008', '8 Bach Dang, Danang', 'avatars/default_user.png', '1994-09-12', 1, 4),
+                                                                                                               (15, 'user10@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Nam Bui', 'MALE', '0900000009', '9 Nguyen Du, Hanoi', 'avatars/default_user.png', '1993-06-18', 1, 4),
+                                                                                                               (16, 'user11@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Nga Do', 'FEMALE', '0900000010', '10 Hai Ba Trung, HCMC', 'avatars/default_user.png', '1998-12-01', 1, 4),
+                                                                                                               (17, 'user12@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Oanh Dinh', 'FEMALE', '0900000011', '11 Phan Chu Trinh, Hanoi', 'avatars/default_user.png', '1997-02-28', 1, 4),
+                                                                                                               (18, 'user13@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Phuong Le', 'MALE', '0900000012', '12 Dien Bien Phu, HCMC', 'avatars/default_user.png', '1999-10-10', 1, 4),
+                                                                                                               (19, 'user14@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Quang Truong', 'MALE', '0900000013', '13 Nguyen Hue, Danang', 'avatars/default_user.png', '2002-05-05', 1, 4),
+                                                                                                               (20, 'user15@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Son Nguyen', 'MALE', '0900000014', '14 Ly Tu Trong, Hanoi', 'avatars/default_user.png', '1996-08-08', 1, 4),
+                                                                                                               (21, 'user16@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Tam Tran', 'FEMALE', '0900000015', '15 Le Thanh Ton, HCMC', 'avatars/default_user.png', '1995-11-11', 1, 4),
+                                                                                                               (22, 'user17@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Thu Vu', 'FEMALE', '0900000016', '16 Ton Duc Thang, Hanoi', 'avatars/default_user.png', '2000-03-03', 1, 4),
+                                                                                                               (23, 'user18@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Tuan Anh', 'MALE', '0900000017', '17 Pasteur, HCMC', 'avatars/default_user.png', '1998-06-06', 1, 4),
+                                                                                                               (24, 'user19@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Uyen Nguyen', 'FEMALE', '0900000018', '18 Ham Nghi, Danang', 'avatars/default_user.png', '1997-09-09', 1, 4),
+                                                                                                               (25, 'user20@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07c209qnMrHlClDW2W', 'Viet Pham', 'MALE', '0900000019', '19 Pham Ngu Lao, HCMC', 'avatars/default_user.png', '1999-12-12', 1, 4);
+SET IDENTITY_INSERT users OFF;
+
+-- 2. Bảng ENROLLMENTS (Bổ sung 19 enrollment cho Khóa học 1)
+SET IDENTITY_INSERT enrollments ON;
+INSERT INTO enrollments (id, user_id, course_id, enrolled_at, status) VALUES
+                                                                          (3, 7, 1, DATEADD(day, -9, GETDATE()), 'ENROLLED'),  -- user2 (ID 7)
+                                                                          (4, 8, 1, DATEADD(day, -8, GETDATE()), 'ENROLLED'),  -- user3 (ID 8)
+                                                                          (5, 9, 1, DATEADD(day, -8, GETDATE()), 'ENROLLED'),  -- user4 (ID 9)
+                                                                          (6, 10, 1, DATEADD(day, -7, GETDATE()), 'ENROLLED'), -- user5 (ID 10)
+                                                                          (7, 11, 1, DATEADD(day, -7, GETDATE()), 'ENROLLED'), -- user6 (ID 11)
+                                                                          (8, 12, 1, DATEADD(day, -6, GETDATE()), 'ENROLLED'), -- user7 (ID 12)
+                                                                          (9, 13, 1, DATEADD(day, -6, GETDATE()), 'ENROLLED'), -- user8 (ID 13)
+                                                                          (10, 14, 1, DATEADD(day, -5, GETDATE()), 'ENROLLED'), -- user9 (ID 14)
+                                                                          (11, 15, 1, DATEADD(day, -5, GETDATE()), 'ENROLLED'), -- user10 (ID 15)
+                                                                          (12, 16, 1, DATEADD(day, -4, GETDATE()), 'ENROLLED'), -- user11 (ID 16)
+                                                                          (13, 17, 1, DATEADD(day, -4, GETDATE()), 'ENROLLED'), -- user12 (ID 17)
+                                                                          (14, 18, 1, DATEADD(day, -3, GETDATE()), 'ENROLLED'), -- user13 (ID 18)
+                                                                          (15, 19, 1, DATEADD(day, -3, GETDATE()), 'ENROLLED'), -- user14 (ID 19)
+                                                                          (16, 20, 1, DATEADD(day, -2, GETDATE()), 'ENROLLED'), -- user15 (ID 20)
+                                                                          (17, 21, 1, DATEADD(day, -2, GETDATE()), 'ENROLLED'), -- user16 (ID 21)
+                                                                          (18, 22, 1, DATEADD(day, -1, GETDATE()), 'ENROLLED'), -- user17 (ID 22)
+                                                                          (19, 23, 1, DATEADD(day, -1, GETDATE()), 'ENROLLED'), -- user18 (ID 23)
+                                                                          (20, 24, 1, DATEADD(day, -1, GETDATE()), 'ENROLLED'), -- user19 (ID 24)
+                                                                          (21, 25, 1, DATEADD(day, -1, GETDATE()), 'ENROLLED'); -- user20 (ID 25)
+SET IDENTITY_INSERT enrollments OFF;
+
+-- 3. Bảng FEEDBACKS (Bổ sung 20 feedback cho Khóa học 1)
+-- Mỗi feedback tương ứng với MỘT enrollment_id khác nhau (1, 3, 4, ..., 21)
+-- để tuân thủ ràng buộc UNIQUE.
+SET IDENTITY_INSERT feedbacks ON;
+INSERT INTO feedbacks (id, rating, review, status, helpful_count, not_helpful_count, enrollment_id) VALUES
+-- Feedback (ID 21) cho Enrollment 1 (của User 4, 'Alice Student')
+(21, 5, N'Khóa học IELTS Speaking này rất tuyệt vời! Giảng viên John Doe dạy rất chi tiết, dễ hiểu. Mình đã tự tin hơn rất nhiều.', 'APPROVED', 10, 0, 1),
+
+-- 19 Feedbacks (ID 22-40) cho 19 Enrollments mới (ID 3-21)
+(22, 4, N'Nội dung khóa học hay, bám sát thực tế. Tuy nhiên, phần video ở Part 2 (Lesson 18) hơi dài một chút.', 'APPROVED', 5, 1, 3),
+(23, 5, N'Rất hài lòng. Phương pháp A.R.E.A (Lesson 18) cực kỳ hữu ích để phát triển ý tưởng. Highly recommended!', 'APPROVED', 22, 0, 4),
+(24, 3, N'Khóa học ổn, nhưng mình mong muốn có nhiều bài quiz hơn. Hiện tại chỉ có 3 quiz (Lesson 1, 2, 3) cho 3 chương.', 'APPROVED', 2, 0, 5),
+(25, 5, N'Giọng giảng viên rất chuẩn, phần video (Lesson 16, 17) chất lượng cao. Mình học được nhiều từ vựng hay.', 'APPROVED', 15, 0, 6),
+(26, 4, N'Nội dung phong phú, đặc biệt là phần chiến lược trả lời Part 1 (Lesson 17).', 'APPROVED', 3, 0, 7),
+(27, 5, N'Đây là khóa học IELTS Speaking tốt nhất mình từng tham gia. Mình đã học xong 2/6 bài và thấy tiến bộ rõ rệt.', 'APPROVED', 8, 0, 8),
+(28, 4, N'Giá 2,000,000 VNĐ là hợp lý so với chất lượng. Mình mua được đợt giảm 15% nữa.', 'APPROVED', 1, 0, 9),
+(29, 5, N'Cảm ơn thầy John Doe. Sau khóa học mình đã đạt được 7.5 Speaking.', 'APPROVED', 30, 2, 10),
+(30, 2, N'Video bài giảng (Lesson 16) thỉnh thoảng bị mờ, không rõ nét. Mong team kỹ thuật kiểm tra lại.', 'REJECTED', 0, 5, 11),
+(31, 5, N'Các bài quiz (Lesson 1, 2, 3) có độ khó vừa phải, giúp ôn tập kiến thức đã học trong video.', 'APPROVED', 7, 0, 12),
+(32, 4, N'Mình (user11@example.com) rất thích cách giảng viên phân tích các tiêu chí chấm điểm ở Chương 1.', 'APPROVED', 6, 0, 13),
+(33, 5, N'Tuyệt vời! Các chiến thuật cho Part 2 và 3 rất thực tế.', 'APPROVED', 9, 0, 14),
+(34, 4, N'Hệ thống ghi chú (Notes) khi xem video rất tiện. Mình đã note lại rất nhiều.', 'APPROVED', 4, 0, 15),
+(35, 3, N'Phần quiz (Lesson 1) có 15 câu, mình làm trong 15 phút. Hơi ít thời gian.', 'APPROVED', 0, 0, 16),
+(36, 5, N'Khóa học này xứng đáng 5 sao. Nội dung đầy đủ cả 3 part.', 'APPROVED', 11, 0, 17),
+(37, 5, N'Đã áp dụng thành công các tips trong khóa học và thấy hiệu quả. Cảm ơn OELS.', 'APPROVED', 12, 1, 18),
+(38, 4, N'Mong chờ thêm các khóa học khác của giảng viên John Doe.', 'APPROVED', 2, 0, 19),
+(39, 5, N'Phần nội dung (html_content) của các bài quiz cũng được viết tốt, giải thích rõ ràng.', 'APPROVED', 3, 0, 20),
+(40, 4, N'Khóa học có 3 chương, 6 bài học (3 video, 3 quiz) là hơi ít. Mong có thêm nội dung về Part 3.', 'APPROVED', 5, 1, 21);
+SET IDENTITY_INSERT feedbacks OFF;
