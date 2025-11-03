@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <!-- CKEditor -->
     <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <style>
         :root {
             --primary-color: #6c63ff;
@@ -146,6 +148,181 @@
         /* Sidebar Image */
         .card-img-top { border-radius: var(--radius) var(--radius) 0 0; } /* Rounded top corners */
 
+        /* === CSS CHO PHẦN FEEDBACK (THÊM VÀO <style>) === */
+
+        .feedback-section {
+            background-color: var(--bg-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+        }
+
+        /* 1. Phần Tóm tắt (Summary) */
+        .feedback-summary {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-overview {
+            text-align: center;
+        }
+
+        .rating-average {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #b4690e;
+            /* Màu cam đậm */
+        }
+
+        .rating-stars-average {
+            font-size: 1.2rem;
+            color: #ffc107;
+            /* Màu sao vàng */
+            margin-bottom: 0.25rem;
+        }
+
+        .rating-total {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .rating-distribution {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .rating-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .rating-bar-stars {
+            font-size: 0.9rem;
+            color: #ffc107;
+            flex-shrink: 0;
+            width: 90px;
+            /* Căn chỉnh */
+            text-align: right;
+        }
+
+        .rating-bar-progress {
+            flex-grow: 1;
+            height: 10px;
+            background-color: var(--bg-light);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .rating-bar-fill {
+            height: 100%;
+            background-color: #6a6f73;
+            /* Màu xám */
+            border-radius: 5px;
+        }
+
+        .rating-bar-percent {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: 500;
+            width: 40px;
+            /* Căn chỉnh */
+        }
+
+        /* 2. Phần Lọc/Tìm kiếm (Controls) */
+        .feedback-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feedback-controls .input-group {
+            flex-grow: 1;
+        }
+
+        .feedback-controls .form-control,
+        .feedback-controls .form-select {
+            border-color: var(--border-color);
+            height: 44px;
+        }
+
+        .feedback-controls .btn-search {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            width: 50px;
+        }
+
+        .feedback-controls .btn-search:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* 3. Phần Danh sách (List) */
+        /* (Sử dụng CSS .feedback-card từ câu trước, chỉ thêm icon) */
+        .feedback-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .feedback-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feedback-actions .btn-like {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .feedback-actions .btn-like:hover {
+            background-color: var(--bg-light);
+        }
+
+        .feedback-actions .btn-report {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .feedback-actions .btn-report:hover {
+            color: var(--primary-color);
+        }
+
+        /* 4. Nút "Tải thêm" */
+        .btn-load-more {
+            width: 100%;
+            padding: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--primary-color);
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        .btn-load-more:hover {
+            background-color: var(--primary-hover);
+            color: white;
+            border-color: var(--primary-hover);
+        }
     </style>
 </head>
 <body>
@@ -241,6 +418,78 @@
                 <h3>Yêu cầu</h3>
                 <div th:utext="${course.prerequisite}"></div>
             </div>
+
+            <!-- feedback -->
+            <div id="feedback-section" class="feedback-section">
+                <h3 class="mb-4">Phản hồi của học viên</h3>
+
+                <div class="feedback-summary">
+                    <div class="rating-overview">
+                        <div class="rating-average"
+                             th:text="${#numbers.formatDecimal(courseFeedbackStats.averageRating, 1, 1)}">4.4</div>
+                        <div class="rating-stars-average">
+                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                <ion-icon th:name="${i <= courseFeedbackStats.averageRating ? 'star' : (i - courseFeedbackStats.averageRating < 1 ? 'star-half-outline' : 'star-outline')}"></ion-icon>
+                            </th:block>
+                        </div>
+                        <div class="rating-total" th:text="${courseFeedbackStats.totalFeedbacks} + ' xếp hạng'">1,234
+                            xếp hạng</div>
+                    </div>
+
+                    <div class="rating-distribution">
+                        <div class="rating-bar-row" th:each="i : ${#numbers.sequence(5, 1, -1)}">
+                            <div class="rating-bar-progress">
+                                <div class="rating-bar-fill"
+                                     th:style="'width: ' + ${courseFeedbackStats.ratingCountMap.get(i)}/${courseFeedbackStats.totalFeedbacks} * 100 + '%;'">} + '%;'">
+                                </div>
+                            </div>
+                            <div class="rating-bar-stars">
+                                <ion-icon name="star"></ion-icon> (<span th:text="${i}">5</span>)
+                            </div>
+                            <div class="rating-bar-percent"
+                                 th:text="${#numbers.formatDecimal(courseFeedbackStats.ratingCountMap.get(i) * 100/ courseFeedbackStats.totalFeedbacks, 1, 1)} + '%'">42%
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <h4 class="mt-4 mb-3">Đánh giá</h4>
+                <div class="feedback-controls">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm đánh giá"
+                               id="feedback-search-input">
+                        <button class="btn btn-search" type="button" id="feedback-search-btn"><i
+                                class="fas fa-search"></i></button>
+                    </div>
+                    <select class="form-select" id="feedback-filter-rating" style="max-width: 180px;">
+                        <option value="all" selected>Tất cả xếp hạng</option>
+                        <option value="5">Năm sao</option>
+                        <option value="4">Bốn sao</option>
+                        <option value="3">Ba sao</option>
+                        <option value="2">Hai sao</option>
+                        <option value="1">Một sao</option>
+                    </select>
+                </div>
+
+                <div id="feedback-list-container">
+                    <div
+                            th:replace="~{components/_feedback_cards :: feedbackCardList(feedbacks=${initialFeedbacks})}">
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-load-more" id="loadMoreFeedbacksBtn" style="text-align: center" th:data-course-id="${courseId}"
+                            th:data-current-page="0" th:data-total-pages="${initialFeedbacks.totalPages}"
+                            th:if="${initialFeedbacks.totalPages > 1}">
+                        Xem thêm
+                        <span id="loadMoreSpinner" class="spinner-border spinner-border-sm d-none" role="status"
+                              aria-hidden="true"></span>
+                    </button>
+                </div>
+
+            </div>
         </div>
 
         <!-- Right Column - Sidebar -->
@@ -290,11 +539,29 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container') || document.createElement('div');
+        if (!container.id) {
+            container.id = 'toast-container';
+            container.style.position = 'fixed'; container.style.top = '20px'; container.style.right = '20px'; container.style.zIndex = '9999';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+        toast.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+        container.appendChild(toast);
+        setTimeout(() => bootstrap.Alert.getOrCreateInstance(toast)?.close(), 4000);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const wishlistButton = document.getElementById('wishlist-btn');
         const buttonContainer = document.getElementById('course-action-buttons');
         const courseId = buttonContainer.dataset.courseId; // Lấy courseId từ data attribute của div cha
 
+        const loadMoreBtn = document.getElementById('loadMoreFeedbacksBtn');
+        const searchBtn = document.getElementById('feedback-search-btn');
+        const searchInput = document.getElementById('feedback-search-input');
+        const filterSelect = document.getElementById('feedback-filter-rating');
         if (wishlistButton) {
             wishlistButton.addEventListener('click', async function() {
                 // Đọc trạng thái hiện tại từ data attribute
@@ -352,7 +619,116 @@
                 }
             });
         }
+
+        // 1. Gắn sự kiện cho nút "Tải thêm"
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => loadMoreFeedbacks(false)); // false = Nối thêm
+        }
+
+        // 2. Hàm xử lý khi nhấn nút tìm kiếm hoặc thay đổi lọc star
+        function handleFilterOrSearch() {
+            loadMoreFeedbacks(true); // true = Xóa và tải lại từ trang 0
+        }
+
+        // 3. Gắn sự kiện cho Nút Tìm kiếm và Dropdown Lọc
+        if (searchBtn) {
+            searchBtn.addEventListener('click', handleFilterOrSearch);
+        }
+        // Tùy chọn: Tìm kiếm khi nhấn Enter
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleFilterOrSearch();
+                }
+            });
+        }
+        if (filterSelect) {
+            filterSelect.addEventListener('change', handleFilterOrSearch);
+        }
+
     });
+
+    async function loadMoreFeedbacks(isSearchOrFilter = false) {
+
+        const loadMoreBtn = document.getElementById('loadMoreFeedbacksBtn');
+        const spinner = document.getElementById('loadMoreSpinner');
+        const feedbackList = document.getElementById('feedback-list-container');
+
+        // Nếu không tìm thấy nút (ví dụ: chỉ có 1 trang) thì không làm gì
+        if (!loadMoreBtn) return;
+
+        let currentPage;
+
+        // Nếu là tìm kiếm/lọc, reset về trang 0
+        if (isSearchOrFilter) {
+            currentPage = 0;
+            loadMoreBtn.dataset.currentPage = "0"; // Reset nút
+            feedbackList.innerHTML = ''; // XÓA danh sách cũ
+        } else {
+            currentPage = parseInt(loadMoreBtn.dataset.currentPage) + 1; // Lấy trang tiếp theo
+        }
+
+        const courseId = loadMoreBtn.dataset.courseId;
+
+        // Lấy giá trị filter và search
+        const ratingFilter = document.getElementById('feedback-filter-rating').value;
+        const searchKeyword = document.getElementById('feedback-search-input').value;
+
+        // Hiển thị trạng thái loading, đồng thời disable nút load more
+        spinner.classList.remove('d-none');
+        loadMoreBtn.disabled = true;
+
+        // Xây dựng API URL
+        let apiUrl = `/courses/api/${courseId}/feedback-fragment?page=${currentPage}`;
+
+        if (ratingFilter !== 'all') {
+            apiUrl += '&ratingFilter=' + ratingFilter;
+        }
+        if (searchKeyword) {
+            apiUrl += '&searchKeyword=' + encodeURIComponent(searchKeyword);
+        }
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch feedback (status: ${response.status})`);
+            }
+
+            // SỬA LỖI: Dùng await response.text()
+            const newCardsHtml = await response.text();
+
+
+            if (newCardsHtml.trim().length > 0) {
+                // Nối HTML mới vào
+                feedbackList.insertAdjacentHTML('beforeend', newCardsHtml);
+                const pageInfo = document.querySelector('.page-info');
+                // Cập nhật lại số trang hiện tại trên nút
+                const newCards =
+                loadMoreBtn.dataset.currentPage = currentPage;
+                loadMoreBtn.dataset.totalPages = pageInfo.dataset.totalPages;
+            } else {
+                // Nếu API trả về rỗng (hết dữ liệu)
+                loadMoreBtn.style.display = 'none';
+            }
+
+            // Kiểm tra xem đây có phải trang cuối không
+            if (currentPage + 1 >= loadMoreBtn.dataset.totalPages) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block'; // Hiển thị lại nút (nếu là search)
+            }
+
+        } catch (error) {
+            console.error('Error fetching feedback:', error);
+            showToast('Tải phản hồi thất bại. Hãy thử lại sau!', 'error');
+        } finally {
+            // SỬA LỖI: Luôn luôn ẩn spinner và kích hoạt lại nút (nếu nó không bị ẩn)
+            spinner.classList.add('d-none');
+            if (loadMoreBtn.style.display !== 'none') {
+                loadMoreBtn.disabled = false;
+            }
+        }
+    }
 </script>
 </body>
 </html>
