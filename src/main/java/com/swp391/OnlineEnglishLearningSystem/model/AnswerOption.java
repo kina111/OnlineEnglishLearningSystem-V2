@@ -13,11 +13,11 @@ public class AnswerOption extends BaseEntity{
     private Long id;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(500)")
-    @NotBlank(message = "Answer option content is required")
-    @Size(max = 500, message = "Answer option content must be between 0-500 characters")
+    @NotBlank(message = "Nội dung lựa chọn không được để trống.")
+    @Size(max = 500, message = "Nội dung lựa chọn không được vượt quá 500 ký tự.")
     private String content; // Nội dung lựa chọn (A, B, C, D...)
 
-    @NotNull
+    @NotNull(message = "Trường 'correct' không được để trống.")
     @Column(nullable = false)
     private Boolean correct; // Đánh dấu đây là đáp án đúng
 
@@ -27,6 +27,7 @@ public class AnswerOption extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
+
 
     public AnswerOption() {
         super();

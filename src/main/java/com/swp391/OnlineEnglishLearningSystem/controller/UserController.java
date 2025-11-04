@@ -1,12 +1,11 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.*;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.ChapterLearningDTO;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.EnrollmentLearningDTO;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.LessonLearningDTO;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.*;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,8 +31,10 @@ public class UserController {
     private final UserLessonService userLessonService;
     private final LearningService learningService;
     private final LessonService lessonService;
+    private final NoteService noteService;
+    private final FeedbackService feedbackService;
 
-    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl, UserLessonService userLessonService, LearningService learningService, LessonService lessonService) {
+    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl, UserLessonService userLessonService, LearningService learningService, LessonService lessonService, NoteService noteService, FeedbackService feedbackService) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.courseSerive = courseSerive;
@@ -43,6 +44,8 @@ public class UserController {
         this.learningService = learningService;
         this.userLessonService = userLessonService;
         this.lessonService = lessonService;
+        this.noteService = noteService;
+        this.feedbackService = feedbackService;
     }
 
     //================================== Profile Management ================================//
@@ -137,7 +140,7 @@ public class UserController {
                                Model model){
         try{
             User user = this.userService.getUserById(userId);
-            List<Enrollment> enrollments = this.enrollmentService.findByUserId(userId);
+            List<EnrollmentInfoDTO> enrollments = this.enrollmentService.createEnrollmentInfoDTO(userId);
             List<Wishlist> wishlists = this.wishlistService.findByUserId(userId);
 
             model.addAttribute("enrollments", enrollments);
@@ -235,6 +238,98 @@ public class UserController {
             return "user/learningView";
         }catch (Exception e){
             return "redirect:/login";
+        }
+    }
+
+    //nhận note và lưu
+    @PostMapping("/api/lessons/{lessonId}/notes")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> takeNotes(@Valid @RequestBody NoteRequest noteRequest,
+                                                       @PathVariable("lessonId") long lessonId,
+                                                       HttpSession session){
+        try{
+            Long userId = (Long) session.getAttribute("currentUserId");
+            Note newNote = this.noteService.createNew(userId, lessonId, noteRequest);
+
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Take notes successfully!", null, null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Take notes failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //lấy notes theo tiêu chí
+    @GetMapping("/api/enrollments/{enrollmentId}/chapters/{chapterId}/notes")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<List<NoteDTO>>> getNotes(@PathVariable("enrollmentId") long enrollmentId,
+                                                               @PathVariable("chapterId") long chapterId,
+                                                               @RequestParam(value = "isNewest") Boolean isNewest){
+        try{
+            Sort sort = isNewest
+                    ? Sort.by(Sort.Direction.DESC, "createdAt")
+                    : Sort.by(Sort.Direction.ASC, "createdAt");
+            List<NoteDTO> noteDTOs = this.noteService.createDtosByChapterAndEnrollmentId(chapterId, enrollmentId, sort);
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Take notes successfully!", noteDTOs, null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Take notes failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //xóa note
+    @DeleteMapping("/api/notes/{noteId}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> deleteNote(@PathVariable("noteId") long noteId,
+                                                        HttpSession session){
+        try{
+            Long userId = (Long) session.getAttribute("currentUserId");
+            if (userId == null){
+                return new ResponseEntity<>(new ApiResponse<>(HttpStatus.UNAUTHORIZED,
+                        "Unauthorized!", null, null), HttpStatus.UNAUTHORIZED);
+            }
+            this.noteService.deleteById(noteId);
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Delete note successfully!", null, null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Delete note failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/api/notes/{noteId}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<String>> updateNote(@PathVariable("noteId") long noteId,
+                                                        @RequestBody String content,
+                                                        HttpSession session){
+        try{
+            Long userId = (Long) session.getAttribute("currentUserId");
+            if (userId == null){
+                return new ResponseEntity<>(new ApiResponse<>(HttpStatus.UNAUTHORIZED,
+                        "Unauthorized!", null, null), HttpStatus.UNAUTHORIZED);
+            }
+            Note note = this.noteService.updateById(noteId, content);
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Update note successfully", note.getContent(), null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Update note failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // ----- FEEDBACK CHO COURSE -----
+    @PostMapping("/api/enrollments/{enrollmentId}/feedback")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> createFeedback(@PathVariable("enrollmentId") long enrollmentId,
+                                                            @RequestBody FeedbackRequest feedbackRequest){
+        try{
+            this.feedbackService.handleSave(enrollmentId, feedbackRequest);
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK,
+                    "Create feedback successfully!", null, null), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Update note failed!", null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -15,13 +15,13 @@ public class Chapter {
     private Long id;
 
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(100)")
-    @NotBlank(message = "Chapter name is required")
-    @Size(min = 5, max = 100, message = "Chapter name must be between 5-100 characters")
+    @NotBlank(message = "Tên chương không được để trống.")
+    @Size(min = 5, max = 100, message = "Tên chương phải có độ dài từ 5 đến 100 ký tự.")
     private String name;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
-    @NotBlank(message = "Short description is required")
-    @Size(min = 10, max = 200, message = "Short description must be between 10-200 characters")
+    @NotBlank(message = "Mô tả ngắn không được để trống.")
+    @Size(min = 10, max = 200, message = "Mô tả ngắn phải có độ dài từ 10 đến 200 ký tự.")
     private String shortDescription;
 
     @Column(nullable = false, name = "order_number")

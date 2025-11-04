@@ -54,16 +54,6 @@ public class Enrollment {
     @Column(name = "last_access_at")
     private LocalDateTime lastAccessAt;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private Integer progress;
-
-    @Column(name = "rating")
-    @Min(1) @Max(5)
-    private Integer rating;
-
-    @Column(name = "review", columnDefinition = "NVARCHAR(MAX)")
-    private String review;
-
     @NotNull
     @Enumerated(EnumType.STRING) //lưu tên Enum (ENROLLED, COMPLETED) vào db
     @Column(nullable = false)
@@ -75,7 +65,6 @@ public class Enrollment {
     public Enrollment(User user, Course course) {
         this.user = user;
         this.course = course;
-        this.progress = 0;
         this.status = EnrollmentStatus.ENROLLED;
     }
 
@@ -125,30 +114,6 @@ public class Enrollment {
 
     public void setLastAccessAt(LocalDateTime lastAccessAt) {
         this.lastAccessAt = lastAccessAt;
-    }
-
-    public Integer getProgress() {
-        return progress;
-    }
-
-    public void setProgress(Integer progress) {
-        this.progress = progress;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public String getReview() {
-        return review;
-    }
-
-    public void setReview(String review) {
-        this.review = review;
     }
 
     public EnrollmentStatus getStatus() {

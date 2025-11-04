@@ -22,8 +22,8 @@ public class GlobalException {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errorList = ex.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage()).collect(Collectors.toList());
-        String errors = String.join("; ", errorList);
+                .map(error -> error.getDefaultMessage()).collect(Collectors.toList());
+        String errors = String.join("\n", errorList);
 
         ApiResponse<Object> response = new ApiResponse<>(HttpStatus.BAD_REQUEST, errors, null, "VALIDATION_ERROR");
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

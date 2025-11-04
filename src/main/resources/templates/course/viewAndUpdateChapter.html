@@ -418,7 +418,10 @@
     async function openEditChapterModal(chapterId) {
         try {
             const res = await fetch(`/api/chapters/${chapterId}`);
-            if (!res.ok) throw new Error('Không thể tải dữ liệu chương!');
+            if (!res.ok) {
+                showToast("Không thể tải dữ liệu chương", "error");
+                return;
+            }
 
             const apiResponse = await res.json();
             const chapter = apiResponse.data;
@@ -439,11 +442,6 @@
         const desc = document.getElementById('chapterShortDescription').value.trim();
         const courseId = document.getElementById('course-content').dataset.courseId;
 
-        if (!name) {
-            showToast('Vui lòng nhập tên chương.', 'error');
-            return;
-        }
-
         const isUpdating = editingChapterId !== null;
         const url = isUpdating ? `/api/chapters/${editingChapterId}` : `/api/courses/${courseId}/chapters`;
         const method = isUpdating ? 'PUT' : 'POST';
@@ -456,7 +454,11 @@
             });
 
             const apiResponse = await res.json();
-            if (!res.ok) throw new Error(apiResponse.message || 'Thao tác thất bại');
+            if (!res.ok) {
+                const errorMsg = apiResponse.message || 'Đã xảy ra lỗi trong quá trình xử lý.';
+                showToast(errorMsg.replace(/\n/g, '<br>'), 'error');
+                return;
+            }
 
             if (isUpdating) {
                 updateChapterInDOM(apiResponse.data);
@@ -482,10 +484,11 @@
             const res = await fetch(`/api/courses/${courseId}/chapters/${chapterId}`, {
                 method: 'DELETE'
             });
-
+            const apiResponse = await res.json();
             if (!res.ok) {
-                const errorResponse = await res.json().catch(() => null);
-                throw new Error(errorResponse?.message || 'Xóa chương thất bại!');
+                const errorMsg = apiResponse.message || 'Đã xảy ra lỗi trong quá trình xử lý.';
+                showToast(errorMsg.replace(/\n/g, '<br>'), 'error');
+                return;
             }
 
             document.getElementById(`chapter-item-${chapterId}`).remove();
@@ -566,7 +569,10 @@
     async function openEditLessonModal(lessonId, lessonType) {
         try {
             const res = await fetch(`/api/lessons/${lessonId}`);
-            if (!res.ok) throw new Error('Không thể tải dữ liệu bài học!');
+            if (!res.ok){
+                showToast("Không thể tải dữ liệu bài học!", 'error');
+                return;
+            }
 
             const apiResponse = await res.json();
             const lesson = apiResponse.data;
@@ -632,11 +638,6 @@
         const lessonType = document.getElementById('lessonTypeForLesson').value;
         const orderNumber = document.getElementById('lessonOrderNumber').value;
 
-        if (!title) {
-            showToast('Vui lòng nhập tên bài học.', 'error');
-            return;
-        }
-
         const isUpdating = editingLessonId !== null;
         let url, method;
 
@@ -666,15 +667,6 @@
             const estimatedTime = document.getElementById('estimatedTime').value;
             const htmlContent = editor ? editor.getData() : '';
 
-            if (!estimatedTime || !/^\d+$/.test(estimatedTime)) {
-                showToast('Vui lòng nhập thời lượng hợp lí.', 'error');
-                return;
-            }
-            if (!htmlContent.trim()) {
-                showToast('Vui lòng nhập nội dung bài giảng.', 'error');
-                return;
-            }
-
             formData.append('estimatedTime', estimatedTime);
             formData.append('htmlContent', htmlContent);
 
@@ -690,19 +682,6 @@
             const timeLimitInMinutes = document.getElementById('timeLimitInMinutes').value;
             const numberOfQuestions = document.getElementById('numberOfQuestions').value;
 
-            if (!passRate || isNaN(passRate) || passRate < 0 || passRate > 100) {
-                showToast('Vui lòng nhập tỷ lệ đạt hợp lệ (từ 0 đến 100).', 'error');
-                return;
-            }
-            if (!timeLimitInMinutes || !/^\d+$/.test(timeLimitInMinutes)) {
-                showToast('Vui lòng nhập giới hạn thời gian hợp lí.', 'error');
-                return;
-            }
-            if (!numberOfQuestions || isNaN(numberOfQuestions) || numberOfQuestions < 0 || numberOfQuestions > 100) {
-                showToast('Vui lòng nhập số lượng câu hỏi hợp lí.', 'error');
-                return;
-            }
-
             formData.append('passRate', passRate);
             formData.append('timeLimitInMinutes', timeLimitInMinutes);
             formData.append('numberOfQuestions', numberOfQuestions);
@@ -713,13 +692,14 @@
                 method: method,
                 body: formData
             });
-
+            const apiResponse = await res.json();
             if (!res.ok) {
-                const errorText = await res.text();
-                throw new Error(errorText || `${isUpdating ? 'Cập nhật' : 'Tạo'} bài học thất bại!`);
+                const errorMsg = apiResponse.message;
+                showToast(errorMsg.replace(/\n/g, '<br>'), 'error');
+                return;
             }
 
-            const apiResponse = await res.json();
+
             const newLesson = apiResponse.data;
 
             if (isUpdating) {
@@ -748,7 +728,9 @@
 
             if (!res.ok) {
                 const errorResponse = await res.json().catch(() => null);
-                throw new Error(errorResponse?.message || 'Xóa bài học thất bại!');
+                const errorMsg = errorResponse.message || 'Đã xảy ra lỗi trong quá trình xử lý.';
+                showToast(errorMsg.replace(/\n/g, '<br>'), 'error');
+                return;
             }
 
             document.getElementById(`lesson-item-${lessonId}`).remove();

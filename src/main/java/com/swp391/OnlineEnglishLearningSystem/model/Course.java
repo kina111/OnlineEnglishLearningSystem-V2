@@ -27,37 +27,39 @@ public class Course extends BaseEntity{
     private Long id;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
-    @NotBlank(message = "Course name is required")
-    @Size(min = 5, max = 100, message = "Course name must be between 5-100 characters")
+    @NotBlank(message = "Tên khóa học không được để trống.")
+    @Size(min = 5, max = 100, message = "Tên khóa học phải có độ dài từ 5 đến 100 ký tự.")
     private String name;
 
-    @Column(name = "short_description",nullable = false, columnDefinition = "NVARCHAR(255)")
-    @NotBlank(message = "Short description is required")
-    @Size(min = 10, message = "Short description must be between 10-200 characters")
+    @Column(name = "short_description", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @NotBlank(message = "Mô tả ngắn không được để trống.")
+    @Size(min = 10, max = 200, message = "Mô tả ngắn phải có độ dài từ 10 đến 200 ký tự.")
     private String shortDescription;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
-    @NotBlank(message = "Description is required")
-    @Size(min = 10, message = "Description must be between 10-1000 characters")
+    @NotBlank(message = "Mô tả chi tiết không được để trống.")
+    @Size(min = 10, max = 1000, message = "Mô tả chi tiết phải có độ dài từ 10 đến 1000 ký tự.")
     private String description;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
-    @NotBlank(message = "Prerequisite is required")
+    @NotBlank(message = "Yêu cầu đầu vào không được để trống.")
     private String prerequisite;
 
-    @NotNull(message = "Thumbnail is required")
+    @NotNull(message = "Ảnh bìa khóa học không được để trống.")
     private String thumbnail;
 
-    @NotNull(message = "Price is required")
-    @DecimalMin(value = "0.0", message = "Price must be positive")
+    @NotNull(message = "Giá khóa học không được để trống.")
+    @DecimalMin(value = "0.0", message = "Giá khóa học phải là số dương.")
     private Double price;
 
-    @NotNull(message = "Discount is required")
-    @DecimalMin(value = "0.0", message = "Discount cannot be negative")
-    @DecimalMax(value = "100.0", message = "Discount cannot exceed 100%")
+    @NotNull(message = "Giá trị giảm giá không được để trống.")
+    @DecimalMin(value = "0.0", message = "Giảm giá không được âm.")
+    @DecimalMax(value = "100.0", message = "Giảm giá không được vượt quá 100%.")
     private Double discount;
 
     private boolean featured;
+
+    @Enumerated(EnumType.STRING)
     private CourseStatus status;
 
     @ManyToOne(fetch = FetchType.EAGER)

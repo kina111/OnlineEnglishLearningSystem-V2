@@ -5,32 +5,32 @@ import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UpdateCourseDTO {
-    @NotBlank(message = "Course name is required")
-    @Size(min = 5, max = 100, message = "Course name must be between 5-100 characters")
+    @NotBlank(message = "Vui lòng nhập tên khóa học.")
+    @Size(min = 5, max = 100, message = "Tên khóa học phải từ 5 đến 100 ký tự.")
     private String name;
 
-    @NotBlank(message = "Short description is required")
-    @Size(min = 10, message = "Short description must be between 10-200 characters")
+    @NotBlank(message = "Vui lòng nhập mô tả ngắn.")
+    @Size(min = 10, max = 200, message = "Mô tả ngắn phải từ 10 đến 200 ký tự.")
     private String shortDescription;
 
-    @NotBlank(message = "Description is required")
-    @Size(min = 10, message = "Description must be between 10-1000 characters")
+    @NotBlank(message = "Vui lòng nhập mô tả chi tiết.")
+    @Size(min = 10, max = 1000, message = "Mô tả chi tiết phải từ 10 đến 1000 ký tự.")
     private String description;
 
-    @NotBlank(message = "Prerequisite is required")
-    @Size(min = 10, message = "Prerequisite must be between 10-10000 characters")
+    @NotBlank(message = "Vui lòng nhập yêu cầu đầu vào (prerequisite).")
+    @Size(min = 10, max = 10000, message = "Yêu cầu đầu vào phải từ 10 đến 10000 ký tự.")
     private String prerequisite;
 
-    @NotNull(message = "Price is required")
-    @DecimalMin(value = "0.0", message = "Price must be positive")
+    @NotNull(message = "Vui lòng nhập giá khóa học.")
+    @DecimalMin(value = "0.0", message = "Giá khóa học phải lớn hơn hoặc bằng 0.")
     private Double price;
 
-    @NotNull(message = "Discount is required")
-    @DecimalMin(value = "0.0", message = "Discount cannot be negative")
-    @DecimalMax(value = "100.0", message = "Discount cannot exceed 100%")
+    @NotNull(message = "Vui lòng nhập mức giảm giá.")
+    @DecimalMin(value = "0.0", message = "Mức giảm giá không được âm.")
+    @DecimalMax(value = "100.0", message = "Mức giảm giá không được vượt quá 100%.")
     private Double discount;
 
-    @NotNull(message = "Course category is required")
+    @NotNull(message = "Vui lòng chọn danh mục khóa học.")
     private Long categoryId;
 
     private MultipartFile thumbnailFile;

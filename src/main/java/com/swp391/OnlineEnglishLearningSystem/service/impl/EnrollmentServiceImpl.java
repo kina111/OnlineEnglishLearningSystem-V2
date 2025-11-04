@@ -4,6 +4,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.Enrollment;
 import com.swp391.OnlineEnglishLearningSystem.model.Order;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.UserLesson;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.EnrollmentInfoDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.EnrollmentLearningDTO;
 import com.swp391.OnlineEnglishLearningSystem.repository.EnrollmentRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.EnrollmentService;
@@ -50,7 +51,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         String title = enrollment.getCourse().getName();
         int totalLessons = userLessons.size();
         int completedLessons = (int) userLessons.stream().filter(UserLesson::isCompleted).count();
-        return new EnrollmentLearningDTO(enrollmentId, title, enrollment.getProgress(), totalLessons, completedLessons);
+        return new EnrollmentLearningDTO(enrollmentId, title, completedLessons/totalLessons, totalLessons, completedLessons);
+    }
+
+    @Override
+    public List<EnrollmentInfoDTO> createEnrollmentInfoDTO(Long userId) {
+        List<EnrollmentInfoDTO> result = enrollmentRepository.findEnrollmentInfoByUserId(userId);
+        for (EnrollmentInfoDTO enrollmentInfoDTO : result) {
+            enrollmentInfoDTO.setProgress((int) (enrollmentInfoDTO.getCompletedLessons() * 100/enrollmentInfoDTO.getTotalLessons()));
+        }
+        return result;
     }
 
     public boolean isEnrolled(Long userId, Long courseId) {

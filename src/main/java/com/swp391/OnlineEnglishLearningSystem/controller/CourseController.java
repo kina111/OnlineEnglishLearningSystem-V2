@@ -4,15 +4,15 @@ import com.swp391.OnlineEnglishLearningSystem.model.ApiResponse;
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseFeedbackStats;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.FeedbackDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.UpdateCourseDTO;
-import com.swp391.OnlineEnglishLearningSystem.service.CourseCategoryService;
-import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
-import com.swp391.OnlineEnglishLearningSystem.service.UserService;
-import com.swp391.OnlineEnglishLearningSystem.service.WishlistService;
+import com.swp391.OnlineEnglishLearningSystem.service.*;
 import com.swp391.OnlineEnglishLearningSystem.service.impl.EnrollmentServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -36,13 +36,15 @@ public class CourseController {
     private final UserService userService;
     private final EnrollmentServiceImpl enrollmentService;
     private final WishlistService wishlistService;
+    private final FeedbackService feedbackService;
 
-    public CourseController(CourseCategoryService courseCategoryService, CourseService courseService, UserService userService, EnrollmentServiceImpl enrollmentService, WishlistService wishlistService) {
+    public CourseController(CourseCategoryService courseCategoryService, CourseService courseService, UserService userService, EnrollmentServiceImpl enrollmentService, WishlistService wishlistService, FeedbackService feedbackService) {
         this.courseCategoryService = courseCategoryService;
         this.courseService = courseService;
         this.userService = userService;
         this.enrollmentService = enrollmentService;
         this.wishlistService = wishlistService;
+        this.feedbackService = feedbackService;
     }
 
     // ===================== GET COURSES =========================
@@ -66,15 +68,19 @@ public class CourseController {
     //show course details for learner
     @GetMapping("/{courseId}/learner")
     public String getCourseDetailsForLearner(@PathVariable("courseId") Long courseId,
-                                             @RequestParam(required = false, defaultValue = "false") boolean inWishlist,
                                              HttpSession session,
                                              Model model){
         try{
             Course course = this.courseService.findById(courseId);
             Long userId = (Long) session.getAttribute("currentUserId");
             boolean isEnrolled = this.enrollmentService.isEnrolled(userId, courseId);
-            inWishlist = this.wishlistService.findByUserIdAndCourseId(userId, courseId).isPresent();
+            boolean inWishlist = this.wishlistService.findByUserIdAndCourseId(userId, courseId).isPresent();
+            Page<FeedbackDTO> initialFeedbacks = this.feedbackService.getApprovedFeedbacks(courseId, PageRequest.of(0, 5, Sort.by("rating").descending()));
+            CourseFeedbackStats courseFeedbackStats = this.feedbackService.getFeedbackStats(courseId);
 
+
+            model.addAttribute("courseFeedbackStats", courseFeedbackStats);
+            model.addAttribute("initialFeedbacks", initialFeedbacks);
             model.addAttribute("inWishlist", inWishlist);
             model.addAttribute("isEnrolled", isEnrolled);
             model.addAttribute("course", course);
@@ -173,8 +179,7 @@ public class CourseController {
             Long authorId = (Long) session.getAttribute("currentUserId");
             Course newCourse = courseService.buildNewCourse(courseDTO, authorId);
 
-            model.addAttribute("course", newCourse);
-            return "course/viewAndUpdateChapter";
+            return "redirect:/courses/" + newCourse.getId();
         }catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/courses/create";
@@ -276,6 +281,25 @@ public class CourseController {
         } catch (Exception e) {
             ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST, "Cập nhật trạng thái featured không thành công!", null, e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/api/{courseId}/feedback-fragment")
+    public String getCourseFeedbackFragment(@PathVariable("courseId") Long courseId,
+                                            @RequestParam(value = "page", defaultValue = "0") int page,
+                                            @RequestParam(value = "ratingFilter", required = false) Integer ratingFilter,
+                                            @RequestParam(value = "searchKeyword", required = false) String searchKeyword,
+                                            Model model){
+
+        try{
+            Pageable pageable = PageRequest.of(page, 5, Sort.by("createdAt").descending());
+            Page<FeedbackDTO> feedbacks = this.feedbackService.getApprovedFeedbacksWithSpecs(courseId, pageable, ratingFilter, searchKeyword);
+
+            model.addAttribute("feedbacks", feedbacks);
+            model.addAttribute("newTotalPages", feedbacks.getTotalPages());
+            return "components/_feedback_cards :: feedbackCardList";
+        }catch (Exception e){
+            return ""; //tạm thời
         }
     }
 }

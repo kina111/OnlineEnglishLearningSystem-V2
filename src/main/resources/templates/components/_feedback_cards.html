@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="feedbackCardList" th:if="${feedbacks != null and !feedbacks.isEmpty()}">
+<!--    lưu thêm thông tin để xử lí button "Load more" phía giao diện-->
+    <span class="page-info d-none" th:data-total-pages="${newTotalPages}" th:text="${newTotalPages}"></span>
+    <div class="card shadow-sm mb-3" th:each="feedback : ${feedbacks}">
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-start gap-3">
+                <div class="feedback-avatar">
+                    <span th:text="${#strings.substring(feedback.userName, 0, 1)}">T</span>
+                </div>
+
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-0" th:text="${feedback.userName}">David T.</h6>
+                    <small class="text-muted" th:text="${#temporals.format(feedback.createdAt, 'dd/MM/yyyy')}">1 năm trước</small>
+
+                    <div class="star-rating-display my-2">
+                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                            <ion-icon th:if="${i <= feedback.rating}" name="star"></ion-icon>
+                            <ion-icon th:unless="${i <= feedback.rating}" name="star-outline" class="star-empty"></ion-icon>
+                        </th:block>
+                    </div>
+
+                    <div class="review-content">
+                        <th:block th:with="cutoff=200, reviewText=${feedback.review}">
+                            <th:block th:with="collapseId='reviewCollapse-' + ${feedback.id}">
+
+                                <div th:if="${#strings.length(reviewText) > cutoff}">
+                                    <span class="review-snippet" th:text="${#strings.substring(reviewText, 0, cutoff)}"></span>
+
+                                    <a class="btn-read-more"
+                                       data-bs-toggle="collapse"
+                                       th:data-bs-target="${collapseId}"
+                                       th:href="'#' + ${collapseId}"
+                                       role="button"
+                                       aria-expanded="false"
+                                       th:aria-controls="${collapseId}">
+                                        Xem thêm
+                                    </a>
+
+                                    <div class="collapse review-rest" th:id="${collapseId}">
+                                        <span th:text="${#strings.substring(reviewText, cutoff, #strings.length(reviewText))}"></span>
+                                    </div>
+                                </div>
+
+                                <div th:unless="${#strings.length(reviewText) > cutoff}">
+                                    <span th:text="${reviewText}"></span>
+                                </div>
+
+                            </th:block>
+                        </th:block>
+                    </div>
+
+                    <div class="feedback-actions">
+                        <button class="btn btn-like">
+                            <i class="far fa-thumbs-up me-1"></i> Hữu ích
+                        </button>
+                        <a href="#" class="btn-report">Báo cáo</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+</body>
+</html>
