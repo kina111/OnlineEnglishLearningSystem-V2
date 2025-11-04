@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý Slider</title>
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --primary-hover: #5a54d6;
+            --secondary-color: #4ecdc4;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #fff;
+            --bg-light: #f8f9fa;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .search-box {
+            grid-column: 1 / -1;
+        }
+
+        select, input {
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: var(--bg-color);
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-color);
+        }
+
+        th {
+            background: var(--bg-light);
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .status-show {
+            color: #28a745;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: #d4edda;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .status-hide {
+            color: #dc3545;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: #f8d7da;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a {
+            padding: 10px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .pagination a:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .pagination a.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .slider-image {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎠 Quản lý Slider</h1>
+        <a href="/admin/sliders/create" class="btn btn-primary">
+            <span>+</span> Thêm slider mới
+        </a>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <label>Trạng thái</label>
+            <select id="statusFilter" onchange="applyFilters()">
+                <option value="">Tất cả trạng thái</option>
+                <option value="SHOW" th:selected="${status == 'SHOW'}">Hiển thị</option>
+                <option value="HIDE" th:selected="${status == 'HIDE'}">Ẩn</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Số lượng hiển thị</label>
+            <select id="sizeFilter" onchange="applyFilters()">
+                <option value="5" th:selected="${currentSize == 5}">5</option>
+                <option value="10" th:selected="${currentSize == 10}">10</option>
+                <option value="20" th:selected="${currentSize == 20}">20</option>
+                <option value="50" th:selected="${currentSize == 50}">50</option>
+            </select>
+        </div>
+
+        <div class="filter-group search-box">
+            <label>Tìm kiếm</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text"
+                       id="searchInput"
+                       placeholder="Tìm theo tiêu đề hoặc link..."
+                       th:value="${keyword}">
+                <button type="button" onclick="applyFilters()" class="btn btn-primary">🔍 Tìm kiếm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="slidersTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Hình ảnh</th>
+                <th>Tiêu đề</th>
+                <th>Mô tả</th>
+                <th>Thứ tự</th>
+                <th>Trạng thái</th>
+                <th>Link</th>
+                <th>Lượt xem</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="slider : ${sliderPage.content}" th:unless="${sliderPage.content.empty}">
+                <td th:text="${slider.id}"></td>
+                <td>
+                    <img th:if="${slider.imageUrl}"
+                         th:src="${slider.imageUrl}"
+                         class="slider-image"
+                         alt="Slider Image">
+                    <span th:unless="${slider.imageUrl}" style="color: var(--text-light);">Chưa có ảnh</span>
+                </td>
+                <td th:text="${slider.title}"></td>
+                <td th:text="${slider.description}"></td>
+                <td th:text="${slider.orderNumber}"></td>
+                <td>
+                    <span th:if="${slider.status == 'SHOW'}" class="status-show">Hiển thị</span>
+                    <span th:unless="${slider.status == 'SHOW'}" class="status-hide">Ẩn</span>
+                </td>
+                <td>
+                    <a th:if="${slider.linkUrl}"
+                       th:href="${slider.linkUrl}"
+                       target="_blank"
+                       style="color: var(--primary-color); text-decoration: none;">
+                        🔗 Xem link
+                    </a>
+                    <span th:unless="${slider.linkUrl}" style="color: var(--text-light);">Không có</span>
+                </td>
+                <td th:text="${slider.viewCount}" style="font-weight: 600; color: var(--primary-color);"></td>
+                <td th:text="${#temporals.format(slider.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                <td>
+                    <div class="actions">
+                        <a th:href="@{/admin/sliders/update/{id}(id=${slider.id})}"
+                           class="btn btn-outline btn-sm">✏️ Sửa</a>
+                        <button th:onclick="'toggleStatus(' + ${slider.id} + ', \'' + (${slider.status} == 'SHOW' ? 'HIDE' : 'SHOW') + '\')'"
+                                th:class="'btn btn-sm ' + (${slider.status} == 'SHOW' ? 'btn-danger' : 'btn-success')"
+                                th:text="${slider.status == 'SHOW'} ? 'Ẩn' : 'Hiện'">
+                        </button>
+                        <button th:onclick="'deleteSlider(' + ${slider.id} + ')'"
+                                class="btn btn-danger btn-sm">🗑️ Xóa</button>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${sliderPage.content.empty}">
+                <td colspan="10" class="no-data">
+                    📝 Không tìm thấy slider nào
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${sliderPage.totalPages > 0}" class="pagination">
+        <a th:each="pageNumber : ${#numbers.sequence(startPage + 1, endPage + 1)}"
+           th:href="@{/admin/sliders(
+                   size=${currentSize},
+                   page=${pageNumber - 1},
+                   keyword=${keyword},
+                   status=${status}
+               )}"
+           th:text="${pageNumber}"
+           th:class="${pageNumber == currentPage + 1} ? 'active' : ''"></a>
+    </div>
+</div>
+
+<script>
+    function applyFilters() {
+        const keyword = document.getElementById('searchInput').value;
+        const status = document.getElementById('statusFilter').value;
+        const size = document.getElementById('sizeFilter').value;
+
+        const urlParams = new URLSearchParams();
+        if (keyword) urlParams.set('keyword', keyword);
+        if (status) urlParams.set('status', status);
+        if (size) urlParams.set('size', size);
+
+        window.location.href = '/admin/sliders?' + urlParams.toString();
+    }
+
+    function toggleStatus(id, newStatus) {
+        if (confirm('Bạn có chắc chắn muốn thay đổi trạng thái slider này?')) {
+            fetch(`/api/sliders/${id}/status?status=${newStatus}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Có lỗi xảy ra khi cập nhật trạng thái');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi cập nhật trạng thái');
+            });
+        }
+    }
+
+    function deleteSlider(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa slider này? Hành động này không thể hoàn tác!')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/sliders/delete/${id}`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyFilters();
+        }
+    });
+</script>
+</body>
+</html>
+
