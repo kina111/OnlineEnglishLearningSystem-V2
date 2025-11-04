@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Slider Component</title>
+    <link rel="stylesheet" th:href="@{/css/slider.css}">
+    <meta th:remove="tag" />
+    <!-- Using meta with th:remove to avoid extra head when used as fragment -->
+    <meta th:fragment="head" th:remove="tag" />
+    <!-- head fragment placeholder, no-op -->
+</head>
+<body>
+<!-- Slider Component -->
+<div class="slider-container" th:fragment="slider-container" th:if="${sliders != null and !sliders.empty}">
+    <div class="slider-wrapper">
+        <!-- Slider Slides -->
+        <div th:each="slider, iterStat : ${sliders}"
+             th:if="${slider.status == 'SHOW'}"
+             class="slider-slide"
+             th:classappend="${iterStat.first} ? 'active' : ''"
+             th:style="'background-image: url(' + ${slider.imageUrl} + ');'"
+             th:data-slider-id="${slider.id}">
+
+            <div class="slider-content">
+                <h2 class="slider-title" th:text="${slider.title}"></h2>
+                <p class="slider-description" th:text="${slider.description}"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <button class="slider-nav prev" onclick="changeSlide(-1)">‹</button>
+    <button class="slider-nav next" onclick="changeSlide(1)">›</button>
+
+    <!-- Dots -->
+    <div class="slider-dots" th:if="${#lists.size(sliders)} > 1">
+        <button th:each="slider, iterStat : ${sliders}"
+                th:if="${slider.status == 'SHOW'}"
+                class="slider-dot"
+                th:classappend="${iterStat.first} ? 'active' : ''"
+                th:onclick="'currentSlide(' + ${iterStat.index} + ')'">
+        </button>
+    </div>
+</div>
+
+<script th:fragment="script">
+    let currentSlideIndex = 0;
+    const slides = document.querySelectorAll('.slider-slide');
+    const dots = document.querySelectorAll('.slider-dot');
+    let slideInterval;
+
+    function showSlide(index) {
+        // Hide all slides
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        // Show current slide
+        if (slides[index]) {
+            slides[index].classList.add('active');
+        }
+        if (dots[index]) {
+            dots[index].classList.add('active');
+        }
+
+        currentSlideIndex = index;
+    }
+
+    function changeSlide(direction) {
+        let newIndex = currentSlideIndex + direction;
+
+        if (newIndex >= slides.length) {
+            newIndex = 0;
+        } else if (newIndex < 0) {
+            newIndex = slides.length - 1;
+        }
+
+        showSlide(newIndex);
+        resetInterval();
+    }
+
+    function currentSlide(index) {
+        showSlide(index);
+        resetInterval();
+    }
+
+    function resetInterval() {
+        clearInterval(slideInterval);
+        if (slides.length > 1) {
+            slideInterval = setInterval(() => {
+                changeSlide(1);
+            }, 5000); // Auto change every 5 seconds
+        }
+    }
+
+    // Initialize slider
+    document.addEventListener('DOMContentLoaded', function() {
+        if (slides.length > 1) {
+            resetInterval();
+        }
+
+        // Track view count for each slider
+        trackSliderViews();
+    });
+
+    function trackSliderViews() {
+        // Get all slider IDs from the page
+        const sliderElements = document.querySelectorAll('.slider-slide');
+        sliderElements.forEach(slide => {
+            const sliderId = slide.getAttribute('data-slider-id');
+            if (sliderId) {
+                // Send view tracking request
+                fetch(`/api/sliders/${sliderId}/view`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).catch(error => {
+                    console.log('View tracking failed:', error);
+                });
+            }
+        });
+    }
+
+    // Pause on hover
+    const sliderContainer = document.querySelector('.slider-container');
+    if (sliderContainer) {
+        sliderContainer.addEventListener('mouseenter', () => {
+            clearInterval(slideInterval);
+        });
+
+        sliderContainer.addEventListener('mouseleave', () => {
+            if (slides.length > 1) {
+                resetInterval();
+            }
+        });
+    }
+</script>
+</body>
+</html>
+

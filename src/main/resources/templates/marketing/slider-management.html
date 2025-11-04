@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider Management - Marketing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --success-color: #28a745;
+            --success-hover: #218838;
+            --danger-color: #dc3545;
+            --danger-hover: #c82333;
+            --warning-color: #ffc107;
+            --warning-hover: #e0a800;
+            --info-color: #17a2b8;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #fff;
+            --bg-light: #f8f9fa;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: var(--bg-color);
+            padding: 30px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .filter-section {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--success-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: var(--warning-hover);
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            justify-content: center;
+        }
+
+        .table-container {
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--bg-light);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .slider-image {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-visible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-hidden {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-draft {
+            background: #ffeaa7;
+            color: #5d4e37;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .pagination a:hover {
+            background: var(--bg-light);
+            border-color: var(--primary-color);
+        }
+
+        .pagination .active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Slider Management</h1>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form th:action="@{/marketing/sliders}" method="get" id="filterForm">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select name="status" id="statusFilter" onchange="applyFilters()">
+                        <option value="">All Status</option>
+                        <option value="SHOW" th:selected="${status == 'SHOW'}">VISIBLE</option>
+                        <option value="HIDE" th:selected="${status == 'HIDE'}">HIDDEN</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="flex: 2;">
+                    <label>Search</label>
+                    <input type="text"
+                           name="keyword"
+                           id="searchInput"
+                           th:value="${keyword}"
+                           placeholder="Search by title or backlink">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        <button type="button" onclick="resetFilters()" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <a th:href="@{/admin/sliders/create}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Create Slider
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="size" th:value="${currentSize}">
+        </form>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container" th:if="${sliderPage != null and !sliderPage.content.empty}">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Backlink</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="slider : ${sliderPage.content}">
+                <td th:text="${slider.id}"></td>
+                <td>
+                    <img th:if="${slider.imageUrl != null and !slider.imageUrl.isEmpty()}"
+                         th:src="${slider.imageUrl}"
+                         class="slider-image"
+                         alt="Slider Image">
+                    <span th:if="${slider.imageUrl == null or slider.imageUrl.isEmpty()}"
+                          style="color: var(--text-light); font-size: 12px;">No image</span>
+                </td>
+                <td th:text="${slider.title}"></td>
+                <td>
+                    <span th:if="${slider.linkUrl != null}" th:text="${slider.linkUrl}"></span>
+                    <span th:if="${slider.linkUrl == null}" style="color: var(--text-light);">-</span>
+                </td>
+                <td>
+                            <span class="status-badge"
+                                  th:classappend="${slider.status == 'SHOW'} ? 'status-visible' :
+                                                  (${slider.status == 'HIDE'} ? 'status-hidden' : 'status-draft')"
+                                  th:text="${slider.status}"></span>
+                </td>
+                <td>
+                    <div class="actions">
+                        <button class="btn btn-success btn-sm btn-icon"
+                                th:if="${slider.status == 'HIDE'}"
+                                th:onclick="'toggleSlider(' + ${slider.id} + ', \\'SHOW\\')'"
+                                title="Show">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm btn-icon"
+                                th:if="${slider.status == 'SHOW'}"
+                                th:onclick="'toggleSlider(' + ${slider.id} + ', \\'HIDE\\')'"
+                                title="Hide">
+                            <i class="fas fa-eye-slash"></i>
+                        </button>
+                        <a th:href="@{/admin/sliders/update/{id}(id=${slider.id})}"
+                           class="btn btn-primary btn-sm btn-icon"
+                           title="Edit">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination" th:if="${sliderPage.totalPages > 0}">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/marketing/sliders(page=${currentPage - 1}, keyword=${keyword}, status=${status}, size=${currentSize})}">
+                Previous
+            </a>
+            <span th:each="pageNumber : ${#numbers.sequence(startPage + 1, endPage + 1)}">
+                    <a th:if="${pageNumber != (currentPage + 1)}"
+                       th:href="@{/marketing/sliders(page=${pageNumber - 1}, keyword=${keyword}, status=${status}, size=${currentSize})}"
+                       th:text="${pageNumber}"></a>
+                    <span th:if="${pageNumber == (currentPage + 1)}"
+                          class="active"
+                          th:text="${pageNumber}"></span>
+                </span>
+            <a th:if="${currentPage < (totalPages - 1)}"
+               th:href="@{/marketing/sliders(page=${currentPage + 1}, keyword=${keyword}, status=${status}, size=${currentSize})}">
+                Next
+            </a>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="table-container" th:if="${sliderPage == null or sliderPage.content.empty}">
+        <div class="empty-state">
+            <i class="fas fa-images"></i>
+            <h3>No sliders found</h3>
+            <p>Create your first slider to get started</p>
+            <a th:href="@{/admin/sliders/create}" class="btn btn-success" style="margin-top: 20px;">
+                <i class="fas fa-plus"></i> Create Slider
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function applyFilters() {
+        document.getElementById('filterForm').submit();
+    }
+
+    function resetFilters() {
+        window.location.href = '/marketing/sliders';
+    }
+
+    function toggleSlider(id, newStatus) {
+        if (confirm('Are you sure you want to change the slider status?')) {
+            fetch('/api/sliders/' + id + '/status?status=' + newStatus, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('An error occurred while updating the slider status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the slider status');
+            });
+        }
+    }
+
+    // Auto-submit search on Enter key
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyFilters();
+        }
+    });
+</script>
+</body>
+</html>
