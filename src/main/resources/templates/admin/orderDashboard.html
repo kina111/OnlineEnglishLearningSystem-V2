@@ -127,7 +127,41 @@
         <h1>Order Dashboard</h1>
 <!--        <a th:href="@{/courses/create}" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Khóa Học Mới</a>-->
     </div>
+    <form method="get" th:action="@{/admin/orders}">
+        Status:
+        <select name="status">
+            <option value="">All</option>
+            <option value="PENDING">Pending</option>
+            <option value="PAID">Paid</option>
+        </select>
 
+<!--        <input type="number" name="minAmount" placeholder="Min amount">-->
+<!--        <input type="number" name="maxAmount" placeholder="Max amount">-->
+
+<!--        <input type="date" name="startDate">-->
+<!--        <input type="date" name="endDate">-->
+        From:
+        <select name="startDate">
+            <option value="">All</option>
+            <option value="5">5 ngày trước</option>
+            <option value="7">7 ngày trước</option>
+            <option value="365">1 năm trước</option>
+        </select>
+
+        Sort by:
+        <select name="sortBy">
+            <option value="createdAt">Created</option>
+            <option value="updatedAt">Updated</option>
+            <option value="amount">Amount</option>
+        </select>
+        Sort direction:
+        <select name="sortDir">
+            <option value="asc">↑ Asc</option>
+            <option value="desc">↓ Desc</option>
+        </select>
+
+        <button type="submit">Filter</button>
+    </form>
 <!--    <form action="" method="get" class="filters">-->
 <!--        <div class="filter-group search-box">-->
 <!--            <label for="keyword">Tìm kiếm theo tên</label>-->
@@ -205,10 +239,9 @@
             <tr th:each="order : ${orders}">
                 <td th:text="${order.id}">1</td>
                 <td th:text="${order.orderCode}">Order code</td>
-                <td th:text="${order.course.name}">Course</td> <td>
+                <td th:text="${order.course.name}">Course</td>
                 <td th:text="${order.user.fullName}">User</td>
-                <span class="badge" th:text="${order.status}">Status</span>
-            </td>
+                <td><span  th:text="${order.status}">Status</span></td>
                 <td th:text="${#numbers.formatCurrency(order.amount)}">Price</td>
                 <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
                 <td th:text="${#temporals.format(order.updatedAt, 'dd/MM/yyyy HH:mm')}">Date</td>
@@ -265,6 +298,45 @@
 <!--        </ul>-->
 <!--    </nav>-->
 
+    <div class="pagination" style="margin-top:20px; text-align:center;">
+        <nav th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center">
+
+                <!-- Previous -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/admin/orders(page=${currentPage - 1}, size=${pageSize},
+                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir})}">
+                        « Prev
+                    </a>
+                </li>
+
+                <!-- Page numbers -->
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:text="${i + 1}"
+                       th:href="@{/admin/orders(page=${i}, size=${pageSize},
+                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir})}">
+                    </a>
+                </li>
+
+                <!-- Next -->
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/admin/orders(page=${currentPage + 1}, size=${pageSize},
+                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir})}">
+                        Next »
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <p class="text-muted mt-2">
+            Trang <b th:text="${currentPage + 1}"></b> / <b th:text="${totalPages}"></b>
+        </p>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

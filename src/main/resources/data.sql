@@ -266,3 +266,22 @@ INSERT INTO notes (id, time_at_lesson, content, user_lesson_id) VALUES
 (19, '10:20', N'Khi kể chuyện (Part 2), phải dùng thì quá khứ (Past Simple, Past Continuous).', 6),
 (20, '15:00', N'Hoàn thành quiz, điểm chưa cao lắm, cần luyện thêm Part 2.', 6);
 SET IDENTITY_INSERT notes OFF;
+
+INSERT INTO orders (
+    order_code,
+    amount,
+    order_info,
+    status,
+    vnp_response_code,
+    vnp_transaction_no,
+    user_id,
+    course_id,
+    created_at,
+    updated_at
+) VALUES
+      ('ORD001', 1990000, N'Khóa học Java cơ bản', 'PAID', '00', '123456789', 1, 1, '02/11/2025', GETDATE()),
+      ('ORD002', 2490000, N'Khóa học Spring Boot nâng cao', 'PAID', '00', '123456790', 2, 2, '03/11/2025', GETDATE()),
+      ('ORD003', 990000, N'Khóa học SQL cho người mới bắt đầu', 'PENDING', NULL, NULL, 3, 3, GETDATE(), GETDATE()),
+      ('ORD004', 2990000, N'Khóa học ReactJS chuyên sâu', 'FAILED', '99', '123456791', 4, 4, GETDATE(), GETDATE()),
+      ('ORD005', 1590000, N'Khóa học Python thực hành', 'PAID', '00', '123456792', 5, 5, GETDATE(), GETDATE()),
+      ('ORD006', 3490000, N'Khóa học Machine Learning cơ bản', 'CANCELLED', NULL, NULL, 6, 6, GETDATE(), GETDATE());
