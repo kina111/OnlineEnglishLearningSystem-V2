@@ -51,7 +51,7 @@ public class Question extends BaseEntity{
     private MediaType mediaType; // Loại media đính kèm (nếu có)
 
     @Size(max = 2048, message = "Đường dẫn media không được vượt quá 2048 ký tự.")
-    @Column(length = 2048, columnDefinition = "NVARCHAR(255)") // Giới hạn độ dài trong CSDL
+    @Column(length = 2048, columnDefinition = "NVARCHAR(MAX)") // Giới hạn độ dài trong CSDL
     private String mediaUrl; // Đường dẫn tới file media
 
     @ManyToOne(fetch = FetchType.LAZY)

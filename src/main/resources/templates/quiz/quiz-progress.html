@@ -98,14 +98,17 @@
             color: #0f5132;
         }
 
-        .bookmarked {
-            border-color: #ffd54f;
-            box-shadow: 0 0 0 3px rgba(255, 213, 79, 0.4);
-        }
+
 
         .unanswered {
             background-color: #f8f9fa;
             color: var(--text-light);
+        }
+
+        .bookmarked {
+            border-color: #ffd54f;
+            box-shadow: 0 0 0 3px rgba(255, 213, 79, 0.4);
+            background-color: #fff8e1;
         }
 
         /* Legend */
@@ -197,10 +200,6 @@
         <div id="message"></div>
     </div>
 
-    <!-- Progress bar -->
-    <div class="progress-container">
-        <div class="progress-bar" id="progress-bar"></div>
-    </div>
 
     <!-- Questions -->
     <div class="question-grid">
@@ -230,7 +229,6 @@
 <script th:inline="javascript">
     const endTimeStr = /*[[${endTime}]]*/ '';
     const endTime = new Date(endTimeStr.replace(' ', 'T'));
-    const progressBar = document.getElementById('progress-bar');
     const timerEl = document.getElementById('timer');
     const msgEl = document.getElementById('message');
     const totalDuration = endTime - new Date();
@@ -251,9 +249,6 @@
         const seconds = diffSec % 60;
         timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
 
-        // Progress bar decreases with time
-        const progress = (diffMs / totalDuration) * 100;
-        progressBar.style.width = progress + '%';
     }
 
     updateTimer();

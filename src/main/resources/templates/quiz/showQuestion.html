@@ -216,7 +216,7 @@
         </div>
 
         <!-- ✅ Media -->
-        <div th:switch="${question.mediaType}" class="mb-4">
+        <div th:switch="${question.mediaType.name()}" class="mb-4">
             <img th:case="'IMAGE'" th:src="${question.mediaUrl}" alt="Image" class="rounded" style="max-width: 400px">
             <audio th:case="'AUDIO'" controls th:src="${question.mediaUrl}"></audio>
             <video th:case="'VIDEO'" controls th:src="${question.mediaUrl}" class="rounded" style="max-width: 400px"></video>
@@ -227,12 +227,14 @@
             <div th:case="MULTIPLE_CHOICE">
                 <div class="mb-4">
                     <div th:each="answer, iterStat : ${question.answerOptions}" class="answer-option">
-                        <input type="checkbox"
-                               name="answer"
-                               th:value="${answer.id}"
-                               th:id="'option_' + ${iterStat.index}"
-                               th:checked="${answeredOptionId != null and answeredOptionId.contains(answer.id)}" />
-                        <label th:for="'option_' + ${iterStat.index}" class="form-check-label">
+
+                        <label th:for="'option_' + ${iterStat.index}" class="form-check-label" style="width: 100%;">
+                            <input type="checkbox" class="btn-check"
+                                   name="answer"
+                                   th:value="${answer.id}"
+                                   th:id="'option_' + ${iterStat.index}"
+                                   th:checked="${answeredOptionId != null and answeredOptionId.contains(answer.id)}"
+                                   style="width: 100%;"/>
                             <span th:text="${(iterStat.index)} + '.'">A.</span>
                             <span th:text="${answer.content}">Answer content</span>
                         </label>
@@ -248,12 +250,10 @@
 
         <!-- ✅ Action Buttons -->
         <div class="action-buttons">
-            <button type="button" class="btn">Peek Answer</button>
-            <label class="btn d-flex align-items-center gap-2">
-                <input type="checkbox" name="isMarked"
-                       th:checked="${answeredOption != null and answeredOption.isBookmarked()}">
-                Mark
-            </label>
+<!--            <button type="button" class="btn">Peek Answer</button>-->
+            <input type="checkbox" name="isMarked" class="btn-check" id="btn-bookmark"
+                   th:checked="${answeredOption != null and answeredOption.isBookmarked()}">
+            <label class="btn btn-primary" for="btn-bookmark">Mark</label>
         </div>
 
         <!-- ✅ Footer Buttons -->

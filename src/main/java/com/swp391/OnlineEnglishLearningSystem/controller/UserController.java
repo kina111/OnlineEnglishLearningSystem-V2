@@ -233,6 +233,7 @@ public class UserController {
             //header
             EnrollmentLearningDTO enrollmentLearningDTO = this.enrollmentService.createEnrollmentDTO(enrollmentId);
 
+            session.setAttribute("currentEnrollmentId", enrollmentId);
             model.addAttribute("chapterLearningDTOS", chapterLearningDTOS);
             model.addAttribute("enrollmentLearningDTO", enrollmentLearningDTO);
             return "user/learningView";

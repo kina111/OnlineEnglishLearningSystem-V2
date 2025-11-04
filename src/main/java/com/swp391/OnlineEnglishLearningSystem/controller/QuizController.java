@@ -29,15 +29,17 @@ public class QuizController {
     private final AnswerOptionService answerOptionService;
     private final UserService userService;
     private final QuizAttemptService quizAttemptService;
+    private final UserLessonService userLessonService;
 
     public QuizController(QuestionService questionService, LessonService lessonService,
                           AnswerOptionService answerOptionService, UserService userService,
-                          QuizAttemptService quizAttemptService) {
+                          QuizAttemptService quizAttemptService, UserLessonService userLessonService) {
         this.questionService = questionService;
         this.lessonService = lessonService;
         this.answerOptionService = answerOptionService;
         this.userService = userService;
         this.quizAttemptService = quizAttemptService;
+        this.userLessonService = userLessonService;
     }
 
 
@@ -194,6 +196,9 @@ public class QuizController {
             return QUIZ_PATH + quizId + "/start";
         }
         quizAttemptService.finishQuizAttempt(quizAttempt,answers);
+        if(quizAttempt.getPassed()){
+            userLessonService.updateIsCompleted(quizAttempt.getUser().getId(), quizId);
+        }
         session.removeAttribute(QUIZ_SESSION);
         session.removeAttribute("quizAttemptId");
         return QUIZ_PATH+"attempt/"+quizAttemptId+"/result";
@@ -201,9 +206,9 @@ public class QuizController {
 
 
     @GetMapping("/attempt/{quizAttemptId}/result")
-    public String showQuizResult(@PathVariable Long quizAttemptId, Model model) {
+    public String showQuizResult(@PathVariable Long quizAttemptId, Model model,HttpSession session) {
         QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
-
+        Long enrollmentId = (Long) session.getAttribute("currentEnrollmentId");
         int totalQuestions = quizAttempt.getQuestions().size();
         int correctAnswers = (int) quizAttempt.getQuestions().stream()
                 .filter(QuizAttemptQuestion::getCorrect)
@@ -223,7 +228,7 @@ public class QuizController {
         model.addAttribute("accuracy", accuracy);
         model.addAttribute("minutes", minutes);
         model.addAttribute("seconds", seconds);
-
+        model.addAttribute("currentEnrollmentId", enrollmentId);
         return "quiz/quiz_result";
     }
 
@@ -270,8 +275,9 @@ public class QuizController {
     }
 
     @GetMapping("/attempt/{attemptId}/review")
-    public String getQuizReviewPage( @PathVariable Long attemptId, Model model) {
+    public String getQuizReviewPage( @PathVariable Long attemptId, Model model,HttpSession session) {
         QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(attemptId);
+        Long enrollmentId = session.getAttribute("currentEnrollmentId") != null ? (Long) session.getAttribute("enrollmentId") : null;
 
         int totalQuestions = quizAttempt.getQuestions().size();
         int correctAnswers = (int) quizAttempt.getQuestions().stream()
@@ -283,7 +289,7 @@ public class QuizController {
         model.addAttribute("totalQuestions", totalQuestions);
         model.addAttribute("correctAnswers", correctAnswers);
         model.addAttribute("accuracy", accuracy);
-
+        model.addAttribute("currentEnrollmentId", enrollmentId);
         return "quiz/attempt_detail";
     }
 

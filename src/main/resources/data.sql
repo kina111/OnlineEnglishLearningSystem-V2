@@ -152,7 +152,7 @@ INSERT INTO user_lesson_progress (id, user_id, lesson_id, enrollment_id, is_comp
 -- User 4 (Alice) - Enrollment 1 (Course 1: IELTS Speaking - Gồm 6 lessons: 16, 1, 17, 2, 18, 3)
 -- Giả sử đã học xong Chapter 1 (Lesson 16, 1). Progress 2/6 = 33%
 (1, 4, 16, 1, 1, DATEADD(day, -8, GETDATE())), -- Chapter 1 - Lecture 1 (Completed)
-(2, 4, 1, 1, 1, DATEADD(day, -7, GETDATE())),  -- Chapter 1 - Quiz 1 (Completed)
+(2, 4, 1, 1, 0, DATEADD(day, -7, GETDATE())),  -- Chapter 1 - Quiz 1 (Completed)
 (3, 4, 17, 1, 0, NULL),                        -- Chapter 2 - Lecture 2 (Not completed)
 (4, 4, 2, 1, 0, NULL),                         -- Chapter 2 - Quiz 2 (Not completed)
 (5, 4, 18, 1, 0, NULL),                        -- Chapter 3 - Lecture 3 (Not completed)
@@ -177,8 +177,8 @@ SET IDENTITY_INSERT wishlist OFF;
 ----
 SET IDENTITY_INSERT questions ON
 INSERT INTO questions (id,content, question_type, media_type, media_url, lesson_id, created_at, updated_at)
-VALUES  (1,N'What is the capital of France?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
-        (2,N'Which planet is known as the Red Planet?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+VALUES  (1,N'What is the capital of France?', 'MULTIPLE_CHOICE', 'IMAGE', 'https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg', 1, GETDATE(), GETDATE()),
+        (2,N'Which planet is known as the Red Planet?', 'MULTIPLE_CHOICE', 'VIDEO', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1', 1, GETDATE(), GETDATE()),
         (3,N'What is the largest ocean on Earth?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
         (4,N'Who wrote "Romeo and Juliet"?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
         (5,N'What is the chemical symbol for water?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
@@ -346,3 +346,22 @@ INSERT INTO feedbacks (id, rating, review, status, helpful_count, not_helpful_co
 (39, 5, N'Phần nội dung (html_content) của các bài quiz cũng được viết tốt, giải thích rõ ràng.', 'APPROVED', 3, 0, 20),
 (40, 4, N'Khóa học có 3 chương, 6 bài học (3 video, 3 quiz) là hơi ít. Mong có thêm nội dung về Part 3.', 'APPROVED', 5, 1, 21);
 SET IDENTITY_INSERT feedbacks OFF;
+
+INSERT INTO orders (
+    order_code,
+    amount,
+    order_info,
+    status,
+    vnp_response_code,
+    vnp_transaction_no,
+    user_id,
+    course_id,
+    created_at,
+    updated_at
+) VALUES
+      ('ORD001', 1990000, N'Khóa học Java cơ bản', 'PAID', '00', '123456789', 1, 1, '02/11/2025', GETDATE()),
+      ('ORD002', 2490000, N'Khóa học Spring Boot nâng cao', 'PAID', '00', '123456790', 2, 2, '03/11/2025', GETDATE()),
+      ('ORD003', 990000, N'Khóa học SQL cho người mới bắt đầu', 'PENDING', NULL, NULL, 3, 3, GETDATE(), GETDATE()),
+      ('ORD004', 2990000, N'Khóa học ReactJS chuyên sâu', 'FAILED', '99', '123456791', 4, 4, GETDATE(), GETDATE()),
+      ('ORD005', 1590000, N'Khóa học Python thực hành', 'PAID', '00', '123456792', 5, 5, GETDATE(), GETDATE()),
+      ('ORD006', 3490000, N'Khóa học Machine Learning cơ bản', 'CANCELLED', NULL, NULL, 6, 6, GETDATE(), GETDATE());

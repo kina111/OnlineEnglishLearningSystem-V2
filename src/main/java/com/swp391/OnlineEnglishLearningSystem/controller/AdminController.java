@@ -1,7 +1,9 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
+import com.swp391.OnlineEnglishLearningSystem.model.Order;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.OrderFilter;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -30,14 +33,16 @@ public class AdminController {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final CourseCategoryService courseCategoryService;
+    private final OrderService orderService;
 
-    public AdminController(UserService userService, UploadService uploadService, RoleService roleService, PasswordEncoder passwordEncoder, EmailService emailService, CourseCategoryService courseCategoryService) {
+    public AdminController(UserService userService, UploadService uploadService, RoleService roleService, PasswordEncoder passwordEncoder, EmailService emailService, CourseCategoryService courseCategoryService, OrderService orderService) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.courseCategoryService = courseCategoryService;
+        this.orderService = orderService;
     }
 
     //===================== DASHBOARD ========================
@@ -47,6 +52,7 @@ public class AdminController {
         model.addAttribute("users", users);
         return "admin/dashboard";
     }
+
 
     @GetMapping("/users")
     public String getUsers(Model model,
@@ -283,5 +289,41 @@ public class AdminController {
             bindingResult.rejectValue("name", "error.courseCategory", e.getMessage());
             return "redirect:/admin/course_categories";
         }
+    }
+
+    @GetMapping("/orders")
+    public String orderManagement(Model model, @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "5") int size,
+                                  @RequestParam(required = false, defaultValue = "") String status,
+                                  @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
+                                  @RequestParam(required = false, defaultValue = "DESC") String sortDir,
+                                  @RequestParam(required = false, defaultValue = "0")int startDate){
+//        List<Order> orders = orderService.getAllOrders();
+        OrderFilter filter = new OrderFilter();
+        filter.setStatus(status);
+        filter.setSortBy(sortBy);
+        filter.setSortDir(sortDir);
+        switch (startDate){
+            case 7:
+                filter.setStartUpdate(LocalDateTime.now().minusDays(7) );
+                break;
+            case 30:
+                filter.setStartUpdate(LocalDateTime.now().minusMonths(1) );
+                break;
+            case 365:
+                filter.setStartUpdate(LocalDateTime.now().minusYears(1) );
+                break;
+        }
+
+        Page<Order> orders = orderService.getOrdersWithSpecs(filter, page, size);
+        for(Order order : orders){
+            System.out.println(order.getId());
+        }
+        model.addAttribute("orders", orders);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", orders.getTotalPages());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("filter", filter);
+        return "admin/orderDashboard";
     }
 }

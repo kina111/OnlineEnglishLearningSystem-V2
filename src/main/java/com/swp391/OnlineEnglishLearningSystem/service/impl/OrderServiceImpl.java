@@ -4,10 +4,19 @@ import com.swp391.OnlineEnglishLearningSystem.config.VNPayConfig;
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.Order;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.OrderFilter;
 import com.swp391.OnlineEnglishLearningSystem.repository.OrderRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.OrderService;
+import com.swp391.OnlineEnglishLearningSystem.service.specification.OrderSpecs;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -152,5 +161,33 @@ public class OrderServiceImpl implements OrderService {
         order.setVnpResponseCode("00");
         order.setVnpTransactionNo(fields.get("vnp_TransactionNo").toString());
         return this.orderRepository.save(order);
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    @Override
+    public Page<Order> getOrdersWithSpecs(OrderFilter filter,int page, int size) {
+//        String range = filter.;
+        String status = filter.getStatus();
+        String sortBy = filter.getSortBy();
+        String direction = filter.getSortDir();
+        if (direction == null) direction = "DESC";
+        direction = direction.equalsIgnoreCase("desc") ? "DESC" : "ASC";
+        LocalDateTime updatedFrom = filter.getStartUpdate();
+
+        Specification<Order> spec = null;
+        if (updatedFrom != null) {
+            spec = OrderSpecs.fromUpdateDate(updatedFrom);
+        }
+        if(status != null && !status.isEmpty())
+        spec = OrderSpecs.hasStatus(status);
+
+        Sort sort = Sort.by(Sort.Direction.fromString(direction),  sortBy != null ? sortBy : "updatedAt");
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return orderRepository.findAll(spec, pageable);
     }
 }
