@@ -3,6 +3,7 @@ package com.swp391.OnlineEnglishLearningSystem.controller;
 import com.swp391.OnlineEnglishLearningSystem.model.ApiResponse;
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
+import com.swp391.OnlineEnglishLearningSystem.model.Enrollment;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseFeedbackStats;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.FeedbackDTO;
@@ -73,16 +74,16 @@ public class CourseController {
         try{
             Course course = this.courseService.findById(courseId);
             Long userId = (Long) session.getAttribute("currentUserId");
-            boolean isEnrolled = this.enrollmentService.isEnrolled(userId, courseId);
+            Enrollment e = this.enrollmentService.findByUserIdAndCourseId(userId, courseId);
             boolean inWishlist = this.wishlistService.findByUserIdAndCourseId(userId, courseId).isPresent();
             Page<FeedbackDTO> initialFeedbacks = this.feedbackService.getApprovedFeedbacks(courseId, PageRequest.of(0, 5, Sort.by("rating").descending()));
             CourseFeedbackStats courseFeedbackStats = this.feedbackService.getFeedbackStats(courseId);
 
-
+            if (e != null) model.addAttribute("currentEnrollmentId", e.getId());
             model.addAttribute("courseFeedbackStats", courseFeedbackStats);
             model.addAttribute("initialFeedbacks", initialFeedbacks);
             model.addAttribute("inWishlist", inWishlist);
-            model.addAttribute("isEnrolled", isEnrolled);
+            model.addAttribute("isEnrolled", e != null);
             model.addAttribute("course", course);
             return "user/viewCourseDetails";
         }catch (Exception e){

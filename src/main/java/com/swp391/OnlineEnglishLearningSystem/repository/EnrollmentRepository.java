@@ -48,4 +48,19 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
             "WHERE u.id = :userId " +
             "GROUP BY e.id, c.name, c.thumbnail, c.shortDescription, e.completedAt, e.lastAccessAt, e.enrolledAt")
     List<EnrollmentInfoDTO> findEnrollmentInfoByUserId(@Param("userId") Long userId);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END
+        FROM Enrollment e
+        WHERE e.course.id = :courseId AND e.user.id = :userId
+    """)
+    boolean existsByUserAndCourse(@Param("userId") Long userId,
+                                  @Param("courseId") Long courseId);
+
+    @Query("""
+        SELECT e
+        FROM Enrollment e
+        WHERE e.course.id = :courseId AND e.user.id = :userId
+    """)
+    Enrollment findByUserIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
 }
