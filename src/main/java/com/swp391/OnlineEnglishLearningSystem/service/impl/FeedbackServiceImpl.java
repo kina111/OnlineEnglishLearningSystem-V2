@@ -66,7 +66,8 @@ public class FeedbackServiceImpl implements FeedbackService {
             totalStars += rating;
         }
 
-        return new CourseFeedbackStats(feedbacks.size(), totalStars / feedbacks.size(), ratingCountMap);
+        double averageStars = feedbacks.isEmpty() ? 0 : totalStars / feedbacks.size();
+        return new CourseFeedbackStats(feedbacks.size(), averageStars, ratingCountMap);
     }
 
     @Override
