@@ -14,11 +14,12 @@ public class OrderFilter {
     private LocalDateTime endUpdate;
     private String sortBy; // amount, createdAt, updatedAt
     private String sortDir; // asc, desc
+    private String search;
 
     public OrderFilter() {
     }
 
-    public OrderFilter(String status, Double minAmount, Double maxAmount, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime startUpdate, LocalDateTime endUpdate, String sortBy, String sortDir) {
+    public OrderFilter(String status, Double minAmount, Double maxAmount, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime startUpdate, LocalDateTime endUpdate, String sortBy, String sortDir, String search) {
         this.status = status;
         this.minAmount = minAmount;
         this.maxAmount = maxAmount;
@@ -28,6 +29,15 @@ public class OrderFilter {
         this.endUpdate = endUpdate;
         this.sortBy = sortBy;
         this.sortDir = sortDir;
+        this.search = search;
+    }
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
     }
 
     public String getStatus() {

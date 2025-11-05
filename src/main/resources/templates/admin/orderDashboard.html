@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Dashboard</title>
+    <title>Enrollment Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <style>
@@ -113,70 +113,119 @@
 <body>
 
 <div class="container">
-<!--    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">-->
-<!--        <i class="fas fa-check-circle me-2"></i>-->
-<!--        <span th:text="${message}"></span>-->
-<!--        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
-<!--    </div>-->
-<!--    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">-->
-<!--        <i class="fas fa-exclamation-triangle me-2"></i>-->
-<!--        <span th:text="${error}"></span>-->
-<!--        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
-<!--    </div>-->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <div class="header">
-        <h1>Order Dashboard</h1>
+        <h1>Enrollment Dashboard</h1>
 <!--        <a th:href="@{/courses/create}" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Khóa Học Mới</a>-->
     </div>
-    <form method="get" th:action="@{/admin/orders}">
-        Status:
-        <select name="status">
-            <option value="">All</option>
-            <option value="PENDING">Pending</option>
-            <option value="PAID">Paid</option>
-        </select>
+    <div class="container mt-3">
+        <div class="row g-3">
+            <!-- Chart -->
+            <div class="col-12">
+                <div class="card shadow-sm p-3">
+                    <h5 class="mb-3">Biểu đồ doanh thu theo tháng</h5>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            <!-- Card 1 -->
+            <div class="col-md-6">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng doanh thu</h5>
+                        <p class="fs-4 fw-bold" th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="col-md-6">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng số đơn hàng</h5>
+                        <p class="fs-4 fw-bold" th:text="${allOrders.size()}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <form method="get" th:action="@{/admin/orders}" class="filters">
+        <div class="filter-group search-box">
+            <label for="keyword">Tìm kiếm theo tên</label>
+            <input type="text" id="keyword" name="keyword" placeholder="Nhập tên khóa học..." th:value="${currentKeyword}">
+        </div>
+
+        <div class="filter-group">
+            <label for="status">Trạng thái</label>
+            <select id="status" name="status">
+                <option value="">Tất cả trạng thái</option>
+                <option th:each="st : ${allStatuses}"
+                        th:value="${st}"
+                        th:text="${st}"
+                        th:selected="${st.name().equals(filter.status)}"
+                        >Status</option>
+            </select>
+        </div>
 
 <!--        <input type="number" name="minAmount" placeholder="Min amount">-->
 <!--        <input type="number" name="maxAmount" placeholder="Max amount">-->
 
 <!--        <input type="date" name="startDate">-->
 <!--        <input type="date" name="endDate">-->
-        From:
-        <select name="startDate">
-            <option value="">All</option>
-            <option value="5">5 ngày trước</option>
-            <option value="7">7 ngày trước</option>
-            <option value="365">1 năm trước</option>
-        </select>
+<!--        <div class="filter-group">-->
+<!--            <label for="startDate">Từ</label>-->
+<!--            <select name="startUpdate" id="startDate">-->
+<!--                <option value="">All</option>-->
+<!--                <option value="7" th:selected="${filter.startDate == 7 }">1 tuần trước</option>-->
+<!--                <option value="30" th:selected="${filter.startDate == 30 }">1 tháng trước</option>-->
+<!--                <option value="365" th:selected="${filter.startDate == 365 }">1 năm trước</option>-->
+<!--            </select>-->
+<!--        </div>-->
+        <div class="filter-group">
+            <label for="startUpdate">Từ</label>
+            <input type="date" name="startUpdate" class="form-control" id="startUpdate" th:value="${filter.startUpdate}">
+        </div>
+        <div class="filter-group">
+            <label for="endUpdate">Đến</label>
+            <input type="date" name="endUpdate" class="form-control" id="endUpdate" th:value="${filter.endUpdate}">
+        </div>
 
-        Sort by:
-        <select name="sortBy">
-            <option value="createdAt">Created</option>
-            <option value="updatedAt">Updated</option>
-            <option value="amount">Amount</option>
-        </select>
-        Sort direction:
-        <select name="sortDir">
-            <option value="asc">↑ Asc</option>
-            <option value="desc">↓ Desc</option>
-        </select>
+        <div class="filter-group">
+            <label for="sortBy">Sắp xếp bởi</label>
+            <select name="sortBy" id="sortBy">
+                <option value="updatedAt" th:selected="${filter.sortBy == 'updatedAt'}">Updated</option>
+                <option value="createdAt" th:selected="${filter.sortBy == 'createdAt'}">Created</option>
+                <option value="amount" th:selected="${filter.sortBy == 'amount'}">Amount</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="sortDir">Sắp xếp theo</label>
+            <select name="sortDir" id="sortDir">
+                <option value="asc" th:selected="${filter.sortDir == 'asc'}">↑ Asc</option>
+                <option value="desc" th:selected="${filter.sortDir == 'desc'}">↓ Desc</option>
+            </select>
+        </div>
 
-        <button type="submit">Filter</button>
+
+        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
     </form>
-<!--    <form action="" method="get" class="filters">-->
+<!--    <form action="" method="get" >-->
 <!--        <div class="filter-group search-box">-->
 <!--            <label for="keyword">Tìm kiếm theo tên</label>-->
 <!--            <input type="text" id="keyword" name="keyword" placeholder="Nhập tên khóa học..." th:value="${currentKeyword}">-->
 <!--        </div>-->
-<!--        <div class="filter-group">-->
-<!--            <label for="status">Trạng thái</label>-->
-<!--            <select id="status" name="status">-->
-<!--                <option value="">Tất cả trạng thái</option>-->
-<!--                <option th:each="st : ${allStatuses}"-->
-<!--                        th:value="${st}"-->
-<!--                        th:text="${st.displayName}"-->
-<!--                        th:selected="${st == currentStatus}">Status</option>-->
-<!--            </select>-->
-<!--        </div>-->
+
 <!--        <div class="filter-group">-->
 <!--            <label for="categoryId">Danh mục</label>-->
 <!--            <select id="categoryId" name="categoryId">-->
@@ -267,8 +316,8 @@
 <!--                    </form>-->
 <!--                </td>-->
                 <td>
-                    <a href="">Cancel</a>
-                    <a href="">Detail</a>
+                    <a class="btn-primary" href="">Cancel</a>
+                    <a class="btn-primary" href="">Detail</a>
                 </td>
             </tr>
             </tbody>
@@ -298,7 +347,7 @@
 <!--        </ul>-->
 <!--    </nav>-->
 
-    <div class="pagination" style="margin-top:20px; text-align:center;">
+    <div >
         <nav th:if="${totalPages > 1}">
             <ul class="pagination justify-content-center">
 
@@ -318,7 +367,7 @@
                     <a class="page-link"
                        th:text="${i + 1}"
                        th:href="@{/admin/orders(page=${i}, size=${pageSize},
-                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir})}">
+                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir}, startDate=${filter.startDate})}">
                     </a>
                 </li>
 
@@ -326,7 +375,7 @@
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                     <a class="page-link"
                        th:href="@{/admin/orders(page=${currentPage + 1}, size=${pageSize},
-                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir})}">
+                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir}, startDate=${filter.startUpdate})}">
                         Next »
                     </a>
                 </li>
@@ -338,6 +387,30 @@
         </p>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+    const monthLabels = [[${monthLabels}]];
+    const monthTotals = [[${monthTotals}]];
+
+    const ctx = document.getElementById('revenueChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Doanh thu theo tháng (VNĐ)',
+                data: monthTotals,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

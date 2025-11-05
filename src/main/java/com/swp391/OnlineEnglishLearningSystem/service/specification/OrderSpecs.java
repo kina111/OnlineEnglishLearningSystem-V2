@@ -28,7 +28,7 @@ public class OrderSpecs {
             return criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), date);
         });
     }
-    public static Specification<Order> toCreateDate(LocalDate date) {
+    public static Specification<Order> toCreateDate(LocalDateTime date) {
         return ((root, query, criteriaBuilder) -> {
             return criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), date);
         });
@@ -39,7 +39,7 @@ public class OrderSpecs {
             return criteriaBuilder.greaterThanOrEqualTo(root.get("updatedAt"), date);
         });
     }
-    public static Specification<Order> toUpdateDate(LocalDate date) {
+    public static Specification<Order> toUpdateDate(LocalDateTime date) {
         return ((root, query, criteriaBuilder) -> {
             return criteriaBuilder.lessThanOrEqualTo(root.get("updatedAt"), date);
         });
@@ -48,6 +48,12 @@ public class OrderSpecs {
     public static Specification<Order> hasStatus(String status) {
         return ((root, query, criteriaBuilder) ->  {
            return criteriaBuilder.equal(root.get("status"), status);
+        });
+    }
+
+    public static Specification<Order> hasOrderCode(String code) {
+        return ((root, query, criteriaBuilder) ->  {
+            return criteriaBuilder.like(root.get("orderCode"), code);
         });
     }
 
