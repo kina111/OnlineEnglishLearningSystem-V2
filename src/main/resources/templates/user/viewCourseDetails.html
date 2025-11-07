@@ -343,9 +343,9 @@
         <h1 th:text="${course.name}">Course Name</h1>
         <p class="lead" th:utext="${course.shortDescription}">Short description...</p>
         <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-warning text-dark me-2">Bán chạy nhất</span>
-            <span class="text-warning me-1">4.7</span> <i class="fas fa-star text-warning"></i>
-            <a href="#" class="ms-2 link-light">(1,234 đánh giá)</a>
+            <span class="badge bg-warning text-dark me-2" th:if="${course.featured}">Nổi bật</span>
+            <span class="text-warning me-1" th:text="${courseFeedbackStats.averageRating}">4.7</span> <i class="fas fa-star text-warning"></i>
+            <a href="#feedback-section" class="ms-2 link-light" th:text="'(' + ${courseFeedbackStats.totalFeedbacks} + ' đánh giá)'">(1,234 đánh giá)</a>
         </div>
         <p class="mb-0">Tạo bởi <a href="#" class="link-light" th:text="${course.author.fullName}">Author Name</a></p>
     </div>
@@ -371,8 +371,7 @@
                                 <span class="fw-bold chapter-name-display" th:text="'Chương ' + ${chapter.orderNumber} + ': ' + ${chapter.name}"></span>
                             </button>
                         </h2>
-                        <div th:id="'collapse-' + ${chapter.id}" class="accordion-collapse collapse"
-                             th:attr="data-bs-parent='#chaptersAccordion'">
+                        <div th:id="'collapse-' + ${chapter.id}" class="accordion-collapse collapse">
                             <div class="accordion-body">
                                 <p class="fst-italic text-muted chapter-short-description" th:text="${chapter.shortDescription}"></p>
                                 <hr>
@@ -439,15 +438,21 @@
                     <div class="rating-distribution">
                         <div class="rating-bar-row" th:each="i : ${#numbers.sequence(5, 1, -1)}">
                             <div class="rating-bar-progress">
-                                <div class="rating-bar-fill"
+                                <div class="rating-bar-fill" th:if="${courseFeedbackStats.totalFeedbacks > 0}"
                                      th:style="'width: ' + ${courseFeedbackStats.ratingCountMap.get(i)}/${courseFeedbackStats.totalFeedbacks} * 100 + '%;'">} + '%;'">
                                 </div>
+                                <div class="rating-bar-fill" th:unless="${courseFeedbackStats.totalFeedbacks > 0}"
+                                     style="width: 0%;">} + '%;'">
+                                </div>
+
                             </div>
                             <div class="rating-bar-stars">
                                 <ion-icon name="star"></ion-icon> (<span th:text="${i}">5</span>)
                             </div>
-                            <div class="rating-bar-percent"
+                            <div class="rating-bar-percent" th:if="${courseFeedbackStats.totalFeedbacks > 0}"
                                  th:text="${#numbers.formatDecimal(courseFeedbackStats.ratingCountMap.get(i) * 100/ courseFeedbackStats.totalFeedbacks, 1, 1)} + '%'">42%
+                            </div>
+                            <div class="rating-bar-percent" th:unless="${courseFeedbackStats.totalFeedbacks > 0}">0%
                             </div>
                         </div>
 
@@ -517,7 +522,7 @@
                         </button>
 
                         <!-- Các nút Mua/Vào học -->
-                        <a th:if="${isEnrolled}" href="#" class="btn btn-success btn-lg"> <i class="fas fa-play"></i> Vào học </a>
+                        <a th:if="${isEnrolled}" th:href="@{'/enrollments/' + ${currentEnrollmentId}}" class="btn btn-success btn-lg"> <i class="fas fa-play"></i> Vào học </a>
                         <a th:unless="${isEnrolled}" th:href="@{/payment/checkout/{courseId}(courseId=${course.id})}" class="btn btn-primary btn-lg"> <i class="fas fa-shopping-cart"></i> Mua ngay </a>
 
                     </div>
