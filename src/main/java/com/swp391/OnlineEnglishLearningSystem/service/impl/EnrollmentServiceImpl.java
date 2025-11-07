@@ -63,10 +63,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return result;
     }
 
-    public boolean isEnrolled(Long userId, Long courseId) {
-        if (userId == null || courseId == null) return false;
-        Enrollment temp = this.enrollmentRepository.findByCourseId(courseId);
-        if (temp == null) return false;
-        return temp.getUser().getId() == (userId);
+    @Override
+    public Enrollment findByUserIdAndCourseId(Long userId, Long courseId) {
+        return this.enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
     }
 }

@@ -1,330 +1,230 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin_layout :: layout(
+        pageTitle = ~{::title},
+        pageContent = ~{::.page-content-wrapper},
+        pageScripts = ~{::.page-scripts-wrapper}
+      )}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Dashboard for Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <style>
-        :root {
-            --primary-color: #6c63ff;
-            --primary-hover: #5a54d6;
-            --secondary-color: #4ecdc4;
-            --text-color: #333;
-            --text-light: #666;
-            --bg-color: #fff;
-            --bg-light: #f8f9fa;
-            --border-color: #e9ecef;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --radius: 12px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light); color: var(--text-color); line-height: 1.6; padding: 20px;
-        }
-        .container {
-            max-width: 1600px; /* Wider for dashboard */
-            margin: 0 auto; background: var(--bg-color); border-radius: var(--radius);
-            box-shadow: var(--shadow); padding: 30px;
-        }
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);
-        }
-        .header h1 { color: var(--primary-color); font-size: 28px; font-weight: 600; }
-
-        .btn {
-            padding: 10px 20px; /* Slightly smaller padding */
-            border: none; border-radius: var(--radius); cursor: pointer; font-size: 14px;
-            font-weight: 500; text-decoration: none; display: inline-flex; align-items: center;
-            gap: 8px; transition: all 0.3s ease; white-space: nowrap; /* Prevent wrapping */
-        }
-        .btn-primary { background: var(--primary-color); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
-        .btn-outline-primary { background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); }
-        .btn-outline-primary:hover { background: var(--primary-color); color: white; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-danger:hover { background: #c82333; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; gap: 4px; border-radius: 8px; }
-
-        .filters {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;
-            margin-bottom: 30px; padding: 25px; background: var(--bg-light);
-            border-radius: var(--radius); border: 1px solid var(--border-color);
-        }
-        .filter-group { display: flex; flex-direction: column; gap: 8px; }
-        .filter-group label { font-size: 14px; font-weight: 500; color: var(--text-light); }
-        .search-box { grid-column: 1 / -1; }
-
-        select, input[type="text"] {
-            padding: 12px 16px; border: 2px solid var(--border-color); border-radius: var(--radius);
-            font-size: 14px; transition: all 0.3s ease; background: var(--bg-color); width: 100%;
-        }
-        select:focus, input[type="text"]:focus {
-            outline: none; border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
-        }
-
-        .table-container { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border-color); }
-        table { width: 100%; border-collapse: collapse; background: var(--bg-color); }
-        th {
-            background: var(--bg-light); padding: 16px 12px; text-align: left;
-            font-weight: 600; color: var(--text-color); border-bottom: 2px solid var(--border-color);
-            cursor: pointer; transition: background-color 0.3s ease; position: relative; white-space: nowrap;
-        }
-        th:hover { background: #e9ecef; }
-        th a { color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-        .sort-icon { color: var(--primary-color); font-weight: bold; }
-
-        td { padding: 14px 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        tr:hover { background: #f8f9fa; }
-
-        .badge { font-size: 12px; padding: 6px 12px; border-radius: 20px; font-weight: 600; }
-        .status-PUBLISHED { color: #198754; background: #d1e7dd; }
-        .status-PENDING { color: #664d03; background: #fff3cd; }
-        .status-DRAFT { color: #6c757d; background: #e2e3e5; }
-        .featured-yes { color: #0a58ca; }
-        .featured-no { color: #6c757d; }
-
-        .actions { display: flex; gap: 8px; }
-
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 30px; flex-wrap: wrap; }
-        .pagination a, .pagination span { padding: 10px 16px; border: 2px solid var(--border-color); border-radius: var(--radius); text-decoration: none; color: var(--text-color); transition: all 0.3s ease; font-weight: 500; display: inline-block; }
-        .pagination a:hover { border-color: var(--primary-color); color: var(--primary-color); }
-        .pagination span.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
-        .pagination span.disabled { color: #adb5bd; background-color: var(--bg-light); border-color: var(--border-color); cursor: default; }
-
-        .no-data { text-align: center; padding: 40px; color: var(--text-light); }
-
-        @media (max-width: 992px) {
-            .actions { flex-direction: column; align-items: flex-start; }
-            .btn { width: 100%; justify-content: center; }
-        }
-        @media (max-width: 768px) {
-            .filters { grid-template-columns: 1fr; }
-            .header { flex-direction: column; gap: 20px; align-items: flex-start; }
-        }
-    </style>
 </head>
 <body>
+    <div class="page-content-wrapper content-area">
+        <div class="container">
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div class="header">
+                <h1>Quản lí course</h1>
+                <a th:href="@{/courses/create}" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Khóa Học Mới</a>
+            </div>
 
-<div class="container">
-    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle me-2"></i>
-        <span th:text="${message}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-triangle me-2"></i>
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div class="header">
-        <h1>Quản lí course</h1>
-        <a th:href="@{/courses/create}" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Khóa Học Mới</a>
-    </div>
+            <form th:action="@{/courses/admin}" method="get" class="filters">
+                <div class="filter-group search-box">
+                    <label for="keyword">Tìm kiếm theo tên</label>
+                    <input type="text" id="keyword" name="keyword" placeholder="Nhập tên khóa học..." th:value="${currentKeyword}">
+                </div>
+                <div class="filter-group">
+                    <label for="status">Trạng thái</label>
+                    <select id="status" name="status">
+                        <option value="">Tất cả trạng thái</option>
+                        <option th:each="st : ${allStatuses}"
+                                th:value="${st}"
+                                th:text="${st.displayName}"
+                                th:selected="${st == currentStatus}">Status</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="categoryId">Danh mục</label>
+                    <select id="categoryId" name="categoryId">
+                        <option value="">Tất cả danh mục</option>
+                        <option th:each="cat : ${allCategories}"
+                                th:value="${cat.id}"
+                                th:text="${cat.name}"
+                                th:selected="${cat.id == currentCategoryId}">Category</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="expertId">Chuyên gia</label>
+                    <select id="expertId" name="expertId">
+                        <option value="">Tất cả chuyên gia</option>
+                        <option th:each="expert : ${allExperts}"
+                                th:value="${expert.id}"
+                                th:text="${expert.fullName}"
+                                th:selected="${expert.id == currentExpertId}">Expert</option>
+                    </select>
+                </div>
+                <div class="filter-group d-flex justify-content-end">
+                    <input type="hidden" name="sort" th:value="${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')}">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
+                </div>
+            </form>
 
-    <form th:action="@{/courses/admin}" method="get" class="filters">
-        <div class="filter-group search-box">
-            <label for="keyword">Tìm kiếm theo tên</label>
-            <input type="text" id="keyword" name="keyword" placeholder="Nhập tên khóa học..." th:value="${currentKeyword}">
-        </div>
-        <div class="filter-group">
-            <label for="status">Trạng thái</label>
-            <select id="status" name="status">
-                <option value="">Tất cả trạng thái</option>
-                <option th:each="st : ${allStatuses}"
-                        th:value="${st}"
-                        th:text="${st.displayName}"
-                        th:selected="${st == currentStatus}">Status</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="categoryId">Danh mục</label>
-            <select id="categoryId" name="categoryId">
-                <option value="">Tất cả danh mục</option>
-                <option th:each="cat : ${allCategories}"
-                        th:value="${cat.id}"
-                        th:text="${cat.name}"
-                        th:selected="${cat.id == currentCategoryId}">Category</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="expertId">Chuyên gia</label>
-            <select id="expertId" name="expertId">
-                <option value="">Tất cả chuyên gia</option>
-                <option th:each="expert : ${allExperts}"
-                        th:value="${expert.id}"
-                        th:text="${expert.fullName}"
-                        th:selected="${expert.id == currentExpertId}">Expert</option>
-            </select>
-        </div>
-        <div class="filter-group d-flex justify-content-end">
-            <input type="hidden" name="sort" th:value="${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')}">
-            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
-        </div>
-    </form>
-
-    <div class="table-container">
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>
-                    <a th:href="@{/courses/admin(expertId=${currentExpertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, sort=${coursePage.sort.getOrderFor('name') == null || coursePage.sort.getOrderFor('name').direction.name() == 'DESC' ? 'name,asc' : 'name,desc'})}">
-                        Tên Khóa Học
-                        <span th:if="${coursePage.sort.getOrderFor('name') != null}" class="sort-icon">
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>
+                            <a th:href="@{/courses/admin(expertId=${currentExpertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, sort=${coursePage.sort.getOrderFor('name') == null || coursePage.sort.getOrderFor('name').direction.name() == 'DESC' ? 'name,asc' : 'name,desc'})}">
+                                Tên Khóa Học
+                                <span th:if="${coursePage.sort.getOrderFor('name') != null}" class="sort-icon">
                                 <i th:classappend="${coursePage.sort.getOrderFor('name').direction.name() == 'ASC' ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
                             </span>
-                    </a>
-                </th>
-                <th>Danh Mục</th>
-                <th>Trạng Thái</th>
-                <th>Nổi Bật</th>
-                <th>Giá</th>
-                <th>
-                    <a th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, sort=${coursePage.sort.getOrderFor('createdAt') == null || coursePage.sort.getOrderFor('createdAt').direction.name() == 'ASC' ? 'createdAt,desc' : 'createdAt,asc'})}">
-                        Ngày Tạo
-                        <span th:if="${coursePage.sort.getOrderFor('createdAt') != null}" class="sort-icon">
+                            </a>
+                        </th>
+                        <th>Danh Mục</th>
+                        <th>Trạng Thái</th>
+                        <th>Nổi Bật</th>
+                        <th>Giá</th>
+                        <th>
+                            <a th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, sort=${coursePage.sort.getOrderFor('createdAt') == null || coursePage.sort.getOrderFor('createdAt').direction.name() == 'ASC' ? 'createdAt,desc' : 'createdAt,asc'})}">
+                                Ngày Tạo
+                                <span th:if="${coursePage.sort.getOrderFor('createdAt') != null}" class="sort-icon">
                                 <i th:classappend="${coursePage.sort.getOrderFor('createdAt').direction.name() == 'ASC' ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
                             </span>
-                    </a>
-                </th>
-                <th>
-                    <a th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, sort=${coursePage.sort.getOrderFor('updatedAt') == null || coursePage.sort.getOrderFor('updatedAt').direction.name() == 'ASC' ? 'updatedAt,desc' : 'updatedAt,asc'})}">
-                        Cập Nhật
-                        <span th:if="${coursePage.sort.getOrderFor('updatedAt') != null}" class="sort-icon">
+                            </a>
+                        </th>
+                        <th>
+                            <a th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, sort=${coursePage.sort.getOrderFor('updatedAt') == null || coursePage.sort.getOrderFor('updatedAt').direction.name() == 'ASC' ? 'updatedAt,desc' : 'updatedAt,asc'})}">
+                                Cập Nhật
+                                <span th:if="${coursePage.sort.getOrderFor('updatedAt') != null}" class="sort-icon">
                                 <i th:classappend="${coursePage.sort.getOrderFor('updatedAt').direction.name() == 'ASC' ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
                             </span>
-                    </a>
-                </th>
-                <th>Hành Động</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${coursePage.totalElements == 0}">
-                <td colspan="9" class="no-data">Không tìm thấy khóa học nào.</td>
-            </tr>
-            <tr th:each="course : ${coursePage.content}">
-                <td th:text="${course.id}">1</td>
-                <td th:text="${course.name}">Course Name</td>
-                <td th:text="${course.category?.name}">Category</td>
-                <td>
-                    <span class="badge" th:classappend="'status-' + ${course.status.name()}" th:text="${course.status.displayName}">Status</span>
-                </td>
-                <td>
-                    <div class="form-check form-switch d-flex justify-content-center">
-                        <input class="form-check-input featured-toggle" type="checkbox" role="switch" onChange="return confirm(`Bạn có chắc chắn muốn set giá trị nổi bật về ${course.featured}`)"
-                               th:id="'featuredSwitch-' + ${course.id}"
-                               th:checked="${course.featured}"
-                               th:data-course-id="${course.id}">
-                    </div>
-                </td>
-                <td th:text="${#numbers.formatCurrency(course.price * (1 - course.discount / 100.0))}">Price</td>
-                <td th:text="${#temporals.format(course.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
-                <td th:text="${#temporals.format(course.updatedAt, 'dd/MM/yyyy HH:mm')}">Date</td>
-                <td>
-                    <div class="d-flex gap-2 mb-2"> <a th:href="@{'/courses/' + ${course.id} + '/update'}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem thông tin">
-                        <i class="fas fa-eye"></i> Thông tin
-                    </a>
-                        <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem nội dung">
-                            <i class="fas fa-list-alt"></i> Nội dung
-                        </a>
-                    </div>
+                            </a>
+                        </th>
+                        <th>Hành Động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${coursePage.totalElements == 0}">
+                        <td colspan="9" class="no-data">Không tìm thấy khóa học nào.</td>
+                    </tr>
+                    <tr th:each="course : ${coursePage.content}">
+                        <td th:text="${course.id}">1</td>
+                        <td th:text="${course.name}">Course Name</td>
+                        <td th:text="${course.category?.name}">Category</td>
+                        <td>
+                            <span class="badge" th:classappend="'status-' + ${course.status.name()}" th:text="${course.status.displayName}">Status</span>
+                        </td>
+                        <td>
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input class="form-check-input featured-toggle" type="checkbox" role="switch" onChange="return confirm(`Bạn có chắc chắn muốn set giá trị nổi bật về ${course.featured}`)"
+                                       th:id="'featuredSwitch-' + ${course.id}"
+                                       th:checked="${course.featured}"
+                                       th:data-course-id="${course.id}">
+                            </div>
+                        </td>
+                        <td th:text="${#numbers.formatCurrency(course.price * (1 - course.discount / 100.0))}">Price</td>
+                        <td th:text="${#temporals.format(course.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
+                        <td th:text="${#temporals.format(course.updatedAt, 'dd/MM/yyyy HH:mm')}">Date</td>
+                        <td>
+                            <div class="d-flex gap-2 mb-2"> <a th:href="@{'/courses/' + ${course.id} + '/update'}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem thông tin">
+                                <i class="fas fa-eye"></i> Thông tin
+                            </a>
+                                <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem nội dung">
+                                    <i class="fas fa-list-alt"></i> Nội dung
+                                </a>
+                            </div>
 
-                    <form th:action="@{'/courses/' + ${course.id} + '?admin-respond=true'}" method="post"
-                          onsubmit="return confirm('Sau khi phê duyệt thì thông tin và nội dung của khóa học sẽ được public và không thể sửa đổi! Bạn có chắc muốn phê duyệt khóa học này không?');" class="d-grid">
-                        <button type="submit" class="btn btn-sm btn-warning w-100"> <i class="fas fa-paper-plane"></i> Phê duyệt
-                        </button>
-                    </form>
-                    <form th:action="@{'/courses/' + ${course.id} + '?admin-respond=false'}" method="post"
-                          onsubmit="return confirm('Khóa học sẽ lưu ở trạng thái DRAFT và gửi về cho chuyên gia. Bạn có chắc chắn không phê duyệt khóa học này không?');" class="d-grid">
-                        <button type="submit" class="btn btn-sm btn-danger w-100"> <i class="fas fa-paper-plane"></i> Không phê duyệt
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                            <form th:action="@{'/courses/' + ${course.id} + '?admin-respond=true'}" method="post"
+                                  onsubmit="return confirm('Sau khi phê duyệt thì thông tin và nội dung của khóa học sẽ được public và không thể sửa đổi! Bạn có chắc muốn phê duyệt khóa học này không?');" class="d-grid">
+                                <button type="submit" class="btn btn-sm btn-warning w-100"> <i class="fas fa-paper-plane"></i> Phê duyệt
+                                </button>
+                            </form>
+                            <form th:action="@{'/courses/' + ${course.id} + '?admin-respond=false'}" method="post"
+                                  onsubmit="return confirm('Khóa học sẽ lưu ở trạng thái DRAFT và gửi về cho chuyên gia. Bạn có chắc chắn không phê duyệt khóa học này không?');" class="d-grid">
+                                <button type="submit" class="btn btn-sm btn-danger w-100"> <i class="fas fa-paper-plane"></i> Không phê duyệt
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <nav aria-label="Page navigation" th:if="${coursePage.totalPages > 1}" class="mt-4">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <span th:if="${coursePage.first}" class="page-link disabled">«</span>
+                        <a th:unless="${coursePage.first}" class="page-link"
+                           th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${coursePage.number - 1}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}">«</a>
+                    </li>
+
+                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, coursePage.totalPages - 1)}">
+                        <span th:if="${pageNumber == coursePage.number}" class="page-link active" th:text="${pageNumber + 1}">1</span>
+                        <a th:unless="${pageNumber == coursePage.number}" class="page-link"
+                           th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${pageNumber}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}"
+                           th:text="${pageNumber + 1}">1</a>
+                    </li>
+
+                    <li class="page-item">
+                        <span th:if="${coursePage.last}" class="page-link disabled">»</span>
+                        <a th:unless="${coursePage.last}" class="page-link"
+                           th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${coursePage.number + 1}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}">»</a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
     </div>
 
-    <nav aria-label="Page navigation" th:if="${coursePage.totalPages > 1}" class="mt-4">
-        <ul class="pagination">
-            <li class="page-item">
-                <span th:if="${coursePage.first}" class="page-link disabled">«</span>
-                <a th:unless="${coursePage.first}" class="page-link"
-                   th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${coursePage.number - 1}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}">«</a>
-            </li>
+<th:block class="page-scripts-wrapper">
+    <script>
+        // --- FEATURED TOGGLE LOGIC ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.querySelector('table tbody'); // Tìm thẻ tbody
 
-            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, coursePage.totalPages - 1)}">
-                <span th:if="${pageNumber == coursePage.number}" class="page-link active" th:text="${pageNumber + 1}">1</span>
-                <a th:unless="${pageNumber == coursePage.number}" class="page-link"
-                   th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${pageNumber}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}"
-                   th:text="${pageNumber + 1}">1</a>
-            </li>
+            if (tableBody) {
+                tableBody.addEventListener('change', async function(event) {
+                    // Chỉ xử lý nếu event xảy ra trên phần tử có class 'featured-toggle'
+                    if (event.target.classList.contains('featured-toggle')) {
+                        const toggleSwitch = event.target;
+                        const courseId = toggleSwitch.dataset.courseId;
+                        const isChecked = toggleSwitch.checked;
 
-            <li class="page-item">
-                <span th:if="${coursePage.last}" class="page-link disabled">»</span>
-                <a th:unless="${coursePage.last}" class="page-link"
-                   th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${coursePage.number + 1}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}">»</a>
-            </li>
-        </ul>
-    </nav>
+                        // (Optional) Vô hiệu hóa switch tạm thời
+                        toggleSwitch.disabled = true;
 
-</div>
+                        try {
+                            const res = await fetch(`/courses/api/${courseId}/toggle-featured`, {
+                                method: 'PATCH', // Hoặc PUT/POST tùy API của bạn
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    // Thêm header Authorization nếu cần
+                                },
+                                body: JSON.stringify({ featured: isChecked }) // Gửi trạng thái mới
+                            });
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // --- FEATURED TOGGLE LOGIC ---
-    document.addEventListener('DOMContentLoaded', function() {
-        const tableBody = document.querySelector('table tbody'); // Tìm thẻ tbody
+                            const apiResponse = await res.json(); // Luôn đọc response để kiểm tra
 
-        if (tableBody) {
-            tableBody.addEventListener('change', async function(event) {
-                // Chỉ xử lý nếu event xảy ra trên phần tử có class 'featured-toggle'
-                if (event.target.classList.contains('featured-toggle')) {
-                    const toggleSwitch = event.target;
-                    const courseId = toggleSwitch.dataset.courseId;
-                    const isChecked = toggleSwitch.checked;
+                            if (!res.ok) {
+                                throw new Error(apiResponse.message || 'Cập nhật thất bại!');
+                            }
 
-                    // (Optional) Vô hiệu hóa switch tạm thời
-                    toggleSwitch.disabled = true;
+                            // showToast(`Đã ${isChecked ? 'bật' : 'tắt'} nổi bật cho khóa học ${courseId}.`);
+                            // Không cần showToast vì đã thấy kết quả ngay trên switch
 
-                    try {
-                        const res = await fetch(`/courses/api/${courseId}/toggle-featured`, {
-                            method: 'PATCH', // Hoặc PUT/POST tùy API của bạn
-                            headers: {
-                                'Content-Type': 'application/json',
-                                // Thêm header Authorization nếu cần
-                            },
-                            body: JSON.stringify({ featured: isChecked }) // Gửi trạng thái mới
-                        });
-
-                        const apiResponse = await res.json(); // Luôn đọc response để kiểm tra
-
-                        if (!res.ok) {
-                            throw new Error(apiResponse.message || 'Cập nhật thất bại!');
+                        } catch (err) {
+                            showToast(err.message || 'Có lỗi xảy ra', 'error');
+                            // QUAN TRỌNG: Hoàn tác lại trạng thái switch nếu API lỗi
+                            toggleSwitch.checked = !isChecked;
+                        } finally {
+                            // (Optional) Kích hoạt lại switch
+                            toggleSwitch.disabled = false;
                         }
-
-                        // showToast(`Đã ${isChecked ? 'bật' : 'tắt'} nổi bật cho khóa học ${courseId}.`);
-                        // Không cần showToast vì đã thấy kết quả ngay trên switch
-
-                    } catch (err) {
-                        showToast(err.message || 'Có lỗi xảy ra', 'error');
-                        // QUAN TRỌNG: Hoàn tác lại trạng thái switch nếu API lỗi
-                        toggleSwitch.checked = !isChecked;
-                    } finally {
-                        // (Optional) Kích hoạt lại switch
-                        toggleSwitch.disabled = false;
                     }
-                }
-            });
-        }
-    });
-</script>
+                });
+            }
+        });
+    </script>
+</th:block>
 </body>
 </html>

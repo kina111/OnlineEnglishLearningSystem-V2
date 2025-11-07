@@ -22,4 +22,6 @@ public interface EnrollmentService {
     EnrollmentLearningDTO createEnrollmentDTO(long enrollmentId);
 
     List<EnrollmentInfoDTO> createEnrollmentInfoDTO(Long userId);
+
+    Enrollment findByUserIdAndCourseId(Long userId, Long courseId);
 }
