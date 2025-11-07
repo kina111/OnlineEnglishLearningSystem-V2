@@ -388,11 +388,19 @@
                                                     <i th:case="'QUIZ'" class="far fa-question-circle text-success me-2"></i>
                                                 </th:block>
 
-                                                <a th:href="@{/courses/{courseId}/lessons/{lessonId}/edit(courseId=${course.id}, lessonId=${lesson.id})}"
+                                                <p th:if="${lesson.lessonType.name() == 'LECTURE'}"
                                                    class="text-decoration-none text-dark"
-                                                   th:text="${lesson.title}">
-                                                    Tên bài học
-                                                </a>
+                                                   th:text="${lesson.title} + ' - '
+                                                    + (${lesson.duration / 60000}) + ':'
+                                                    + (${(lesson.duration / 1000) % 60})">
+                                                    Bài giảng
+                                                </p>
+                                                <p th:if="${lesson.lessonType.name() == 'QUIZ'}"
+                                                   class="text-decoration-none text-dark"
+                                                   th:text="${lesson.title} + ' - ' + ${lesson.timeLimitInMinutes} + ' phút'">
+                                                    Bài kiểm tra
+                                                </p>
+
                                             </div>
                                         </div>
                                     </div>
