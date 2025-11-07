@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Bài viết</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa; /* Màu nền xám nhạt */
+        }
+
+        /* Tùy chỉnh cho nội dung bài đăng */
+        .post-content {
+            /* Tăng kích thước chữ và khoảng cách dòng để dễ đọc */
+            font-size: 1.125rem; /* ~18px */
+            line-height: 1.7;
+            color: #333;
+        }
+
+        .post-content h3 {
+            /* Tùy chỉnh tiêu đề phụ (giống C++) */
+            font-weight: 700;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-content ul {
+            /* Tùy chỉnh danh sách để dùng gạch ngang (–) */
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .post-content li {
+            position: relative;
+            padding-left: 1.75rem; /* Tạo không gian cho dấu gạch ngang */
+            margin-bottom: 0.5rem;
+        }
+
+        .post-content li::before {
+            content: "–"; /* Ký tự gạch ngang */
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            color: #555;
+            font-weight: 700;
+        }
+
+        /* Căn giữa và giới hạn chiều rộng của nội dung */
+        .post-container {
+            max-width: 900px; /* Chiều rộng tối đa của cột nội dung */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container post-container my-5">
+    <div class="row">
+        <div class="col-12">
+
+            <div class="mb-4">
+                <span class="fw-bold fs-5" th:text="${blog.authorName}">Huyền Lễ Ngọc</span>
+            </div>
+
+            <article>
+                <h1 class="display-5 fw-bold mb-4" th:text="${blog.title}">
+                    TRẢI NGHIỆM HỌC THỬ REACT NATIVE, DEVOPS, C++ VÔ CÙNG CHẤT LƯỢNG CÙNG F8
+                </h1>
+
+                <div class="d-flex align-items-center mb-4">
+                    <img th:src="'/uploads/' + ${blog.authorAvatarUrl}" class="rounded-circle" alt="Avatar">
+
+                    <div class="ms-3">
+                        <div class="fw-bold" th:text="${blog.authorName}">Huyền Lễ Ngọc</div>
+                        <div class="text-muted small" th:text="${#temporals.format(blog.createdAt, 'dd/MM/yyyy')}">2 tháng trước</div>
+                    </div>
+
+                </div>
+
+                <div class="post-content mt-5" th:utext="${blog.content}">
+                    Nội dung
+                </div>
+
+            </article>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
