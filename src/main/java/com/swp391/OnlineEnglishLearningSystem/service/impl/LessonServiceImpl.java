@@ -89,10 +89,12 @@ public class LessonServiceImpl implements LessonService {
         lectureToUpdate.setEstimatedTime(request.getEstimatedTime());
         lectureToUpdate.setHtmlContent(request.getHtmlContent());
         try{
-            String videoUrl = uploadService.uploadVideo(request.getVideo(), "lectures/videos");
-            long duration = VideoDuration.getVideoDuration(request.getVideo());
-            lectureToUpdate.setVideoUrl(videoUrl);
-            lectureToUpdate.setDuration(duration);
+            if (request.getVideo() != null){
+                String videoUrl = uploadService.uploadVideo(request.getVideo(), "lectures/videos");
+                long duration = VideoDuration.getVideoDuration(request.getVideo());
+                lectureToUpdate.setVideoUrl(videoUrl);
+                lectureToUpdate.setDuration(duration);
+            }
         }catch (Exception e){
             throw new IllegalArgumentException("Video file is error!");
         }
