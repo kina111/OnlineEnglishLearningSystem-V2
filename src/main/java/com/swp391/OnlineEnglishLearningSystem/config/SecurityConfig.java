@@ -32,6 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/quiz/*").hasRole("ADMIN")
                         .anyRequest().permitAll()  // Cho phép tất cả không cần auth
                 )
                 .formLogin(form -> form

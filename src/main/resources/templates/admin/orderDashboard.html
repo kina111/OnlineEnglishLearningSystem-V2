@@ -6,6 +6,7 @@
     <title>Enrollment Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary-color: #6c63ff;
@@ -131,8 +132,7 @@
         <div class="row g-3">
             <!-- Chart -->
             <div class="col-12">
-                <div class="card shadow-sm p-3">
-                    <h5 class="mb-3">Biểu đồ doanh thu theo tháng</h5>
+                <div class="card shadow-sm p-3" style="max-height: 600px;display: flex;align-items: center;justify-content: center;">
                     <canvas id="revenueChart"></canvas>
                 </div>
             </div>
@@ -163,7 +163,16 @@
     <form method="get" th:action="@{/admin/orders}" class="filters">
         <div class="filter-group search-box">
             <label for="keyword">Tìm kiếm theo tên</label>
-            <input type="text" id="keyword" name="keyword" placeholder="Nhập tên khóa học..." th:value="${currentKeyword}">
+            <input type="text" id="keyword" name="keyword" placeholder="Nhập mã đơn hàng..." th:value="${currentKeyword}">
+        </div>
+
+        <div class="filter-group">
+            <label for="chartType">Loại biểu đồ</label>
+            <select id="chartType" name="chartType">
+                <option value="line" th:selected="${chartType == 'line'}">Đường</option>
+                <option value="bar" th:selected="${chartType == 'bar'}">Cột</option>
+                <option value="pie" th:selected="${chartType == 'pie'}">Tròn</option>
+            </select>
         </div>
 
         <div class="filter-group">
@@ -178,27 +187,13 @@
             </select>
         </div>
 
-<!--        <input type="number" name="minAmount" placeholder="Min amount">-->
-<!--        <input type="number" name="maxAmount" placeholder="Max amount">-->
-
-<!--        <input type="date" name="startDate">-->
-<!--        <input type="date" name="endDate">-->
-<!--        <div class="filter-group">-->
-<!--            <label for="startDate">Từ</label>-->
-<!--            <select name="startUpdate" id="startDate">-->
-<!--                <option value="">All</option>-->
-<!--                <option value="7" th:selected="${filter.startDate == 7 }">1 tuần trước</option>-->
-<!--                <option value="30" th:selected="${filter.startDate == 30 }">1 tháng trước</option>-->
-<!--                <option value="365" th:selected="${filter.startDate == 365 }">1 năm trước</option>-->
-<!--            </select>-->
-<!--        </div>-->
         <div class="filter-group">
             <label for="startUpdate">Từ</label>
-            <input type="date" name="startUpdate" class="form-control" id="startUpdate" th:value="${filter.startUpdate}">
+            <input type="date" name="startUpdate" class="form-control" id="startUpdate" th:value="${startUpdate}">
         </div>
         <div class="filter-group">
             <label for="endUpdate">Đến</label>
-            <input type="date" name="endUpdate" class="form-control" id="endUpdate" th:value="${filter.endUpdate}">
+            <input type="date" name="endUpdate" class="form-control" id="endUpdate" th:value="${endUpdate}">
         </div>
 
         <div class="filter-group">
@@ -291,7 +286,7 @@
                 <td th:text="${order.course.name}">Course</td>
                 <td th:text="${order.user.fullName}">User</td>
                 <td><span  th:text="${order.status}">Status</span></td>
-                <td th:text="${#numbers.formatCurrency(order.amount)}">Price</td>
+                <td th:text="${#numbers.formatDecimal(order.amount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
                 <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
                 <td th:text="${#temporals.format(order.updatedAt, 'dd/MM/yyyy HH:mm')}">Date</td>
 
@@ -355,7 +350,7 @@
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <a class="page-link"
                        th:href="@{/admin/orders(page=${currentPage - 1}, size=${pageSize},
-                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir})}">
+                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir}, startDate=${filter.startUpdate}, chartType=${chartType})}">
                         « Prev
                     </a>
                 </li>
@@ -367,7 +362,7 @@
                     <a class="page-link"
                        th:text="${i + 1}"
                        th:href="@{/admin/orders(page=${i}, size=${pageSize},
-                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir}, startDate=${filter.startDate})}">
+                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir}, startDate=${filter.startDate}, chartType=${chartType})}">
                     </a>
                 </li>
 
@@ -375,7 +370,7 @@
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                     <a class="page-link"
                        th:href="@{/admin/orders(page=${currentPage + 1}, size=${pageSize},
-                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir}, startDate=${filter.startUpdate})}">
+                        status=${filter.status}, sortBy=${filter.sortBy}, sortDir=${filter.sortDir}, startDate=${filter.startUpdate}, chartType=${chartType})}">
                         Next »
                     </a>
                 </li>
@@ -387,29 +382,97 @@
         </p>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
 <script th:inline="javascript">
+    /*<![CDATA[*/
     const monthLabels = [[${monthLabels}]];
     const monthTotals = [[${monthTotals}]];
 
-    const ctx = document.getElementById('revenueChart');
-    new Chart(ctx, {
-        type: 'bar',
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    let currentType = /*[[${chartType != null ? chartType : 'bar'}]]*/ 'bar';
+
+    const chartConfig = {
+        type: currentType,
         data: {
-            labels: monthLabels,
+            labels: monthLabels.map(m => "Tháng " + m),
             datasets: [{
-                label: 'Doanh thu theo tháng (VNĐ)',
+                label: `Doanh thu theo tháng (VNĐ)`,
                 data: monthTotals,
-                borderWidth: 1
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)'
+                ],
+                borderWidth: 1,
+                tension: 0.3,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
             responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Tổng doanh thu theo tháng' }
+            },
             scales: {
-                y: { beginAtZero: true }
+                y: { beginAtZero: true, title: { display: true, text: 'Doanh thu (VNĐ)' } },
+                x: { title: { display: true, text: 'Tháng' } }
             }
         }
+    };
+
+    let chart = new Chart(ctx, chartConfig);
+
+    function changeChartType(type) {
+        if (currentType === type) return;
+        currentType = type;
+
+        chart.destroy();
+        chart = new Chart(ctx, {
+            ...chartConfig,
+            type: type,
+            options: {
+                ...chartConfig.options,
+                scales: (type === 'pie') ? {} : chartConfig.options.scales
+            }
+        });
+    }
+
+
+    // ✅ Cập nhật biểu đồ khi đổi loại
+    document.getElementById('chartType').addEventListener('change', (e) => {
+        const newType = e.target.value;
+        changeChartType(newType);
+        updatePaginationLinks(); // cập nhật link phân trang theo chartType hiện tại
     });
+
+    // ✅ Cập nhật link phân trang động theo loại biểu đồ hiện tại
+    document.addEventListener("DOMContentLoaded", () => {
+        updatePaginationLinks();
+    });
+
+    function updatePaginationLinks() {
+        const chartType = document.getElementById("chartType").value;
+        const links = document.querySelectorAll(".pagination a.page-link");
+
+        links.forEach(link => {
+            try {
+                const url = new URL(link.href, window.location.origin);
+                url.searchParams.set("chartType", chartType);
+                link.href = url.toString();
+            } catch (e) {
+                console.warn("Invalid pagination link:", link.href);
+            }
+        });
+    }
+    /*]]>*/
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

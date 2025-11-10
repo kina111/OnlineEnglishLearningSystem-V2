@@ -298,6 +298,7 @@ public class AdminController {
                                   @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
                                   @RequestParam(required = false, defaultValue = "DESC") String sortDir,
                                   @RequestParam(required = false, defaultValue = "") String keyword,
+                                  @RequestParam(required = false,defaultValue = "line" )String chartType,
                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startUpdate,
                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endUpdate){
 //        List<Order> orders = orderService.getAllOrders();
@@ -325,6 +326,7 @@ public class AdminController {
                 .sum();
 
         // 4️⃣ Tính doanh thu theo tháng (YearMonth)
+        double filteredAmount = ordersPage.stream().mapToDouble(Order::getAmount).sum();
         Map<YearMonth, Double> revenueByMonth = orders.stream()
                 .collect(Collectors.groupingBy(
                         order -> YearMonth.from(order.getUpdatedAt()), // group theo tháng-năm của updatedAt
@@ -338,13 +340,15 @@ public class AdminController {
                 .toList();
         List<Double> monthTotals = new ArrayList<>(revenueByMonth.values());
 
-
+        model.addAttribute("startUpdate", startUpdate);
+        model.addAttribute("endUpdate", endUpdate);
         model.addAttribute("orders", ordersPage);
         model.addAttribute("allStatuses", Order.OrderStatus.values());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", ordersPage.getTotalPages());
         model.addAttribute("pageSize", size);
         model.addAttribute("filter", filter);
+        model.addAttribute("chartType", chartType);
         model.addAttribute("totalAmount", totalAmount);
         model.addAttribute("allOrders", orders);
         model.addAttribute("monthLabels", monthLabels);
