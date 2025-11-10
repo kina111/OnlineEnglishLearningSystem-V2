@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cấm truy cập (403)</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div class="container">
+    <h1>Lỗi 403 - Cấm truy cập</h1>
+    <p th:text="${errorMessage}">
+        Rất tiếc, bạn không có quyền truy cập trang này.
+    </p>
+    <a th:href="@{/}">Quay về trang chủ</a>
+</div>
+</body>
+</html>

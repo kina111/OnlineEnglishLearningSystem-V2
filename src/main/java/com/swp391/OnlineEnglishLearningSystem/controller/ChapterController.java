@@ -157,8 +157,14 @@ public class ChapterController {
     @DeleteMapping("/api/courses/{courseId}/chapters/{chapterId}")
     public ResponseEntity<ApiResponse<Void>> deleteChapterById(@PathVariable("courseId") Long courseId,
                                                                @PathVariable("chapterId") Long chapterId) {
-        this.chapterService.deleteChapterAndReorder(courseId, chapterId);
-        ApiResponse<Void> response = new ApiResponse<>(HttpStatus.OK, "Xóa chương thành công", null, null);
-        return ResponseEntity.ok(response);
+        try{
+            this.chapterService.deleteChapterAndReorder(courseId, chapterId);
+            ApiResponse<Void> response = new ApiResponse<>(HttpStatus.OK, "Xóa chương thành công", null, null);
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST,
+                    "Không thể xóa chương học!", null, null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
 }

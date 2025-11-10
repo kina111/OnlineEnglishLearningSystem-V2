@@ -1,6 +1,5 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
-import com.swp391.OnlineEnglishLearningSystem.model.Blog;
 import com.swp391.OnlineEnglishLearningSystem.model.BlogCategory;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.BlogDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.BlogCategoryService;
@@ -10,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
