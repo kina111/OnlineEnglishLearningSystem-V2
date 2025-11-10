@@ -217,9 +217,9 @@
 
         <!-- ✅ Media -->
         <div th:switch="${question.mediaType.name()}" class="mb-4">
-            <img th:case="'IMAGE'" th:src="${question.mediaUrl}" alt="Image" class="rounded" style="max-width: 400px">
-            <audio th:case="'AUDIO'" controls th:src="${question.mediaUrl}"></audio>
-            <video th:case="'VIDEO'" controls th:src="${question.mediaUrl}" class="rounded" style="max-width: 400px"></video>
+            <img th:case="'IMAGE'" th:src="${'/uploads/'+question.mediaUrl}" alt="Image" class="rounded" style="max-width: 400px">
+            <audio th:case="'AUDIO'" controls th:src="${'/uploads/'+question.mediaUrl}"></audio>
+            <video th:case="'VIDEO'" controls th:src="${'/uploads/'+question.mediaUrl}" class="rounded" style="max-width: 400px"></video>
         </div>
 
         <!-- ✅ Question Type -->

@@ -227,10 +227,10 @@
 
         <!-- Action buttons -->
         <div class="actions">
-            <button type="button" class="btn btn-info"><a href="review">📝 Xem lại chi tiết</a></button>
-            <button type="button" class="btn btn-primary"><a th:href="@{'/quiz/'+${quizAttempt.lesson.id}+'/start'}" role="button">🔁 Làm lại quiz</a>
+            <button type="button" class="btn btn-info"><a href="review">Xem lại chi tiết</a></button>
+            <button type="button" class="btn btn-primary"><a th:href="@{'/quiz/'+${quizAttempt.lesson.id}+'/start'}" role="button">Làm lại quiz</a>
             </button>
-            <button type="button" class="btn btn-success"><a th:href="${currentEnrollmentId != null} ? '/enrollments/' + ${currentEnrollmentId} : '/'" role="button">🏠 Quay về</a></button>
+            <button type="button" class="btn btn-success"><a th:href="${currentEnrollmentId != null} ? '/enrollments/' + ${currentEnrollmentId} : '/'" role="button">Quay về</a></button>
         </div>
 
     </div>
