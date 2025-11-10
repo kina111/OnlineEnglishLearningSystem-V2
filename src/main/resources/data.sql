@@ -423,83 +423,19 @@ SET IDENTITY_INSERT blog_categories OFF;
 SET IDENTITY_INSERT blogs ON;
 INSERT INTO blogs (id, title, thumbnail_url, short_description, content, blog_category_id, author_id, status, created_at, updated_at) VALUES
 -- Danh mục 1: Mẹo thi IELTS (ID=1) - Tác giả 2, 5 (Experts)
-(1, N'5 Chiến lược làm bài IELTS Reading hiệu quả', 'blogs/ielts-reading-strategies.png', N'Nắm vững 5 chiến lược Skimming, Scanning và làm chủ các dạng câu hỏi True/False/NG.', N'Chiến lược làm bài IELTS Reading hiệu quả
+(1, N'5 Chiến lược làm bài IELTS Reading hiệu quả', 'blogs/ielts-reading-strategies.png', N'Nắm vững 5 chiến lược Skimming, Scanning và làm chủ các dạng câu hỏi True/False/NG.', N'Phần Reading trong IELTS luôn khiến nhiều thí sinh “đau đầu” vì lượng thông tin quá lớn, thời gian hạn chế và cách ra đề đánh đố. Tuy nhiên, nếu nắm được chiến lược phù hợp, bạn hoàn toàn có thể làm bài nhanh hơn, hiểu chính xác hơn và đạt điểm cao hơn. Dưới đây là 5 chiến lược làm bài IELTS Reading hiệu quả mà bạn nên áp dụng ngay từ hôm nay.
 
-Phần IELTS Reading luôn là “nỗi ám ảnh” của nhiều thí sinh vì lượng thông tin khổng lồ và thời gian có hạn. Tuy nhiên, nếu bạn có chiến lược rõ ràng, việc đạt band cao hoàn toàn nằm trong tầm tay. Hãy cùng khám phá những bí quyết làm bài hiệu quả nhé!
+1. Hiểu rõ cấu trúc bài thi trước khi bắt đầu. Bài Reading có 3 đoạn văn với tổng cộng 40 câu hỏi trong 60 phút. Mỗi dạng câu hỏi sẽ kiểm tra một kỹ năng khác nhau: Matching Headings kiểm tra khả năng nắm ý chính, True/False/Not Given kiểm tra kỹ năng hiểu chi tiết, Summary Completion kiểm tra khả năng tìm từ khóa và hiểu ngữ cảnh. Vì vậy, hãy dành 1-2 phút đầu để xem qua cấu trúc, xác định dạng câu hỏi và lên kế hoạch làm bài cho từng phần thay vì lao ngay vào đọc.
 
-1️⃣ Đọc lướt (Skim) để nắm ý chính
+2. Làm chủ kỹ năng skimming và scanning. Đây là hai kỹ năng “sống còn” trong IELTS Reading. Skimming giúp bạn đọc nhanh để nắm ý chính của bài, nên chỉ cần dành khoảng 2 phút đọc lướt qua tiêu đề, câu chủ đề và từ khóa. Scanning giúp bạn lướt nhanh để tìm thông tin cụ thể như ngày tháng, tên riêng hay con số. Hãy nhớ rằng từ trong câu hỏi và trong bài thường không giống nhau hoàn toàn, vì thế bạn cần luyện khả năng nhận diện từ đồng nghĩa hoặc cách diễn đạt khác (paraphrase).
 
-Trước khi lao vào chi tiết, hãy dành 1–2 phút đọc lướt toàn bài. Mục tiêu không phải hiểu hết, mà là nắm:
+3. Đọc câu hỏi trước khi đọc bài. Một sai lầm phổ biến là đọc toàn bài trước rồi mới xem câu hỏi, khiến bạn mất thời gian và phải đọc lại nhiều lần. Hãy đọc câu hỏi trước để biết mình đang tìm gì. Ví dụ, nếu câu hỏi hỏi “What is the main reason why whales migrate?”, bạn chỉ cần tập trung vào phần nói về cá voi và việc di cư, không cần đọc lan man. Khi đọc câu hỏi, hãy gạch chân từ khóa để định hướng khi tìm thông tin trong đoạn văn.
 
-Chủ đề chính của bài (main idea)
+4. Quản lý thời gian thông minh. Bạn chỉ có 60 phút cho 40 câu hỏi, tức khoảng 1,5 phút cho mỗi câu. Nếu gặp câu khó, đừng dừng lại quá 2 phút mà hãy đánh dấu lại để quay lại sau. Thông thường, bạn nên làm Passage 1 trong 15 phút (dễ nhất), Passage 2 trong 20 phút (trung bình) và Passage 3 trong 25 phút (khó nhất). Đừng quên dành 2-3 phút cuối cùng để kiểm tra lại các câu trống hoặc đoán nếu cần.
 
-Bố cục từng đoạn (structure)
+5. Cẩn thận với “Not Given” và bẫy từ vựng. Dạng True/False/Not Given là nơi dễ mất điểm nhất vì thông tin trong bài thường được diễn đạt theo cách khác. Nguyên tắc là: True nếu thông tin trùng khớp hoàn toàn, False nếu trái ngược, và Not Given nếu bài không nhắc đến. Nếu bạn không tìm thấy thông tin khẳng định hay phủ định rõ ràng, rất có thể đó là Not Given. Ngoài ra, đừng để bị đánh lừa bởi những từ quen thuộc – nhiều khi bài dùng từ tương tự nhưng nghĩa khác.
 
-Từ vựng lặp lại nhiều lần (có thể là keyword chính)
-
-Điều này giúp bạn biết nên tìm thông tin ở đâu khi làm từng câu hỏi.
-
-2️⃣ Đọc kỹ câu hỏi trước khi đọc bài
-
-Sai lầm phổ biến là đọc bài trước, trong khi câu hỏi mới là thứ dẫn đường cho bạn.
-Hãy đọc kỹ từng câu hỏi để:
-
-Xác định dạng câu hỏi (True/False, Matching, Summary…)
-
-Gạch chân từ khóa quan trọng (keywords)
-
-Dự đoán loại thông tin cần tìm (tên riêng, số liệu, lý do, kết quả…)
-
-3️⃣ Tìm và đối chiếu từ khóa (Scan)
-
-Khi đã có từ khóa, bạn quét nhanh bài đọc (scan) để tìm vị trí chứa thông tin liên quan.
-Lưu ý: đề IELTS thường paraphrase (đổi cách diễn đạt), nên đừng chỉ tìm đúng từ trong câu hỏi — hãy tìm từ đồng nghĩa hoặc cấu trúc tương đương.
-
-Ví dụ:
-
-“cause” → “lead to”, “result in”
-
-“important” → “crucial”, “vital”
-
-4️⃣ Không đọc toàn bộ – đọc có chọn lọc
-
-Thời gian chỉ có 60 phút cho 40 câu, vì vậy không thể đọc hết 3 bài.
-Hãy tập trung vào đoạn chứa câu trả lời, bỏ qua phần không liên quan.
-Đọc có chiến lược sẽ giúp bạn tiết kiệm ít nhất 10–15 phút.
-
-5️⃣ Quản lý thời gian thông minh
-
-Chia thời gian hợp lý:
-
-Passage 1: ~17 phút
-
-Passage 2: ~20 phút
-
-Passage 3: ~23 phút
-
-Giữ vài phút cuối để kiểm tra lại đáp án và chuyển sang phiếu trả lời (nếu thi trên giấy).
-
-6️⃣ Trả lời hết – không để trống
-
-IELTS Reading không trừ điểm khi sai, vì vậy hãy đoán nếu không chắc.
-Một đáp án đoán còn có cơ hội đúng, còn để trống thì chắc chắn sai.
-
-7️⃣ Ôn luyện với chiến lược rõ ràng
-
-Luyện đọc mỗi ngày với các nguồn chính thống như:
-
-Cambridge IELTS series
-
-The Economist, BBC, National Geographic
-
-IELTS Reading practice tests
-
-Tập trung cải thiện tốc độ đọc, vốn từ đồng nghĩa, và khả năng nắm ý chính nhanh.
-
-💡 Kết luận
-
-Làm tốt IELTS Reading không chỉ dựa vào vốn từ mà còn ở chiến lược thông minh.
-Hãy luyện tập đều đặn, giữ bình tĩnh trong phòng thi, và nhớ rằng: bạn không cần hiểu hết bài — chỉ cần hiểu phần cần thiết để trả lời đúng.', 1, 2, 'PUBLISHED', GETDATE(), GETDATE()),
+Tóm lại, muốn làm tốt IELTS Reading, bạn cần hiểu cấu trúc bài, luyện kỹ năng đọc nhanh (skimming và scanning), đọc câu hỏi trước, quản lý thời gian chặt chẽ và nhận diện bẫy từ vựng. Quan trọng nhất là hãy luyện tập thường xuyên với đề thật trong bộ Cambridge IELTS và luôn phân tích kỹ những lỗi sai sau mỗi lần làm bài. Kiên trì thực hiện những chiến lược này, bạn sẽ thấy điểm Reading của mình tăng lên rõ rệt.', 1, 2, 'PUBLISHED', GETDATE(), GETDATE()),
 (2, N'Cách đạt Band 8.0+ IELTS Speaking Part 2', 'blogs/ielts-speaking-part2.png', N'Phân tích cấu trúc, cách dùng từ vựng "ăn điểm" và các chủ đề thường gặp trong Part 2.', N'Nội dung chi tiết về phương pháp A.R.E.A...', 1, 5, 'PUBLISHED', GETDATE(), GETDATE()),
 (3, N'Tổng hợp lỗi ngữ pháp thường gặp trong IELTS Writing', 'blogs/ielts-writing-grammar.png', N'Tránh mất điểm đáng tiếc với 10 lỗi ngữ pháp phổ biến nhất trong Writing Task 1 và Task 2.', N'Nội dung chi tiết về lỗi mạo từ, thì...', 1, 2, 'PUBLISHED', GETDATE(), GETDATE()),
 (4, N'Làm thế nào để luyện nghe IELTS thụ động?', 'blogs/ielts-passive-listening.png', N'Biến thời gian chết thành thời gian học với các nguồn podcast và video hiệu quả.', N'Nội dung chi tiết về các kênh podcast...', 1, 5, 'PUBLISHED', GETDATE(), GETDATE()),
