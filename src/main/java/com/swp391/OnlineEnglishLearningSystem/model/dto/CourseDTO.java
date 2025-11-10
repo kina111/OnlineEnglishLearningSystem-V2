@@ -1,9 +1,11 @@
 package com.swp391.OnlineEnglishLearningSystem.model.dto;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
+import com.swp391.OnlineEnglishLearningSystem.util.ValidMediaType;
 import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@ValidMediaType(message = "Vui lòng tải file hợp lệ.")
 public class CourseDTO {
     @NotBlank(message = "Vui lòng nhập tên khóa học")
     @Size(min = 5, max = 100, message = "Tên khóa học phải từ 5-100 kí tự")
