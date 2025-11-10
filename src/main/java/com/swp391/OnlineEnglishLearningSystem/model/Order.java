@@ -8,7 +8,17 @@ import java.math.BigDecimal;
 @Table(name = "orders")
 public class Order extends BaseEntity{
     public enum OrderStatus{
-        PENDING, PAID, FAILED, CANCELLED
+        PENDING("Đang chờ"),
+        PAID("Đã thanh toán"),
+        FAILED("Thất bại"),
+        CANCELLED("Đã hủy");
+        private final String displayName;
+        OrderStatus(String displayName) {
+            this.displayName = displayName;
+        }
+        public String getDisplayName() {
+            return displayName;
+        }
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

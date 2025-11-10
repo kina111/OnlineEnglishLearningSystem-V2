@@ -169,25 +169,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<Order> getOrdersWithSpecs(OrderFilter filter,int page, int size) {
+    public List<Order> getOrdersWithSpecs(OrderFilter filter) {
 //        String range = filter.;
         String status = filter.getStatus();
         String sortBy = filter.getSortBy();
         String direction = filter.getSortDir();
+        String search = filter.getSearch();
         if (direction == null) direction = "DESC";
         direction = direction.equalsIgnoreCase("desc") ? "DESC" : "ASC";
         LocalDateTime updatedFrom = filter.getStartUpdate();
+        LocalDateTime updatedTo = filter.getEndUpdate();
 
         Specification<Order> spec = null;
         if (updatedFrom != null) {
             spec = OrderSpecs.fromUpdateDate(updatedFrom);
         }
+        if (updatedTo != null) {
+            spec = OrderSpecs.toUpdateDate(updatedTo);
+        }
+        if (search != null && !search.isEmpty()) {
+            spec = OrderSpecs.hasOrderCode(search);
+        }
         if(status != null && !status.isEmpty())
         spec = OrderSpecs.hasStatus(status);
 
         Sort sort = Sort.by(Sort.Direction.fromString(direction),  sortBy != null ? sortBy : "updatedAt");
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return orderRepository.findAll(spec, pageable);
+//
+//        Pageable pageable = PageRequest.of(page, size, sort);
+        return orderRepository.findAll(spec, sort);
     }
 }

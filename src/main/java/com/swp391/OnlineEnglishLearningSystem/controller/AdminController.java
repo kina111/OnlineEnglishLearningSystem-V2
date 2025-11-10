@@ -6,10 +6,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.OrderFilter;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.time.YearMonth;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
@@ -297,33 +297,62 @@ public class AdminController {
                                   @RequestParam(required = false, defaultValue = "") String status,
                                   @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
                                   @RequestParam(required = false, defaultValue = "DESC") String sortDir,
-                                  @RequestParam(required = false, defaultValue = "0")int startDate){
+                                  @RequestParam(required = false, defaultValue = "") String keyword,
+                                  @RequestParam(required = false,defaultValue = "line" )String chartType,
+                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startUpdate,
+                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endUpdate){
 //        List<Order> orders = orderService.getAllOrders();
         OrderFilter filter = new OrderFilter();
         filter.setStatus(status);
         filter.setSortBy(sortBy);
         filter.setSortDir(sortDir);
-        switch (startDate){
-            case 7:
-                filter.setStartUpdate(LocalDateTime.now().minusDays(7) );
-                break;
-            case 30:
-                filter.setStartUpdate(LocalDateTime.now().minusMonths(1) );
-                break;
-            case 365:
-                filter.setStartUpdate(LocalDateTime.now().minusYears(1) );
-                break;
+        filter.setSearch(keyword);
+        if(startUpdate != null){
+            filter.setStartUpdate(startUpdate.atStartOfDay());
+        }
+        if(endUpdate != null){
+            filter.setEndUpdate(endUpdate.atStartOfDay().plusDays(1));
         }
 
-        Page<Order> orders = orderService.getOrdersWithSpecs(filter, page, size);
-        for(Order order : orders){
-            System.out.println(order.getId());
-        }
-        model.addAttribute("orders", orders);
+        List<Order> orders = orderService.getOrdersWithSpecs(filter);
+        //List to page
+        int start = Math.min(page * size, orders.size());
+        int end = Math.min((page + 1) * size, orders.size());
+        List<Order> pagedOrders = orders.subList(start, end);
+        Page<Order> ordersPage = new PageImpl<>(pagedOrders, PageRequest.of(page, size), orders.size());
+        //total amount
+        double totalAmount = orders.stream()
+                .mapToDouble(Order::getAmount)
+                .sum();
+
+        // 4️⃣ Tính doanh thu theo tháng (YearMonth)
+        double filteredAmount = ordersPage.stream().mapToDouble(Order::getAmount).sum();
+        Map<YearMonth, Double> revenueByMonth = orders.stream()
+                .collect(Collectors.groupingBy(
+                        order -> YearMonth.from(order.getUpdatedAt()), // group theo tháng-năm của updatedAt
+                        TreeMap::new, // sắp xếp theo thứ tự thời gian
+                        Collectors.summingDouble(Order::getAmount)
+                ));
+
+        // 5️⃣ Chuyển sang 2 danh sách để hiển thị trên biểu đồ (JS dễ dùng)
+        List<String> monthLabels = revenueByMonth.keySet().stream()
+                .map(ym -> ym.toString()) // dạng "2025-01"
+                .toList();
+        List<Double> monthTotals = new ArrayList<>(revenueByMonth.values());
+
+        model.addAttribute("startUpdate", startUpdate);
+        model.addAttribute("endUpdate", endUpdate);
+        model.addAttribute("orders", ordersPage);
+        model.addAttribute("allStatuses", Order.OrderStatus.values());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", orders.getTotalPages());
+        model.addAttribute("totalPages", ordersPage.getTotalPages());
         model.addAttribute("pageSize", size);
         model.addAttribute("filter", filter);
+        model.addAttribute("chartType", chartType);
+        model.addAttribute("totalAmount", totalAmount);
+        model.addAttribute("allOrders", orders);
+        model.addAttribute("monthLabels", monthLabels);
+        model.addAttribute("monthTotals", monthTotals);
         return "admin/orderDashboard";
     }
 }

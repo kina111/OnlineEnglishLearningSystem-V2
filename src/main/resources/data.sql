@@ -176,57 +176,103 @@ SET IDENTITY_INSERT wishlist OFF;
 
 ----
 SET IDENTITY_INSERT questions ON
-INSERT INTO questions (id,content, question_type, media_type, media_url, lesson_id, created_at, updated_at)
-VALUES  (1,N'What is the capital of France?', 'MULTIPLE_CHOICE', 'IMAGE', 'https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg', 1, GETDATE(), GETDATE()),
-        (2,N'Which planet is known as the Red Planet?', 'MULTIPLE_CHOICE', 'VIDEO', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1', 1, GETDATE(), GETDATE()),
-        (3,N'What is the largest ocean on Earth?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
-        (4,N'Who wrote "Romeo and Juliet"?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
-        (5,N'What is the chemical symbol for water?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
-        (6,N'Which language is used for Android app development?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
-        (7,N'Which language is used for Android app development?', 'SHORT_ANSWER', 'NONE', NULL, 1, GETDATE(), GETDATE());
+INSERT INTO questions (id, content, question_type, media_type, media_url, lesson_id, created_at, updated_at)
+VALUES
+    (1, N'IELTS Speaking test có bao nhiêu phần?', 'MULTIPLE_CHOICE', 'IMAGE', 'quizzes/media/Phan-nao-IELTS-Speaking-quan-trong-nhat-1-1_1762747036995.png', 1, GETDATE(), GETDATE()),
+    (2, N'Phần nào trong IELTS Speaking yêu cầu thí sinh nói về một chủ đề trong khoảng 1–2 phút?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+    (3, N'Thời gian trung bình của bài thi IELTS Speaking là bao lâu?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+    (4, N'Tiêu chí nào KHÔNG nằm trong 4 tiêu chí chấm điểm IELTS Speaking?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+    (5, N'Mục đích chính của phần Speaking Part 1 là gì?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+    (6, N'Khi giám khảo hỏi bạn “Do you work or study?”, câu trả lời nào sau đây là phù hợp nhất?', 'MULTIPLE_CHOICE', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+    (7, N'Bạn sẽ nói trong bao lâu ở phần IELTS Speaking Part 2?', 'SHORT_ANSWER', 'NONE', NULL, 1, GETDATE(), GETDATE()),
+-- -- Q2
+    (8, N'Bạn thường làm gì vào thời gian rảnh?', 'SHORT_ANSWER', 'NONE', NULL, 2, GETDATE(), GETDATE()),
+    (9, N'IELTS Speaking Part 1 kéo dài khoảng bao lâu?', 'MULTIPLE_CHOICE', 'NONE', NULL, 2, GETDATE(), GETDATE()),
+    (10, N'Giám khảo sẽ hỏi bao nhiêu chủ đề trong Part 1?', 'MULTIPLE_CHOICE', 'NONE', NULL, 2, GETDATE(), GETDATE()),
+    (11, N'Mục tiêu của Part 1 là gì?', 'MULTIPLE_CHOICE', 'NONE', NULL, 2, GETDATE(), GETDATE()),
+-- Q3
+    (12, N'Trong Part 2, bạn cần nói trong bao lâu?', 'SHORT_ANSWER', 'NONE', NULL, 3, GETDATE(), GETDATE()),
+    (13, N'Điều gì giúp bạn phát triển ý tốt hơn?', 'MULTIPLE_CHOICE', 'NONE', NULL, 3, GETDATE(), GETDATE()),
+    (14, N'Trong Part 3, bạn nên trả lời thế nào?', 'MULTIPLE_CHOICE', 'NONE', NULL, 3, GETDATE(), GETDATE()),
+-- Q4
+    (15, N'Cách mở đầu email lịch sự là gì?', 'MULTIPLE_CHOICE', 'NONE', NULL, 4, GETDATE(), GETDATE()),
+    (16, N'“I look forward to hearing from you” nghĩa là gì?', 'MULTIPLE_CHOICE', 'NONE', NULL, 4, GETDATE(), GETDATE());
+SET IDENTITY_INSERT questions OFF;
 
-SET IDENTITY_INSERT questions OFF
 
 --Answer option
 SET IDENTITY_INSERT answer_options ON
-INSERT INTO answer_options (id,content, correct, explanation, question_id, created_at, updated_at)
-VALUES (1,N'Paris', 1, N'Paris is the capital city of France.', 1, GETDATE(), GETDATE()),
--- Incorrect answers
-       (2,N'London', 0, N'London is the capital of the UK, not France.', 1, GETDATE(), GETDATE()),
-       (3,N'Rome', 0, N'Rome is the capital of Italy.', 1, GETDATE(), GETDATE()),
-       (4,N'Madrid', 0, N'Madrid is the capital of Spain.', 1, GETDATE(), GETDATE()),
-       (5,N'Hanoi', 0, N'Madrid is the capital of Spain.', 1, GETDATE(), GETDATE()),
+INSERT INTO answer_options (id, content, correct, explanation, question_id, created_at, updated_at)
+VALUES
+-- Q1
+(1, N'3 phần', 1, N'IELTS Speaking có 3 phần: Part 1 - Introduction & Interview, Part 2 - Long Turn, Part 3 - Discussion.', 1, GETDATE(), GETDATE()),
+(2, N'2 phần', 0, N'Có tất cả 3 phần trong IELTS Speaking.', 1, GETDATE(), GETDATE()),
+(3, N'4 phần', 0, N'Chỉ có 3 phần chính, không phải 4.', 1, GETDATE(), GETDATE()),
+(4, N'5 phần', 0, N'Không đúng, chỉ có 3 phần.', 1, GETDATE(), GETDATE()),
 
+-- Q2
+(5, N'Speaking Part 2', 1, N'Ở Part 2, bạn sẽ nói liên tục 1–2 phút về một chủ đề được cho sẵn (Cue Card).', 2, GETDATE(), GETDATE()),
+(6, N'Speaking Part 1', 0, N'Part 1 chỉ gồm các câu hỏi ngắn về bản thân.', 2, GETDATE(), GETDATE()),
+(7, N'Speaking Part 3', 0, N'Part 3 là phần thảo luận với giám khảo.', 2, GETDATE(), GETDATE()),
+(8, N'Writing Task 1', 0, N'Writing Task 1 thuộc kỹ năng viết, không phải Speaking.', 2, GETDATE(), GETDATE()),
 
-       (6,N'Mars', 1, N'Mars is called the Red Planet due to its reddish appearance.', 2, GETDATE(), GETDATE()),
-       (7,N'Jupiter', 0, N'Jupiter is the largest planet but not red.', 2, GETDATE(), GETDATE()),
-       (8,N'Venus', 0, N'Venus is often called Earth’s sister planet.', 2, GETDATE(), GETDATE()),
-       (9,N'Mercury', 0, N'Mercury is the closest to the sun.', 2, GETDATE(), GETDATE()),
+-- Q3
+(9, N'11–14 phút', 1, N'Thời gian IELTS Speaking thường kéo dài 11–14 phút.', 3, GETDATE(), GETDATE()),
+(10, N'5 phút', 0, N'Quá ngắn, bài thi thường hơn 10 phút.', 3, GETDATE(), GETDATE()),
+(11, N'20 phút', 0, N'Không đúng, quá dài so với thực tế.', 3, GETDATE(), GETDATE()),
+(12, N'30 phút', 0, N'Không chính xác, IELTS Speaking chỉ khoảng 14 phút.', 3, GETDATE(), GETDATE()),
 
-       (10,N'Pacific Ocean', 1, N'The Pacific Ocean is the largest and deepest ocean.', 3, GETDATE(), GETDATE()),
-       (11,N'Atlantic Ocean', 0, N'The Atlantic is the second-largest ocean.', 3, GETDATE(), GETDATE()),
-       (12,N'Indian Ocean', 0, N'The Indian Ocean is third in size.', 3, GETDATE(), GETDATE()),
-       (13,N'Arctic Ocean', 0, N'The Arctic Ocean is the smallest.', 3, GETDATE(), GETDATE()),
+-- Q4
+(13, N'Pronunciation', 0, N'Phát âm là 1 trong 4 tiêu chí chính.', 4, GETDATE(), GETDATE()),
+(14, N'Fluency and Coherence', 0, N'Độ trôi chảy và mạch lạc là 1 tiêu chí chính.', 4, GETDATE(), GETDATE()),
+(15, N'Grammar Range and Accuracy', 0, N'Ngữ pháp là 1 tiêu chí chính.', 4, GETDATE(), GETDATE()),
+(16, N'Spelling Accuracy', 1, N'Đánh vần không nằm trong tiêu chí chấm điểm Speaking.', 4, GETDATE(), GETDATE()),
 
-       (14,N'William Shakespeare', 1, N'Shakespeare wrote this famous tragedy.', 4, GETDATE(), GETDATE()),
-       (15,N'Jane Austen', 0, N'Jane Austen wrote "Pride and Prejudice".', 4, GETDATE(), GETDATE()),
-       (16,N'Charles Dickens', 0, N'Dickens is known for "Oliver Twist".', 4, GETDATE(), GETDATE()),
-       (17,N'Mark Twain', 0, N'Mark Twain wrote "Huckleberry Finn".', 4, GETDATE(), GETDATE()),
+-- Q5
+(17, N'Giới thiệu bản thân và nói về những chủ đề quen thuộc', 1, N'Part 1 nhằm giúp thí sinh “khởi động” và nói về bản thân, công việc, sở thích,...', 5, GETDATE(), GETDATE()),
+(18, N'Thảo luận chủ đề học thuật', 0, N'Đây là nội dung của Part 3.', 5, GETDATE(), GETDATE()),
+(19, N'Phân tích một biểu đồ', 0, N'Đó là kỹ năng Writing Task 1.', 5, GETDATE(), GETDATE()),
+(20, N'Đọc to một đoạn văn', 0, N'IELTS Speaking không có phần đọc to.', 5, GETDATE(), GETDATE()),
 
-       (18,N'H₂O', 1, N'This is the molecular formula for water.', 5, GETDATE(), GETDATE()),
-       (19,N'O₂', 0, N'This represents oxygen gas.', 5, GETDATE(), GETDATE()),
-       (20,N'CO₂', 0, N'This is carbon dioxide.', 5, GETDATE(), GETDATE()),
-       (21,N'NaCl', 0, N'This is table salt.', 5, GETDATE(), GETDATE()),
+-- Q6
+(21, N'I’m currently a student at university.', 1, N'Câu trả lời tự nhiên, đúng ngữ pháp, và cung cấp thông tin cụ thể.', 6, GETDATE(), GETDATE()),
+(22, N'Yes, I do.', 0, N'Quá ngắn, không phù hợp với yêu cầu mở rộng câu trả lời.', 6, GETDATE(), GETDATE()),
+(23, N'Study.', 0, N'Câu này không có cấu trúc đầy đủ.', 6, GETDATE(), GETDATE()),
+(24, N'Work.', 0, N'Cần một câu hoàn chỉnh, không chỉ một từ.', 6, GETDATE(), GETDATE()),
 
-       (22,N'Java', 1, N'Java has been the primary language for Android for many years.', 6, GETDATE(), GETDATE()),
-       (23,N'Python', 0, N'Python is not commonly used for native Android development.', 6, GETDATE(), GETDATE()),
-       (24,N'PHP', 0, N'PHP is used for web development.', 6, GETDATE(), GETDATE()),
-       (25,N'C#', 0, N'C# is used for Windows and Xamarin apps.', 6, GETDATE(), GETDATE());
+--     Quiz2
+--     Q1
+(28, N'4–5 phút', 1, N'Part 1 thường kéo dài 4–5 phút.', 9, GETDATE(), GETDATE()),
+(29, N'2–3 phút', 0, NULL, 9, GETDATE(), GETDATE()),
+(30, N'6–8 phút', 0, NULL, 9, GETDATE(), GETDATE()),
+
+(31, N'2–3 chủ đề', 1, N'Part 1 gồm 2–3 chủ đề quen thuộc.', 10, GETDATE(), GETDATE()),
+(32, N'1 chủ đề duy nhất', 0, NULL, 10, GETDATE(), GETDATE()),
+
+(33, N'Giúp thí sinh thoải mái, kiểm tra khả năng giao tiếp cơ bản', 1, N'Đúng – Part 1 là phần “warm-up”.', 11, GETDATE(), GETDATE()),
+(34, N'Kiểm tra phát âm chuyên sâu', 0, NULL, 11, GETDATE(), GETDATE()),
+
+    -- Quiz 3
+(35, N'Dùng ví dụ, so sánh và trải nghiệm cá nhân', 1, N'Các ví dụ giúp mở rộng nội dung.', 13, GETDATE(), GETDATE()),
+(36, N'Chỉ trả lời ngắn gọn 1 câu', 0, NULL, 13, GETDATE(), GETDATE()),
+
+(37, N'Trả lời chi tiết, nêu lý do và ví dụ', 1, N'Part 3 yêu cầu câu trả lời sâu.', 14, GETDATE(), GETDATE()),
+(38, N'Trả lời bằng Yes/No', 0, NULL, 14, GETDATE(), GETDATE()),
+-- Quiz 4
+(39, N'Dear Mr. Smith,', 1, N'Cách chào chuyên nghiệp phổ biến.', 15, GETDATE(), GETDATE()),
+(40, N'Hey dude,', 0, NULL, 15, GETDATE(), GETDATE()),
+-- QUiz 5
+(41, N'Tôi mong nhận phản hồi từ bạn.', 1, N'Dịch chính xác nghĩa câu này.', 16, GETDATE(), GETDATE()),
+(42, N'Tôi muốn nghe bạn nói.', 0, NULL, 16, GETDATE(), GETDATE());
 
 
 SET IDENTITY_INSERT answer_options OFF;
+
 SET IDENTITY_INSERT short_answer_options ON
-INSERT INTO short_answer_options (id,question_id,solution_text) values (1,7,'Java');
+INSERT INTO short_answer_options (id,question_id,solution_text) values
+    (1,7,'2'),
+    (2, 8, N'free time activities'),
+    (3, 12, N'2 minutes');
 SET IDENTITY_INSERT short_answer_options OFF;
 
 
@@ -377,7 +423,19 @@ SET IDENTITY_INSERT blog_categories OFF;
 SET IDENTITY_INSERT blogs ON;
 INSERT INTO blogs (id, title, thumbnail_url, short_description, content, blog_category_id, author_id, status, created_at, updated_at) VALUES
 -- Danh mục 1: Mẹo thi IELTS (ID=1) - Tác giả 2, 5 (Experts)
-(1, N'5 Chiến lược làm bài IELTS Reading hiệu quả', 'blogs/ielts-reading-strategies.png', N'Nắm vững 5 chiến lược Skimming, Scanning và làm chủ các dạng câu hỏi True/False/NG.', N'Nội dung chi tiết về cách Skimming và Scanning hiệu quả...', 1, 2, 'PUBLISHED', GETDATE(), GETDATE()),
+(1, N'5 Chiến lược làm bài IELTS Reading hiệu quả', 'blogs/ielts-reading-strategies.png', N'Nắm vững 5 chiến lược Skimming, Scanning và làm chủ các dạng câu hỏi True/False/NG.', N'Phần Reading trong IELTS luôn khiến nhiều thí sinh “đau đầu” vì lượng thông tin quá lớn, thời gian hạn chế và cách ra đề đánh đố. Tuy nhiên, nếu nắm được chiến lược phù hợp, bạn hoàn toàn có thể làm bài nhanh hơn, hiểu chính xác hơn và đạt điểm cao hơn. Dưới đây là 5 chiến lược làm bài IELTS Reading hiệu quả mà bạn nên áp dụng ngay từ hôm nay.
+
+1. Hiểu rõ cấu trúc bài thi trước khi bắt đầu. Bài Reading có 3 đoạn văn với tổng cộng 40 câu hỏi trong 60 phút. Mỗi dạng câu hỏi sẽ kiểm tra một kỹ năng khác nhau: Matching Headings kiểm tra khả năng nắm ý chính, True/False/Not Given kiểm tra kỹ năng hiểu chi tiết, Summary Completion kiểm tra khả năng tìm từ khóa và hiểu ngữ cảnh. Vì vậy, hãy dành 1-2 phút đầu để xem qua cấu trúc, xác định dạng câu hỏi và lên kế hoạch làm bài cho từng phần thay vì lao ngay vào đọc.
+
+2. Làm chủ kỹ năng skimming và scanning. Đây là hai kỹ năng “sống còn” trong IELTS Reading. Skimming giúp bạn đọc nhanh để nắm ý chính của bài, nên chỉ cần dành khoảng 2 phút đọc lướt qua tiêu đề, câu chủ đề và từ khóa. Scanning giúp bạn lướt nhanh để tìm thông tin cụ thể như ngày tháng, tên riêng hay con số. Hãy nhớ rằng từ trong câu hỏi và trong bài thường không giống nhau hoàn toàn, vì thế bạn cần luyện khả năng nhận diện từ đồng nghĩa hoặc cách diễn đạt khác (paraphrase).
+
+3. Đọc câu hỏi trước khi đọc bài. Một sai lầm phổ biến là đọc toàn bài trước rồi mới xem câu hỏi, khiến bạn mất thời gian và phải đọc lại nhiều lần. Hãy đọc câu hỏi trước để biết mình đang tìm gì. Ví dụ, nếu câu hỏi hỏi “What is the main reason why whales migrate?”, bạn chỉ cần tập trung vào phần nói về cá voi và việc di cư, không cần đọc lan man. Khi đọc câu hỏi, hãy gạch chân từ khóa để định hướng khi tìm thông tin trong đoạn văn.
+
+4. Quản lý thời gian thông minh. Bạn chỉ có 60 phút cho 40 câu hỏi, tức khoảng 1,5 phút cho mỗi câu. Nếu gặp câu khó, đừng dừng lại quá 2 phút mà hãy đánh dấu lại để quay lại sau. Thông thường, bạn nên làm Passage 1 trong 15 phút (dễ nhất), Passage 2 trong 20 phút (trung bình) và Passage 3 trong 25 phút (khó nhất). Đừng quên dành 2-3 phút cuối cùng để kiểm tra lại các câu trống hoặc đoán nếu cần.
+
+5. Cẩn thận với “Not Given” và bẫy từ vựng. Dạng True/False/Not Given là nơi dễ mất điểm nhất vì thông tin trong bài thường được diễn đạt theo cách khác. Nguyên tắc là: True nếu thông tin trùng khớp hoàn toàn, False nếu trái ngược, và Not Given nếu bài không nhắc đến. Nếu bạn không tìm thấy thông tin khẳng định hay phủ định rõ ràng, rất có thể đó là Not Given. Ngoài ra, đừng để bị đánh lừa bởi những từ quen thuộc – nhiều khi bài dùng từ tương tự nhưng nghĩa khác.
+
+Tóm lại, muốn làm tốt IELTS Reading, bạn cần hiểu cấu trúc bài, luyện kỹ năng đọc nhanh (skimming và scanning), đọc câu hỏi trước, quản lý thời gian chặt chẽ và nhận diện bẫy từ vựng. Quan trọng nhất là hãy luyện tập thường xuyên với đề thật trong bộ Cambridge IELTS và luôn phân tích kỹ những lỗi sai sau mỗi lần làm bài. Kiên trì thực hiện những chiến lược này, bạn sẽ thấy điểm Reading của mình tăng lên rõ rệt.', 1, 2, 'PUBLISHED', GETDATE(), GETDATE()),
 (2, N'Cách đạt Band 8.0+ IELTS Speaking Part 2', 'blogs/ielts-speaking-part2.png', N'Phân tích cấu trúc, cách dùng từ vựng "ăn điểm" và các chủ đề thường gặp trong Part 2.', N'Nội dung chi tiết về phương pháp A.R.E.A...', 1, 5, 'PUBLISHED', GETDATE(), GETDATE()),
 (3, N'Tổng hợp lỗi ngữ pháp thường gặp trong IELTS Writing', 'blogs/ielts-writing-grammar.png', N'Tránh mất điểm đáng tiếc với 10 lỗi ngữ pháp phổ biến nhất trong Writing Task 1 và Task 2.', N'Nội dung chi tiết về lỗi mạo từ, thì...', 1, 2, 'PUBLISHED', GETDATE(), GETDATE()),
 (4, N'Làm thế nào để luyện nghe IELTS thụ động?', 'blogs/ielts-passive-listening.png', N'Biến thời gian chết thành thời gian học với các nguồn podcast và video hiệu quả.', N'Nội dung chi tiết về các kênh podcast...', 1, 5, 'PUBLISHED', GETDATE(), GETDATE()),

@@ -19,5 +19,5 @@ public interface OrderService {
 
     Order update(Map fields);
     List<Order> getAllOrders();
-    Page<Order> getOrdersWithSpecs(OrderFilter filter,int page,int size);
+    List<Order> getOrdersWithSpecs(OrderFilter filter);
 }
