@@ -2,6 +2,7 @@ package com.swp391.OnlineEnglishLearningSystem.util;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Question;
 import com.swp391.OnlineEnglishLearningSystem.model.ShortAnswerOption;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.MultipleChoiceQuestionFormDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.ShortAnswerQuestionFormDTO;
 import jakarta.validation.ConstraintValidator;
@@ -32,6 +33,10 @@ public class ValidMediaTypeValidator implements ConstraintValidator<ValidMediaTy
             ShortAnswerQuestionFormDTO questionDTO = (ShortAnswerQuestionFormDTO) dto;
             mediaType = questionDTO.getMediaType();
             mediaFile = questionDTO.getMedia();
+        }else if (dto instanceof CourseDTO){
+            CourseDTO courseDTO = (CourseDTO) dto;
+            mediaType = Question.MediaType.IMAGE;
+            mediaFile = courseDTO.getThumbnailFile();
         }
 
         // 1. Nếu người dùng chọn NONE, hoặc không upload file, thì luôn hợp lệ
