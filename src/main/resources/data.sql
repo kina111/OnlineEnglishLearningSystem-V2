@@ -359,9 +359,48 @@ INSERT INTO orders (
     created_at,
     updated_at
 ) VALUES
-      ('ORD001', 1990000, N'Khóa học Java cơ bản', 'PAID', '00', '123456789', 1, 1, '02/11/2025', '02/11/2025'),
-      ('ORD002', 2490000, N'Khóa học Spring Boot nâng cao', 'PAID', '00', '123456790', 2, 2, '03/11/2025', '03/11/2025'),
-      ('ORD003', 990000, N'Khóa học SQL cho người mới bắt đầu', 'PENDING', NULL, NULL, 3, 3, '02/10/2025', '02/10/2025'),
-      ('ORD004', 2990000, N'Khóa học ReactJS chuyên sâu', 'FAILED', '99', '123456791', 4, 4, '05/9/2025', '07/9/2025'),
-      ('ORD005', 1590000, N'Khóa học Python thực hành', 'PAID', '00', '123456792', 5, 5, '02/9/2025', GETDATE()),
-      ('ORD006', 3490000, N'Khóa học Machine Learning cơ bản', 'CANCELLED', NULL, NULL, 6, 6, '02/9/2025', '01/11/2025');
+      ('ORD001', 1990000, N'Khóa học Java cơ bản', 'PAID', '00', '123456789', 1, 1, '02/11/2025', GETDATE()),
+      ('ORD002', 2490000, N'Khóa học Spring Boot nâng cao', 'PAID', '00', '123456790', 2, 2, '03/11/2025', GETDATE()),
+      ('ORD003', 990000, N'Khóa học SQL cho người mới bắt đầu', 'PENDING', NULL, NULL, 3, 3, GETDATE(), GETDATE()),
+      ('ORD004', 2990000, N'Khóa học ReactJS chuyên sâu', 'FAILED', '99', '123456791', 4, 4, GETDATE(), GETDATE()),
+      ('ORD005', 1590000, N'Khóa học Python thực hành', 'PAID', '00', '123456792', 5, 5, GETDATE(), GETDATE()),
+      ('ORD006', 3490000, N'Khóa học Machine Learning cơ bản', 'CANCELLED', NULL, NULL, 6, 6, GETDATE(), GETDATE());
+
+SET IDENTITY_INSERT blog_categories ON;
+INSERT INTO blog_categories (id, name, slug) VALUES
+                                                 (1, N'Mẹo thi IELTS', 'meo-thi-ielts'),
+                                                 (2, N'Ngữ pháp Tiếng Anh', 'ngu-phap-tieng-anh'),
+                                                 (3, N'Từ vựng theo chủ đề', 'tu-vung-theo-chu-de'),
+                                                 (4, N'Tiếng Anh Thương Mại', 'tieng-anh-thuong-mai');
+SET IDENTITY_INSERT blog_categories OFF;
+
+SET IDENTITY_INSERT blogs ON;
+INSERT INTO blogs (id, title, thumbnail_url, short_description, content, blog_category_id, author_id, status, created_at, updated_at) VALUES
+-- Danh mục 1: Mẹo thi IELTS (ID=1) - Tác giả 2, 5 (Experts)
+(1, N'5 Chiến lược làm bài IELTS Reading hiệu quả', 'blogs/ielts-reading-strategies.png', N'Nắm vững 5 chiến lược Skimming, Scanning và làm chủ các dạng câu hỏi True/False/NG.', N'Nội dung chi tiết về cách Skimming và Scanning hiệu quả...', 1, 2, 'PUBLISHED', GETDATE(), GETDATE()),
+(2, N'Cách đạt Band 8.0+ IELTS Speaking Part 2', 'blogs/ielts-speaking-part2.png', N'Phân tích cấu trúc, cách dùng từ vựng "ăn điểm" và các chủ đề thường gặp trong Part 2.', N'Nội dung chi tiết về phương pháp A.R.E.A...', 1, 5, 'PUBLISHED', GETDATE(), GETDATE()),
+(3, N'Tổng hợp lỗi ngữ pháp thường gặp trong IELTS Writing', 'blogs/ielts-writing-grammar.png', N'Tránh mất điểm đáng tiếc với 10 lỗi ngữ pháp phổ biến nhất trong Writing Task 1 và Task 2.', N'Nội dung chi tiết về lỗi mạo từ, thì...', 1, 2, 'PUBLISHED', GETDATE(), GETDATE()),
+(4, N'Làm thế nào để luyện nghe IELTS thụ động?', 'blogs/ielts-passive-listening.png', N'Biến thời gian chết thành thời gian học với các nguồn podcast và video hiệu quả.', N'Nội dung chi tiết về các kênh podcast...', 1, 5, 'PUBLISHED', GETDATE(), GETDATE()),
+(5, N'Phân tích đề Writing Task 2 (Dạng Problem/Solution)', 'blogs/ielts-writing-task2-problem.png', N'Hướng dẫn lập dàn ý chi tiết cho dạng bài Problem/Solution.', N'Nội dung chi tiết về cách viết mở bài...', 1, 2, 'DRAFT', GETDATE(), GETDATE()),
+
+-- Danh mục 2: Ngữ pháp Tiếng Anh (ID=2) - Tác giả 6 (Expert)
+(6, N'Phân biệt Thì Hiện tại Hoàn thành và Quá khứ Đơn', 'blogs/present-perfect-vs-past-simple.png', N'Khi nào dùng "I have finished" và khi nào dùng "I finished"? Tìm hiểu sự khác biệt.', N'Nội dung chi tiết về các dấu hiệu nhận biết...', 2, 6, 'PUBLISHED', GETDATE(), GETDATE()),
+(7, N'Tất cả về Mệnh đề Quan hệ (Relative Clauses)', 'blogs/relative-clauses.png', N'Cách sử dụng who, whom, which, that, và whose một cách chính xác.', N'Nội dung chi tiết về mệnh đề quan hệ xác định...', 2, 6, 'PUBLISHED', GETDATE(), GETDATE()),
+(8, N'Câu điều kiện loại 1, 2, 3 và câu điều kiện hỗn hợp', 'blogs/conditional-sentences.png', N'Tổng hợp công thức và cách dùng của 4 loại câu điều kiện.', N'Nội dung chi tiết về If-clauses...', 2, 6, 'PUBLISHED', GETDATE(), GETDATE()),
+(9, N'Cách sử dụng mạo từ A, AN, THE', 'blogs/articles-a-an-the.png', N'Làm chủ mạo từ, một trong những phần khó nhất với người Việt.', N'Nội dung chi tiết về các quy tắc dùng THE...', 2, 6, 'PUBLISHED', GETDATE(), GETDATE()),
+(10, N'Bài tập Câu bị động (Passive Voice)', 'blogs/passive-voice-exercise.png', N'Tổng hợp các dạng bài tập câu bị động từ cơ bản đến nâng cao.', N'Nội dung chi tiết về các bài tập...', 2, 6, 'DRAFT', GETDATE(), GETDATE()),
+
+-- Danh mục 3: Từ vựng theo chủ đề (ID=3) - Tác giả 3 (Marketing)
+(11, N'20 Từ vựng chủ đề "Công nghệ" (Technology) bạn nên biết', 'blogs/vocab-technology.png', N'Học các từ vựng thiết yếu về AI, machine learning, và cybersecurity.', N'Nội dung chi tiết về danh sách từ vựng...', 3, 3, 'PUBLISHED', GETDATE(), GETDATE()),
+(12, N'Từ vựng chủ đề "Môi trường" (Environment) cho IELTS', 'blogs/vocab-environment.png', N'Các collocations hay về climate change, global warming, và sustainable energy.', N'Nội dung chi tiết về danh sách từ vựng...', 3, 3, 'PUBLISHED', GETDATE(), GETDATE()),
+(13, N'15 Idioms (Thành ngữ) phổ biến trong giao tiếp', 'blogs/common-idioms.png', N'Học các thành ngữ như "break a leg", "piece of cake" để nói tiếng Anh tự nhiên hơn.', N'Nội dung chi tiết về 15 thành ngữ...', 3, 3, 'PUBLISHED', GETDATE(), GETDATE()),
+(14, N'Từ vựng chủ đề "Sức khỏe" (Health and Fitness)', 'blogs/vocab-health.png', N'Các từ vựng về nutrition, mental health, và physical exercise.', N'Nội dung chi tiết về danh sách từ vựng...', 3, 3, 'PUBLISHED', GETDATE(), GETDATE()),
+(15, N'Học từ vựng qua phim ảnh: Phương pháp hiệu quả', 'blogs/vocab-movies.png', N'Hướng dẫn chi tiết cách học từ vựng qua Netflix mà không cần Vietsub.', N'Nội dung chi tiết về các bước học...', 3, 3, 'PUBLISHED', GETDATE(), GETDATE()),
+
+-- Danh mục 4: Tiếng Anh Thương Mại (ID=4) - Tác giả 2, 6 (Experts)
+(16, N'5 Mẫu câu tiếng Anh "bất bại" khi đàm phán', 'blogs/business-negotiation.png', N'Học cách đưa ra đề nghị, từ chối lịch sự và đạt được thỏa thuận.', N'Nội dung chi tiết về các mẫu câu...', 4, 2, 'PUBLISHED', GETDATE(), GETDATE()),
+(17, N'Cách viết Email xin việc bằng Tiếng Anh (Kèm mẫu)', 'blogs/job-application-email.png', N'Hướng dẫn viết cover letter và email xin việc gây ấn tượng với nhà tuyển dụng.', N'Nội dung chi tiết về các mẫu email...', 4, 6, 'PUBLISHED', GETDATE(), GETDATE()),
+(18, N'Làm thế nào để thuyết trình bằng Tiếng Anh tự tin?', 'blogs/business-presentation.png', N'Các bước chuẩn bị, cấu trúc bài thuyết trình và cách xử lý câu hỏi Q&A.', N'Nội dung chi tiết về kỹ năng thuyết trình...', 4, 2, 'PUBLISHED', GETDATE(), GETDATE()),
+(19, N'Thuật ngữ Tiếng Anh trong cuộc họp (Meeting Vocabulary)', 'blogs/meeting-vocabulary.png', N'Các cụm từ dùng để bắt đầu cuộc họp, đưa ra ý kiến, ngắt lời và chốt vấn đề.', N'Nội dung chi... (agenda, minutes, consensus)...', 4, 6, 'PUBLISHED', GETDATE(), GETDATE()),
+(20, N'Giao tiếp qua điện thoại (Telephoning) nơi công sở', 'blogs/telephoning-skills.png', N'Các mẫu câu nghe, gọi, và để lại lời nhắn một cách chuyên nghiệp.', N'Nội dung chi tiết về telephoning...', 4, 6, 'DRAFT', GETDATE(), GETDATE());
+SET IDENTITY_INSERT blogs OFF;

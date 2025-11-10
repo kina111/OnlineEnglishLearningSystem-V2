@@ -4,7 +4,7 @@
         <ul class="nav-links" style="margin-bottom: 0">
             <li><a href="/" id="home">Trang chủ</a></li>
             <li><a href="/courses/learner" id="courses">Khóa học</a></li>
-            <li><a href="#" id="posts" th:href="@{/marketing}">Bài viết</a></li>
+            <li><a href="#" id="posts" th:href="@{/blogs}">Bài viết</a></li>
         </ul>
         <div class="user-menu" sec:authorize="isAuthenticated()">
             <div class="user-icon" id="userIcon">
@@ -19,11 +19,11 @@
                     <i class="fas fa-book"></i>
                     Khóa học của tôi
                 </a>
-                <a href="/courses/create" class="dropdown-item"><!-- sec:authorize="hasRole('ROLE_EXPERT')"-->
+                <a href="/courses/create" class="dropdown-item" sec:authorize="hasRole('ROLE_EXPERT')"><!-- sec:authorize="hasRole('ROLE_EXPERT')"-->
                     <i class="fas fa-book"></i>
                     Tạo khóa học mới
                 </a>
-                <a th:href="@{'/courses/users/' + ${session.currentUserId}}" class="dropdown-item"><!-- sec:authorize="hasRole('ROLE_EXPERT')"-->
+                <a th:href="@{'/courses/users/' + ${session.currentUserId}}" class="dropdown-item" sec:authorize="hasRole('ROLE_EXPERT')"><!-- sec:authorize="hasRole('ROLE_EXPERT')"-->
                     <i class="fas fa-book"></i>
                     Khóa học tôi tạo
                 </a>

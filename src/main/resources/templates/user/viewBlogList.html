@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Bài Viết</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* (Toàn bộ CSS custom của bạn ở đây) */
+        :root {
+            --primary-color: #6c63ff; --primary-hover: #5a54d6; --secondary-color: #4ecdc4;
+            --text-color: #333; --text-light: #666; --bg-color: #fff; --bg-light: #f8f9fa;
+            --border-color: #e9ecef; --shadow: 0 4px 20px rgba(0,0,0,0.08); --radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: var(--text-color); background-color: var(--bg-light); }
+        .container-fluid { padding: 0; }
+        .content-container { max-width: 1400px; margin: 2rem auto; padding: 0 15px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+        .page-title { font-size: 2.5rem; font-weight: 700; color: var(--text-color); }
+        .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; white-space: nowrap; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        /* Layout */
+        .main-layout { display: grid; grid-template-columns: 1fr; gap: 2.5rem; }
+        @media (min-width: 992px) { .main-layout { grid-template-columns: 1fr 320px; } }
+
+        /* Sidebar */
+        .sidebar { background: var(--bg-color); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); height: fit-content; position: sticky; top: 20px; display: flex; flex-direction: column; gap: 1.5rem; }
+        .sidebar-section { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+        .sidebar-section:last-child { border-bottom: none; padding-bottom: 0; }
+        .sidebar-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-color); }
+        .search-box { position: relative; }
+        .search-box input { padding-right: 2.5rem; border-radius: 8px; border: 1px solid var(--border-color); }
+        .search-box button { position: absolute; right: 0; top: 0; bottom: 0; border: none; background: transparent; color: var(--text-light); padding: 0 0.8rem; cursor: pointer; }
+        .category-list { list-style: none; padding: 0; }
+        .category-item a { display: block; padding: 0.5rem 0; color: var(--text-light); text-decoration: none; transition: color 0.3s ease; }
+        .category-item a:hover { color: var(--primary-color); }
+        .featured-course { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.8rem; text-decoration: none; color: inherit; }
+        .featured-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; flex-shrink: 0;}
+        .featured-title { font-size: 0.9rem; font-weight: 500; }
+        .contact-info { list-style: none; padding: 0; }
+        .contact-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.4rem 0; color: var(--text-light); font-size: 0.9rem; }
+        .contact-item i { width: 16px; color: var(--primary-color); text-align: center; }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 3rem; flex-wrap: wrap; padding: 0; list-style: none;}
+        .pagination .page-item .page-link { padding: 0.6rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; text-decoration: none; color: var(--text-color); transition: all 0.3s ease; font-weight: 500; background-color: var(--bg-color); }
+        .pagination .page-item .page-link:hover { border-color: var(--primary-color); color: var(--primary-color); background-color: #f0f2ff; }
+        .pagination .page-item.active .page-link { background: var(--primary-color); color: white; border-color: var(--primary-color); z-index: 3; }
+        .pagination .page-item.disabled .page-link { color: #adb5bd; background-color: var(--bg-light); border-color: var(--border-color); cursor: default; pointer-events: none; }
+
+        /* Card Styles */
+        .card-custom {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem; /* Thêm khoảng cách giữa các card */
+            overflow: hidden; /* Đảm bảo ảnh bo góc đúng */
+        }
+        .badge-custom {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .author-name {
+            font-weight: 600;
+        }
+        .card-title-custom {
+            font-weight: 700;
+            font-size: 1.75rem;
+        }
+        .thumbnail-img {
+            border-radius: 10px;
+            object-fit: cover;
+            height: 100%;
+            max-height: 180px;
+        }
+
+        /* Thêm style cho thẻ <a> bọc card */
+        .blog-link {
+            text-decoration: none;
+            color: inherit; /* Kế thừa màu chữ (đen) */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: block; /* Quan trọng */
+        }
+        .blog-link:hover .card-custom {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .blog-link:hover .card-title-custom {
+            color: var(--primary-color); /* Đổi màu tiêu đề khi hover */
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{components/header :: header}"></div>
+
+<div class="content-container">
+    <div class="page-header">
+        <h1 class="page-title">Danh sách Bài Viết</h1>
+    </div>
+
+    <div class="main-layout">
+        <div class="main-content">
+            <a th:each="blogDTO : ${blogPage.content}"
+               th:href="'/blogs/' + ${blogDTO.id}"
+               class="blog-link">
+
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img th:src="@{'/uploads/' + ${blogDTO.authorAvatarUrl}}" class="rounded-circle" alt="Avatar" width="40" height="40">
+                            <span class="ms-2 author-name" th:text="${blogDTO.authorName}">Vân Phương Nguyễn</span>
+                        </div>
+
+                        <div class="row align-items-center">
+                            <div class="col-md-9">
+                                <h2 class="card-title-custom mb-3" th:text="${blogDTO.title}">
+                                    title
+                                </h2>
+                                <p class="text-muted mb-3" th:text="${blogDTO.shortDescription}">
+                                    Short description goes here...
+                                </p>
+                                <div class="d-flex align-items-center flex-wrap">
+                                    <span class="badge rounded-pill bg-light text-dark border badge-custom me-3 px-3 py-2" th:text="${blogDTO.categoryName}">Tự học</span>
+                                    <small class="text-muted" th:text="${#temporals.format(blogDTO.createdAt, 'dd-MM-yyyy')}"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 mt-3 mt-md-0">
+                                <img th:src="'/uploads/' + ${blogDTO.thumbnail}" class="img-fluid thumbnail-img w-100" alt="Blog Thumbnail">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <div th:if="${blogPage == null || blogPage.isEmpty()}" class="alert alert-info mt-4 text-center">
+                Không tìm thấy bài viết nào phù hợp.
+            </div>
+
+            <nav aria-label="Page navigation" th:if="${blogPage.totalPages > 1}" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${blogPage.first} ? 'disabled'">
+                        <a class="page-link" th:href="${blogPage.first} ? '#' : @{/blogs(page=${currentPage - 1}, categorySlug=${categorySlug})}">Trước</a>
+                    </li>
+
+                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, blogPage.totalPages - 1)}"
+                        th:classappend="${pageNumber == blogPage.number} ? 'active'">
+                        <a class="page-link" th:href="@{/blogs(page=${pageNumber+1}, categorySlug=${categorySlug})}"
+                           th:text="${pageNumber + 1}">1</a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${blogPage.last} ? 'disabled'">
+                        <a class="page-link" th:href="${blogPage.last} ? '#' : @{/blogs(page=${currentPage + 1}, categorySlug=${categorySlug})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+        <aside class="sidebar">
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">Chủ đề</h3>
+            <ul class="category-list">
+                <li class="category-item">
+                    <a href="/blogs">Tất cả </a>
+                </li>
+                <li class="category-item" th:each="blogCate : ${blogCategories}">
+                    <a th:href="@{/blogs(categorySlug=${blogCate.slug})}" th:text="${blogCate.name}">Category Name</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">Thông tin liên hệ</h3>
+            <ul class="contact-info">
+                <li class="contact-item"><i class="fas fa-envelope"></i><span>contact@oels.edu.vn</span></li>
+                <li class="contact-item"><i class="fas fa-phone"></i><span>+84 123 456 789</span></li>
+                <li class="contact-item"><i class="fas fa-map-marker-alt"></i><span>Hà Nội, Việt Nam</span></li>
+            </ul>
+        </div>
+    </aside>
+    </div>
+</div>
+<div th:replace="~{components/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

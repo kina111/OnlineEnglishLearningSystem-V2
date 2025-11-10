@@ -3,11 +3,9 @@ package com.swp391.OnlineEnglishLearningSystem.controller;
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.Token;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.BlogDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.UserDTO;
-import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
-import com.swp391.OnlineEnglishLearningSystem.service.EmailService;
-import com.swp391.OnlineEnglishLearningSystem.service.TokenService;
-import com.swp391.OnlineEnglishLearningSystem.service.UserService;
+import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -31,18 +29,23 @@ public class AuthController {
     private final TokenService tokenService;
     private final EmailService emailService;
     private final CourseService courseService;
+    private final BlogService blogService;
 
-    public AuthController(UserService userService, TokenService tokenService, EmailService emailService, CourseService courseService) {
+    public AuthController(UserService userService, TokenService tokenService, EmailService emailService, CourseService courseService, BlogService blogService) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.emailService = emailService;
         this.courseService = courseService;
+        this.blogService = blogService;
     }
 
     // ---------------- HOME ----------------
     @GetMapping("/")
     public String home(Model model) {
-        List<Course> featuredCourses = this.courseService.findFeaturedCourses(3);
+        List<Course> featuredCourses = this.courseService.findFeaturedCourses(6);
+        List<BlogDTO> latestBlogs = this.blogService.findLatestBlogs(4);
+
+        model.addAttribute("latestBlogs", latestBlogs);
         model.addAttribute("featuredCourses", featuredCourses);
         return "home";
     }

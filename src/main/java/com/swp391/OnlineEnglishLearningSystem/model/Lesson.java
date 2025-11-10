@@ -48,7 +48,7 @@ public class Lesson extends BaseEntity{
 
     // --- Dành cho bài giảng ---
     private String videoUrl;
-    private Long duration; // tính bằng milliseconds
+    private Long duration = 0L; // tính bằng milliseconds
 
     // --- Dành cho bài kiểm tra ---
     @Column(name = "pass_rate")

@@ -68,6 +68,9 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "author")
     private List<Course> courses = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author")
+    private List<Blog> blogs = new ArrayList<>();
+
     public User() {
     }
 
