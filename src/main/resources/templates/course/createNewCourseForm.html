@@ -27,6 +27,12 @@
 
 <div class="container my-5">
     <h2 th:text="${isUpdate ? 'Cập nhật thông tin khóa học' : 'Tạo khóa học mới'}">Thông tin khóa học cơ bản</h2>
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Tạo khóa học</li>
+        </ol>
+    </nav>
     <h4 th:if="${error}" th:text="${error}" class="alert alert-danger"></h4>
     <div th:if="${isUpdate}" class="alert alert-info d-flex align-items-center" role="alert">
         <i class="fas fa-info-circle me-2"></i>
@@ -41,6 +47,11 @@
     <hr>
 
     <form th:action="${isUpdate} ? @{/courses/{id}/update(id=${courseId})} : @{/courses/create}" th:object="${courseDTO}" method="post" enctype="multipart/form-data">
+
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+            <ul><li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li></ul>
+        </div>
 
         <div class="row g-4">
             <div class="col-md-8">

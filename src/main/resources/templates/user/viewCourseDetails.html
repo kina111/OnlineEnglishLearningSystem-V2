@@ -597,11 +597,15 @@
                         }
                     });
 
+                    const data = await response.json();
                     // Kiểm tra kết quả từ API
-                    if (!response.ok) {
-                        const errorData = await response.json(); // Đọc lỗi từ ApiResponse
-                        throw new Error(errorData.message || 'Thao tác thất bại!');
+                    if (!response.ok || data.status !== 'success') {
+                        showToast(data.message || 'Thao tác thất bại!', 'error');
+                        return;
                     }
+
+                    //nếu thành công
+                    showToast("Đã cập nhật danh sách yêu thích thành công.", "success");
 
                     // --- CẬP NHẬT GIAO DIỆN NÚT KHI THÀNH CÔNG ---
                     const newStatus = addToWishlistAction; // Trạng thái mới sau khi thao tác
@@ -619,7 +623,7 @@
 
                 } catch (error) {
                     console.error('Lỗi khi cập nhật Wishlist:', error);
-                    alert('Đã xảy ra lỗi: ' + error.message);
+                    showToast("Vui lòng đăng nhập!", "error");
                     // Khôi phục lại trạng thái nút ban đầu nếu lỗi
                     if (isInWishlist) {
                         this.innerHTML = '<i class="fas fa-heart"></i> Đã quan tâm';

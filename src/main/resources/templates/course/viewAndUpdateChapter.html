@@ -248,6 +248,11 @@
                                             </div>
 
                                             <div class="lesson-actions">
+                                                <a th:if="${lesson.lessonType.name() == 'QUIZ'}"
+                                                   th:href="@{/courses/{courseId}/quizzes/{id}/questions(courseId=${course.id},id=${lesson.id})}"
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="fas fa-tasks"></i> Question Bank
+                                                </a>
                                                 <button class="btn btn-sm btn-outline-primary btn-edit-lesson"
                                                         th:data-lesson-id="${lesson.id}"
                                                         th:data-lesson-type="${lesson.lessonType.name()}"
@@ -260,11 +265,6 @@
                                                         title="Xóa bài học">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                                <a th:if="${lesson.lessonType.name() == 'QUIZ'}"
-                                                   th:href="@{/courses/{courseId}/quizzes/{id}/questions(courseId=${course.id},id=${lesson.id})}"
-                                                   class="btn btn-sm btn-success">
-                                                    <i class="fas fa-tasks"></i> Question Bank
-                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -763,21 +763,7 @@
         const iconClass = lesson.lessonType === 'LECTURE' ? 'fa-play-circle text-primary' : 'fa-question-circle text-success';
         const courseId = document.getElementById('course-content').dataset.courseId;
 
-        let actionButtons = `
-            <div class="lesson-actions">
-                <button class="btn btn-sm btn-outline-primary btn-edit-lesson"
-                        data-lesson-id="${lesson.id}"
-                        data-lesson-type="${lesson.lessonType}"
-                        title="Sửa bài học">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger btn-delete-lesson"
-                        data-lesson-id="${lesson.id}"
-                        data-chapter-id="${chapterId}"
-                        title="Xóa bài học">
-                    <i class="fas fa-trash"></i>
-                </button>
-        `;
+        let actionButtons = `<div class="lesson-actions">`;
 
         if (lesson.lessonType === 'QUIZ') {
             actionButtons += `
@@ -786,6 +772,21 @@
                 </a>
             `;
         }
+
+        actionButtons += `
+            <button class="btn btn-sm btn-outline-primary btn-edit-lesson"
+                    data-lesson-id="${lesson.id}"
+                    data-lesson-type="${lesson.lessonType}"
+                    title="Sửa bài học">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger btn-delete-lesson"
+                    data-lesson-id="${lesson.id}"
+                    data-chapter-id="${chapterId}"
+                    title="Xóa bài học">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
 
         actionButtons += `</div>`;
 
