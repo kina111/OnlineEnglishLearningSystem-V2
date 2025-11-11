@@ -10,7 +10,7 @@ import java.util.List;
 public interface NoteService {
     Note createNew(Long userId, long lessonId, NoteRequest noteRequest);
 
-    List<NoteDTO> createDtosByChapterAndEnrollmentId(long enrollmentId, long chapterId, Sort sort);
+    List<NoteDTO> createDtosByChapterAndEnrollmentId(long chapterId, long enrollmentId, Sort sort);
 
     void deleteById(long noteId);
 

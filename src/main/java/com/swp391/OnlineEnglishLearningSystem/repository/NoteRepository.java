@@ -20,7 +20,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             "JOIN n.userLesson ul " +
             "JOIN ul.lesson l " +
             "JOIN l.chapter c " +
-            "WHERE l.chapter.id = :chapterId AND ul.enrollment.id = :enrollmentId")
+            "WHERE c.id = :chapterId AND ul.enrollment.id = :enrollmentId")
     List<NoteDTO> findNotesByChapterAndEnrollmentId(
             @Param("chapterId") Long chapterId,
             @Param("enrollmentId") Long enrollmentId,
