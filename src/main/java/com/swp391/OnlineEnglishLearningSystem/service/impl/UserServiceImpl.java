@@ -117,4 +117,9 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.findAllByRole(role);
     }
 
+    @Override
+    public List<User> geUsersById(List<Long> ids) {
+        return userRepository.findAllById(ids);
+    }
+
 }

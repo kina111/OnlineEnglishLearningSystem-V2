@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa thông tin nhóm</title>
+    <link rel="stylesheet" th:href="@{/css/userProfile.css}">
+</head>
+<body>
+<div th:replace="~{components/header :: header}"></div>
+
+<div class="container">
+    <p th:text="${error}" class="alert error"></p>
+
+    <form th:action="@{'/chats/group/' + ${updatedChat.id}+'/edit'}"
+          method="post" id="groupForm" enctype="multipart/form-data">
+        <div class="profile-card">
+            <input type="hidden" name="id" th:value="${updatedChat.id}">
+            <input type="hidden" name="type" th:value="${updatedChat.type}">
+
+            <!-- Avatar nhóm -->
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img th:src="@{'/uploads/' + ${updatedChat.avatar}}" alt="Avatar nhóm">
+                    <div class="avatar-upload">Thay đổi ảnh</div>
+                    <input type="file" id="avatarInput" name="avatarFile" accept="image/*" hidden>
+                </div>
+                <div class="profile-meta">
+                    <div class="meta-field">
+                        <label>Tên nhóm:</label>
+                        <input type="text" name="name" th:value="${updatedChat.name}">
+                        <div class="error-message" id="nameError">Vui lòng nhập tên nhóm</div>
+                    </div>
+                    <div class="meta-field">
+                        <label>Ngày tạo:</label>
+                        <input type="text" th:value="${#temporals.format(updatedChat.createdAt, 'yyyy-MM-dd HH:mm')}" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin chi tiết nhóm -->
+            <div class="profile-info">
+                <div class="info-row">
+                    <div class="info-field full-width">
+                        <label>Mô tả nhóm:</label>
+                        <input type="text" name="description" th:value="${updatedChat.description}" rows="3" placeholder="Nhập mô tả ngắn..."></input>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-field full-width">
+                        <label>Thành viên trong nhóm:</label>
+                        <ul>
+                            <li th:each="member : ${updatedChat.members}"
+                                th:text="${member.user.fullName}">Tên thành viên</li>
+                        </ul>
+                        <p><a th:href="@{'/chats/' + ${updatedChat.id} + '/invite'}" class="btn btn-sm btn-success">+ Thêm thành viên</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-buttons">
+                <button type="button" class="btn btn-secondary" th:onclick="'window.location.href=\'/chats/group/' + ${updatedChat.id} + '\';'">
+                    Hủy bỏ
+                </button>
+                <button type="submit" class="btn btn-primary">Cập nhật nhóm</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div th:replace="~{components/footer :: footer}"></div>
+
+<script>
+    // 📸 Preview avatar khi người dùng chọn file mới
+    document.querySelector('.avatar-upload').addEventListener('click', () => {
+        document.getElementById('avatarInput').click();
+    });
+
+    document.getElementById('avatarInput').addEventListener('change', e => {
+        if (e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = ev => document.querySelector('.profile-avatar img').src = ev.target.result;
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    // ✅ Validate form
+    const form = document.getElementById('groupForm');
+    form.addEventListener('submit', e => {
+        let isValid = true;
+
+        const nameField = form.querySelector('[th\\:field="*{name}"]');
+        const hasError = nameField.value.trim() === '';
+        nameField.parentElement.classList.toggle('has-error', hasError);
+        document.getElementById('nameError').style.display = hasError ? 'block' : 'none';
+
+        if (hasError) {
+            e.preventDefault();
+            alert('Vui lòng nhập tên nhóm!');
+            isValid = false;
+        }
+
+        if (!isValid) e.preventDefault();
+    });
+
+    // 🧹 Remove error khi người dùng nhập lại
+    form.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('input', () => el.parentElement.classList.remove('has-error'));
+    });
+</script>
+</body>
+</html>

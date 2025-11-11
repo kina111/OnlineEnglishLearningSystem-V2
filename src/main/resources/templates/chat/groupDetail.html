@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin nhóm chat</title>
+    <link rel="stylesheet" th:href="@{/css/userProfile.css}">
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{components/header :: header}"></div>
+
+<!-- Nội dung chính -->
+<div class="container">
+    <div class="profile-card">
+
+        <!-- Avatar + Tên nhóm -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <img th:if="${chat.avatar != null}" th:src="@{'/uploads/' + ${chat.avatar}}" alt="Avatar nhóm">
+                <img th:if="${chat.avatar == null}" src="/images/default-group.png" alt="Avatar mặc định">
+            </div>
+            <div class="profile-meta">
+                <h2 th:text="${chat.name}">Tên nhóm</h2>
+                <p>
+                    Ngày tạo nhóm:
+                    <span th:text="${#temporals.format(chat.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Thông tin chi tiết -->
+        <div class="profile-info">
+            <dl>
+                <div class="info-row">
+                    <dt>Mô tả nhóm:</dt>
+                    <dd th:text="${chat.description}">Không có mô tả</dd>
+                </div>
+
+                <div class="info-row">
+                    <dt>Loại nhóm:</dt>
+                    <dd th:text="${chat.type}">GROUP</dd>
+                </div>
+
+                <div class="info-row">
+                    <dt>Thành viên:</dt>
+                    <dd>
+                        <ul>
+                            <li th:each="member : ${chat.members}"
+                                th:text="${member.user.fullName}">Tên thành viên</li>
+                        </ul>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Action -->
+        <div class="action-buttons">
+            <a th:href="@{'/chats/group/' + ${chat.id} +'/out'}" class="btn btn-danger">Rời nhóm</a>
+            <a th:href="@{'/chats/group/' + ${chat.id} +'/edit'}" class="btn btn-secondary">Chỉnh sửa nhóm</a>
+            <a th:href="@{'/chats/'}" class="btn btn-primary">Quay về danh sách nhóm</a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{components/footer :: footer}"></div>
+
+</body>
+</html>

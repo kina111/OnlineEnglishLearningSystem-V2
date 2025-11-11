@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "courses")
-public class Course extends BaseEntity{
+public class    Course extends BaseEntity{
     public enum CourseStatus {
         PUBLISHED("Đã duyệt"),
         DRAFT("Đang sửa"),
