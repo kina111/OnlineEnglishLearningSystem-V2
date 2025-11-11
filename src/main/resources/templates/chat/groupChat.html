@@ -57,7 +57,6 @@
             gap: 10px;
         }
 
-        /* --- Mỗi dòng tin nhắn (container flex) --- */
         .message-row {
             display: flex;
             flex-direction: column;
@@ -113,11 +112,6 @@
             border-radius: 25px;
             padding: 10px 20px;
         }
-
-        .chat-footer form {
-            display: flex;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
@@ -137,6 +131,9 @@
     </div>
 </div>
 
+<!-- Debug area (optional) -->
+<div id="chat2"></div>
+
 <!-- Chat content -->
 <div id="chat" class="chat-box">
     <div th:each="message : ${chat.messages}"
@@ -153,19 +150,93 @@
 
 <!-- Footer -->
 <div class="chat-footer">
-    <form th:action="@{/chats/group/{groupId}/send(groupId=${chat.id})}" method="post">
-        <input type="hidden" name="from" th:value="${user.id}">
-        <input type="text" name="content" class="form-control" placeholder="Nhập tin nhắn...">
-        <button type="submit" class="btn btn-primary">
-            <i class="fa-solid fa-paper-plane"></i>
-        </button>
-    </form>
+    <input type="hidden" id="userId" th:value="${user.id}">
+    <input type="hidden" id="groupId" th:value="${chat.id}">
+    <input type="text" id="content" class="form-control" placeholder="Nhập tin nhắn...">
+    <button class="btn btn-primary" onclick="send()">
+        <i class="fa-solid fa-paper-plane"></i>
+    </button>
 </div>
 
-<script>
-    // Tự động cuộn xuống cuối khi load trang
-    const chatBox = document.getElementById('chat');
-    chatBox.scrollTop = chatBox.scrollHeight;
+<!-- JS -->
+<script th:inline="javascript">
+    const currentUserId = [[${user.id}]];
+
+    let eventSource;
+
+    function connect() {
+        const groupId = document.getElementById("groupId").value;
+        const userId = document.getElementById("userId").value;
+
+        eventSource = new EventSource(`/chats/subscribe/${groupId}/${userId}`);
+
+        eventSource.addEventListener("init", e => {
+            document.getElementById("chat2").innerHTML += `<p>✅ ${e.data}</p>`;
+        });
+
+        eventSource.addEventListener("message", e => {
+            const msg = JSON.parse(e.data);
+            renderMessage(msg);
+        });
+
+        eventSource.onerror = () => {
+            document.getElementById("chat2").innerHTML += `<p style="color:red">❌ Connection lost</p>`;
+        };
+    }
+
+    // auto-connect when page loads
+    window.addEventListener("load", connect);
+
+    function send() {
+        const content = document.getElementById("content").value.trim();
+        if (!content) return;
+
+        const group = document.getElementById("groupId").value;
+        const user = document.getElementById("userId").value;
+
+        fetch("/chats/sse/send", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                fromUser: Number(user),
+                toGroup: Number(group),
+                content: content
+            })
+        }).catch(err => console.error("Send failed", err));
+
+        document.getElementById("content").value = '';
+    }
+
+    function renderMessage(msg) {
+        const chat = document.getElementById("chat");
+        const isMine = msg.fromUser === currentUserId;
+
+        const row = document.createElement("div");
+        row.className = "message-row" + (isMine ? " me" : "");
+
+        if (!isMine) {
+            const sender = document.createElement("div");
+            sender.className = "message-sender";
+            sender.textContent = msg.userName;
+            row.appendChild(sender);
+        }
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message " + (isMine ? "me" : "other");
+        const contentDiv = document.createElement("div");
+        contentDiv.textContent = msg.content;
+        messageDiv.appendChild(contentDiv);
+        row.appendChild(messageDiv);
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "text-muted small mt-1";
+        const date = new Date(msg.timestamp);
+        timeDiv.textContent = date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        row.appendChild(timeDiv);
+
+        chat.appendChild(row);
+        chat.scrollTop = chat.scrollHeight;
+    }
 </script>
 
 </body>

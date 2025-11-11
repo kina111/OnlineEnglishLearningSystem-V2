@@ -4,18 +4,25 @@ import com.swp391.OnlineEnglishLearningSystem.model.Chat;
 import com.swp391.OnlineEnglishLearningSystem.model.ChatMember;
 import com.swp391.OnlineEnglishLearningSystem.model.Message;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.MessageDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.ChatMemberService;
 import com.swp391.OnlineEnglishLearningSystem.service.ChatService;
 import com.swp391.OnlineEnglishLearningSystem.service.MessageService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequestMapping("/chats")
@@ -24,6 +31,7 @@ public class ChatController {
     private final ChatMemberService chatMemberService;
     private final MessageService messageService;
     private final UserService userService;
+
 
     public ChatController(ChatService chatService, ChatMemberService chatMemberService, MessageService messageService, UserService userService) {
         this.chatService = chatService;
@@ -147,6 +155,7 @@ public class ChatController {
         message.setSender(user);
         message.setContent(content);
         messageService.save(message);
+//        sendMessage(message);
         return "redirect:/chats/group/"+groupId;
     }
 
@@ -195,4 +204,64 @@ public class ChatController {
         chatMemberService.removeChatMember(id, user.getId());
         return "redirect:/chats/";
     }
+
+    //SSE realtime
+
+    private final Map<Long, Map<Long, SseEmitter>> groupEmitters = new ConcurrentHashMap<>();
+
+    @GetMapping(value = "/subscribe/{groupId}/{userId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@PathVariable Long groupId, @PathVariable Long userId) {
+        SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
+
+        groupEmitters.computeIfAbsent(groupId, g -> new ConcurrentHashMap<>()).put(userId, emitter);
+
+        emitter.onCompletion(() -> removeEmitter(groupId, userId));
+        emitter.onTimeout(() -> removeEmitter(groupId, userId));
+        emitter.onError((e) -> removeEmitter(groupId, userId));
+
+        try {
+            emitter.send(SseEmitter.event().name("init").data("Connected to group " + groupId + " as " + userId));
+        } catch (IOException e) {
+            emitter.completeWithError(e);
+        }
+
+        return emitter;
+    }
+
+    private void removeEmitter(Long groupId,Long userId) {
+        Map<Long, SseEmitter> group = groupEmitters.get(groupId);
+        if (group != null) {
+            group.remove(userId);
+            if (group.isEmpty()) {
+                groupEmitters.remove(groupId);
+            }
+        }
+    }
+
+    @PostMapping("/sse/send")
+    public String sendMessage( @RequestBody MessageDTO msgDto) {
+        Chat groupChat = chatService.findById(msgDto.getToGroup());
+        if (groupChat == null) return "No active group: " + msgDto.getToGroup();
+        Message msg = new Message();
+        User user = userService.getUserById(msgDto.getFromUser());
+        msgDto.setUserName(user.getFullName());
+        msgDto.setTimestamp(LocalDateTime.now());
+        msg.setSender(user);
+        msg.setContent(msgDto.getContent());
+        msg.setChat(groupChat);
+        messageService.save(msg);
+        Map<Long, SseEmitter> group = groupEmitters.get(msg.getChat().getId());
+        if (group == null) return "No active group: " + msg.getChat().getId();
+
+        for (Map.Entry<Long, SseEmitter> entry : group.entrySet()) {
+            try {
+                entry.getValue().send(SseEmitter.event().name("message").data(msgDto));
+            } catch (IOException e) {
+                entry.getValue().completeWithError(e);
+            }
+        }
+
+        return "Message sent to group " + msg.getChat().getId();
+    }
+
 }
