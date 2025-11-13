@@ -134,9 +134,14 @@ public class LessonController {
     @GetMapping("/courses/{courseId}/quizzes/{quizId}/questions")
     public String getQuizQuestionBank(@PathVariable("quizId") Long id,
                                       @PathVariable("courseId") Long courseId,
+                                      @RequestParam(value = "type", required = false) String type,
                                       Model model){
         try{
             Lesson quiz = lessonService.findQuizAndQuestions(id);
+            List<Question> questions = this.questionService.findByQuizIdWithSpecs(id, type);
+
+            model.addAttribute("questions", questions);
+            model.addAttribute("type", type);
             model.addAttribute("quiz", quiz);
             model.addAttribute("courseId", courseId);
             return "course/quizQuestions";

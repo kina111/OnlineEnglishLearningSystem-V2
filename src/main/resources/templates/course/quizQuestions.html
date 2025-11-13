@@ -191,12 +191,23 @@
 
     <main class="right-panel">
         <div class="card filter-bar">
-            <input type="text" id="filter-type-input" placeholder="Lọc theo loại: multiple-choice, short-answer...">
+            <form th:action="@{/courses/{courseId}/quizzes/{quizId}/questions(courseId=${courseId}, quizId=${quizId})}"
+                  method="get">
+                <label for="filter-type-input">Loại câu hỏi</label>
+                <select name="type" id="filter-type-input" onchange="this.form.submit()">
+                    <option value="">-- All --</option>
+                    <option value="MULTIPLE_CHOICE"
+                            th:selected="${type == 'MULTIPLE_CHOICE'}">Multiple Choice</option>
+                    <option value="SHORT_ANSWER"
+                            th:selected="${type == 'SHORT_ANSWER'}">Short Answer</option>
+                </select>
+            </form>
+
             <input type="text" id="search-content-input" placeholder="Tìm kiếm theo nội dung câu hỏi...">
         </div>
 
         <div class="card question-list">
-            <div th:each="question, stat : ${quiz.questions}" class="question-card" th:data-question-type="${question.questionType.name()}">
+            <div th:each="question, stat : ${questions}" class="question-card" th:data-question-type="${question.questionType.name()}">
 
                 <div class="question-header" th:text="'Câu ' + ${stat.count} + ': ' + ${question.content}"></div>
 
