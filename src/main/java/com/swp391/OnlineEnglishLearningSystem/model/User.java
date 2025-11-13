@@ -94,6 +94,10 @@ public class User extends BaseEntity implements UserDetails {
         this.dob = dob;
     }
 
+    public User(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

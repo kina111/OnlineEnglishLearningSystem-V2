@@ -561,7 +561,7 @@ th:data-enrollment-id="${enrollmentLearningDTO.id}">
     let completionApiCalledForCurrentVideo = false; // Flag for API call status
     let notesModalInstance = null;
 
-    const userId = document.body.dataset.userId;
+    let userId = document.body.dataset.userId;
     const enrollmentId = document.body.dataset.enrollmentId; // Lấy nếu cần gửi lên API
 
     // --- DOM ELEMENTS ---

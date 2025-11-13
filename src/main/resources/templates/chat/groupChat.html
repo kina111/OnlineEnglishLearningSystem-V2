@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${chat.name}">Hội thoại</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .chat-header {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-header .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #6c757d;
+        }
+
+        .chat-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .chat-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .message-row.me {
+            align-items: flex-end;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            word-wrap: break-word;
+            display: inline-block;
+            position: relative;
+        }
+
+        .message.other {
+            background-color: #e9ecef;
+            border-bottom-left-radius: 0;
+        }
+
+        .message.me {
+            background-color: #0d6efd;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .message-sender {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sender-icon {
+            color: #6c757d;
+        }
+
+        .message-image {
+            max-width: 400px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .chat-footer {
+            border-top: 1px solid #dee2e6;
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-footer input[type="text"] {
+            flex-grow: 1;
+            border-radius: 25px;
+            padding: 10px 15px;
+        }
+
+        .chat-footer button {
+            border-radius: 25px;
+            padding: 10px 20px;
+        }
+
+        #preview {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 10px;
+            margin-left: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="chat-header">
+    <div class="chat-avatar">
+        <img th:if="${chat.avatar != null}" th:src="@{'/uploads/' + ${chat.avatar}}" alt="avatar">
+        <i th:if="${chat.avatar == null}"
+           th:classappend="${chat.type.name() == 'GROUP'} ? 'fa-solid fa-users' : 'fa-solid fa-user'"></i>
+    </div>
+    <div>
+        <div class="chat-name" th:text="${chat.name}">Tên nhóm</div>
+        <a th:href="@{'/chats/group/' + ${chat.id} + '/detail'}" class="small text-muted text-decoration-none">
+            Xem thông tin nhóm
+        </a>
+    </div>
+</div>
+
+<!-- Chat content -->
+<div id="chat" class="chat-box">
+    <div th:each="message : ${chat.messages}"
+         th:classappend="${message.sender.id == user.id} ? 'message-row me' : 'message-row'">
+
+        <div th:if="${message.sender.id != user.id}" class="message-sender">
+
+            <span th:text="${message.sender.fullName}">Người gửi</span>
+        </div>
+
+        <div th:classappend="${message.sender.id == user.id} ? 'message me' : 'message other'">
+            <div th:if="${message.content != null}" th:text="${message.content}">Nội dung</div>
+            <img th:if="${message.fileURl != null}"
+                 th:src="@{'/uploads/' + ${message.fileURl }}"
+                 class="message-image"
+                 alt="image">
+        </div>
+
+        <div class="text-muted small mt-1"
+             th:text="${#temporals.format(message.createdAt, 'HH:mm')}"></div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="chat-footer">
+    <input type="hidden" id="userId" th:value="${user.id}">
+    <input type="hidden" id="groupId" th:value="${chat.id}">
+
+    <label for="imageInput" class="btn btn-light border">
+        <i class="fa-solid fa-image"></i>
+    </label>
+    <input type="file" id="imageInput" accept="image/*" style="display:none">
+    <img id="preview" alt="Preview">
+
+    <input type="text" id="content" class="form-control" placeholder="Nhập tin nhắn...">
+    <button class="btn btn-primary" onclick="send()">
+        <i class="fa-solid fa-paper-plane"></i>
+    </button>
+</div>
+
+<!-- JS -->
+<script th:inline="javascript">
+    const currentUserId = [[${user.id}]];
+
+    let eventSource;
+
+    function connect() {
+        const groupId = document.getElementById("groupId").value;
+        const userId = document.getElementById("userId").value;
+
+        eventSource = new EventSource(`/chats/subscribe/${groupId}/${userId}`);
+
+        eventSource.addEventListener("message", e => {
+            const msg = JSON.parse(e.data);
+            renderMessage(msg);
+        });
+
+        eventSource.onerror = () => console.warn("Connection lost");
+    }
+
+    window.addEventListener("load", connect);
+
+    // Preview ảnh
+    document.getElementById("imageInput").addEventListener("change", function() {
+        const file = this.files[0];
+        const preview = document.getElementById("preview");
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = "none";
+        }
+    });
+
+    async function send() {
+        const content = document.getElementById("content").value.trim();
+        const fileInput = document.getElementById("imageInput");
+        const file = fileInput.files[0];
+
+        if (!content && !file) return;
+
+        const group = document.getElementById("groupId").value;
+        const user = document.getElementById("userId").value;
+
+        const formData = new FormData();
+        formData.append("fromUser", user);
+        formData.append("toGroup", group);
+        formData.append("content", content);
+        if (file) formData.append("image", file);
+
+        await fetch("/chats/sse/send", { method: "POST", body: formData });
+
+        // reset
+        document.getElementById("content").value = '';
+        fileInput.value = '';
+        document.getElementById("preview").style.display = "none";
+    }
+
+    function renderMessage(msg) {
+        const chat = document.getElementById("chat");
+        const isMine = msg.fromUser === currentUserId;
+
+        const row = document.createElement("div");
+        row.className = "message-row" + (isMine ? " me" : "");
+
+        if (!isMine) {
+            const sender = document.createElement("div");
+            sender.className = "message-sender";
+            sender.innerHTML = `<i class='fa-solid fa-user sender-icon'></i> <span>${msg.userName}</span>`;
+            row.appendChild(sender);
+        }
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message " + (isMine ? "me" : "other");
+
+        if (msg.content) {
+            const contentDiv = document.createElement("div");
+            contentDiv.textContent = msg.content;
+            messageDiv.appendChild(contentDiv);
+        }
+
+        if (msg.fileUrl) {
+            const img = document.createElement("img");
+            img.src = "/uploads/" + msg.fileUrl;
+            img.className = "message-image";
+            messageDiv.appendChild(img);
+        }
+
+        row.appendChild(messageDiv);
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "text-muted small mt-1";
+        const date = new Date(msg.timestamp);
+        timeDiv.textContent = date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hour12: false});
+        row.appendChild(timeDiv);
+
+        chat.appendChild(row);
+        chat.scrollTop = chat.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
