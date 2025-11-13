@@ -33,8 +33,9 @@ public class UserController {
     private final LessonService lessonService;
     private final NoteService noteService;
     private final FeedbackService feedbackService;
+    private final BlogService blogService;
 
-    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl, UserLessonService userLessonService, LearningService learningService, LessonService lessonService, NoteService noteService, FeedbackService feedbackService) {
+    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl, UserLessonService userLessonService, LearningService learningService, LessonService lessonService, NoteService noteService, FeedbackService feedbackService, BlogService blogService) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.courseSerive = courseSerive;
@@ -46,6 +47,7 @@ public class UserController {
         this.lessonService = lessonService;
         this.noteService = noteService;
         this.feedbackService = feedbackService;
+        this.blogService = blogService;
     }
 
     //================================== Profile Management ================================//
@@ -142,7 +144,9 @@ public class UserController {
             User user = this.userService.getUserById(userId);
             List<EnrollmentInfoDTO> enrollments = this.enrollmentService.createEnrollmentInfoDTO(userId);
             List<Wishlist> wishlists = this.wishlistService.findByUserId(userId);
+            List<BlogDTO> latestBlogs = this.blogService.findLatestBlogs(4);
 
+            model.addAttribute("latestBlogs", latestBlogs);
             model.addAttribute("enrollments", enrollments);
             model.addAttribute("wishlists", wishlists);
             model.addAttribute("user", user);
