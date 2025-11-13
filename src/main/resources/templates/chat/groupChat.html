@@ -142,6 +142,10 @@
              th:text="${message.sender.fullName}">Người gửi</div>
         <div th:classappend="${message.sender.id == user.id} ? 'message me' : 'message other'">
             <div th:text="${message.content}">Nội dung tin nhắn</div>
+            <img th:if="${message.fileURl != null}"
+                 th:src="@{'/uploads/' + ${message.fileURl}}"
+                 style="max-width:200px; border-radius:10px; margin-top:5px;"
+                 alt="image">
         </div>
         <div class="text-muted small mt-1"
              th:text="${#temporals.format(message.createdAt, 'HH:mm')}"></div>
@@ -152,6 +156,12 @@
 <div class="chat-footer">
     <input type="hidden" id="userId" th:value="${user.id}">
     <input type="hidden" id="groupId" th:value="${chat.id}">
+
+    <label for="imageInput" class="btn btn-light border">
+        <i class="fa-solid fa-image"></i>
+    </label>
+    <input type="file" id="imageInput" accept="image/*" style="display:none">
+
     <input type="text" id="content" class="form-control" placeholder="Nhập tin nhắn...">
     <button class="btn btn-primary" onclick="send()">
         <i class="fa-solid fa-paper-plane"></i>
@@ -190,23 +200,40 @@
     // auto-connect when page loads
     window.addEventListener("load", connect);
 
-    function send() {
+    async function send() {
         const content = document.getElementById("content").value.trim();
-        if (!content) return;
+        const fileInput = document.getElementById("imageInput");
+        const file = fileInput.files[0];
 
+        if (!content&&!file) return;
 
         const group = document.getElementById("groupId").value;
         const user = document.getElementById("userId").value;
 
-        fetch("/chats/sse/send", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                fromUser: Number(user),
-                toGroup: Number(group),
-                content: content
-            })
-        }).catch(err => console.error("Send failed", err));
+        const formData = new FormData();
+        formData.append("fromUser", user);
+        formData.append("toGroup", group);
+        formData.append("content", content);
+        if (file) formData.append("image", file);
+
+        try {
+            await fetch("/chats/sse/send", {
+                method: "POST",
+                body: formData
+            });
+        } catch (err) {
+            console.error("Send failed", err);
+        }
+
+        // fetch("/chats/sse/send", {
+        //     method: "POST",
+        //     headers: {"Content-Type": "application/json"},
+        //     body: JSON.stringify({
+        //         fromUser: Number(user),
+        //         toGroup: Number(group),
+        //         content: content
+        //     })
+        // }).catch(err => console.error("Send failed", err));
 
         document.getElementById("content").value = '';
     }
@@ -227,9 +254,22 @@
 
         const messageDiv = document.createElement("div");
         messageDiv.className = "message " + (isMine ? "me" : "other");
-        const contentDiv = document.createElement("div");
-        contentDiv.textContent = msg.content;
-        messageDiv.appendChild(contentDiv);
+
+        if (msg.content) {
+            const contentDiv = document.createElement("div");
+            contentDiv.textContent = msg.content;
+            messageDiv.appendChild(contentDiv);
+        }
+
+        if (msg.fileUrl) {
+            const img = document.createElement("img");
+            img.src = "/uploads/"+msg.fileUrl;
+            img.style.maxWidth = "200px";
+            img.style.borderRadius = "10px";
+            img.style.marginTop = "5px";
+            messageDiv.appendChild(img);
+        }
+
         row.appendChild(messageDiv);
 
         const timeDiv = document.createElement("div");

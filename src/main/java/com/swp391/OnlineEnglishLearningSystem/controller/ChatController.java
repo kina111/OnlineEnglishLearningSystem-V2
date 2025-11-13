@@ -270,17 +270,35 @@ public class ChatController {
     }
 
     @PostMapping("/sse/send")
-    public String sendMessage( @RequestBody MessageDTO msgDto) {
-        Chat groupChat = chatService.findById(msgDto.getToGroup());
-        if (groupChat == null) return "No active group: " + msgDto.getToGroup();
+    public String sendMessage( @RequestParam Long fromUser,
+                               @RequestParam Long toGroup,
+                               @RequestParam(required = false) String content,
+                               @RequestParam(required = false) MultipartFile image) {
+
+        String imageUrl = null;
+        if(image != null&&!image.isEmpty()){
+            imageUrl = uploadService.uploadImage(image, "chats/images/");
+        }
+
+        Chat groupChat = chatService.findById(toGroup);
+        if (groupChat == null) return "No active group: " + toGroup;
+
+        MessageDTO msgDto = new MessageDTO();
         Message msg = new Message();
-        User user = userService.getUserById(msgDto.getFromUser());
+        User user = userService.getUserById(fromUser);
+        msgDto.setFromUser(fromUser);
         msgDto.setUserName(user.getFullName());
+        msgDto.setUserAvatarUrl(user.getAvatar());
+        msgDto.setContent(content);
         msgDto.setTimestamp(LocalDateTime.now());
+        msgDto.setFileUrl(imageUrl);
+
         msg.setSender(user);
-        msg.setContent(msgDto.getContent());
+        msg.setContent(content);
         msg.setChat(groupChat);
+        msg.setFileURl(imageUrl);
         messageService.save(msg);
+
         Map<Long, SseEmitter> group = groupEmitters.get(msg.getChat().getId());
         if (group == null) return "No active group: " + msg.getChat().getId();
 
