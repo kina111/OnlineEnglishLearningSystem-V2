@@ -21,7 +21,7 @@ public class ChatMember {
     @JoinColumn(name = "chat_id", nullable = false)
     private Chat chat;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -31,5 +31,63 @@ public class ChatMember {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime joinedAt = LocalDateTime.now();
+
+    public ChatMember() {
+    }
+
+    public ChatMember(Long id, Chat chat, User user, Role role, LocalDateTime joinedAt) {
+        this.id = id;
+        this.chat = chat;
+        this.user = user;
+        this.role = role;
+        this.joinedAt = joinedAt;
+    }
+
+    public ChatMember(Chat chat, User user, Role role) {
+        this.chat = chat;
+        this.user = user;
+        this.role = role;
+        this.joinedAt = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Chat getChat() {
+        return chat;
+    }
+
+    public void setChat(Chat chat) {
+        this.chat = chat;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public LocalDateTime getJoinedAt() {
+        return joinedAt;
+    }
+
+    public void setJoinedAt(LocalDateTime joinedAt) {
+        this.joinedAt = joinedAt;
+    }
 }
 

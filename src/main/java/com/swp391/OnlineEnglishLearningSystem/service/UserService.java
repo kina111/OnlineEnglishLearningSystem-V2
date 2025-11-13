@@ -35,4 +35,6 @@ public interface UserService {
     Page<User> getUsersWithSpecs(Pageable pageale, String gender, String role, Boolean enabled, String search);
 
     List<User> getUsersByRoleName(String roleName);
+
+    List<User> geUsersById(List<Long> ids);
 }
