@@ -275,13 +275,12 @@ public class ChatController {
                                @RequestParam(required = false) String content,
                                @RequestParam(required = false) MultipartFile image) {
 
-        String imageUrl = null;
-        if(image != null&&!image.isEmpty()){
-            imageUrl = uploadService.uploadImage(image, "chats/images/");
-        }
-
         Chat groupChat = chatService.findById(toGroup);
         if (groupChat == null) return "No active group: " + toGroup;
+        String imageUrl = null;
+        if(image != null&&!image.isEmpty()){
+            imageUrl = uploadService.uploadImage(image, "chats/"+toGroup+"/images/");
+        }
 
         MessageDTO msgDto = new MessageDTO();
         Message msg = new Message();

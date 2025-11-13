@@ -73,6 +73,7 @@
             border-radius: 15px;
             word-wrap: break-word;
             display: inline-block;
+            position: relative;
         }
 
         .message.other {
@@ -91,6 +92,20 @@
             font-weight: 600;
             margin-bottom: 3px;
             color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sender-icon {
+            color: #6c757d;
+        }
+
+        .message-image {
+            max-width: 400px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: block;
         }
 
         .chat-footer {
@@ -112,6 +127,14 @@
             border-radius: 25px;
             padding: 10px 20px;
         }
+
+        #preview {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 10px;
+            margin-left: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -131,22 +154,24 @@
     </div>
 </div>
 
-<!-- Debug area (optional) -->
-<!--<div id="chat2"></div>-->
-
 <!-- Chat content -->
 <div id="chat" class="chat-box">
     <div th:each="message : ${chat.messages}"
          th:classappend="${message.sender.id == user.id} ? 'message-row me' : 'message-row'">
-        <div th:if="${message.sender.id != user.id}" class="message-sender"
-             th:text="${message.sender.fullName}">Người gửi</div>
+
+        <div th:if="${message.sender.id != user.id}" class="message-sender">
+
+            <span th:text="${message.sender.fullName}">Người gửi</span>
+        </div>
+
         <div th:classappend="${message.sender.id == user.id} ? 'message me' : 'message other'">
-            <div th:text="${message.content}">Nội dung tin nhắn</div>
+            <div th:if="${message.content != null}" th:text="${message.content}">Nội dung</div>
             <img th:if="${message.fileURl != null}"
-                 th:src="@{'/uploads/' + ${message.fileURl}}"
-                 style="max-width:200px; border-radius:10px; margin-top:5px;"
+                 th:src="@{'/uploads/' + ${message.fileURl }}"
+                 class="message-image"
                  alt="image">
         </div>
+
         <div class="text-muted small mt-1"
              th:text="${#temporals.format(message.createdAt, 'HH:mm')}"></div>
     </div>
@@ -161,6 +186,7 @@
         <i class="fa-solid fa-image"></i>
     </label>
     <input type="file" id="imageInput" accept="image/*" style="display:none">
+    <img id="preview" alt="Preview">
 
     <input type="text" id="content" class="form-control" placeholder="Nhập tin nhắn...">
     <button class="btn btn-primary" onclick="send()">
@@ -180,32 +206,38 @@
 
         eventSource = new EventSource(`/chats/subscribe/${groupId}/${userId}`);
 
-        eventSource.addEventListener("init", e => {
-            // document.getElementById("chat2").innerHTML += `<p>✅ ${e.data}</p>`;
-            alert(e.data);
-        });
-
         eventSource.addEventListener("message", e => {
             const msg = JSON.parse(e.data);
             renderMessage(msg);
         });
 
-        eventSource.onerror = () => {
-            // document.getElementById("chat2").innerHTML += `<p style="color:red">❌ Connection lost</p>`;
-            alert("Connection lost");
-            // eventSource.close();
-        };
+        eventSource.onerror = () => console.warn("Connection lost");
     }
 
-    // auto-connect when page loads
     window.addEventListener("load", connect);
+
+    // Preview ảnh
+    document.getElementById("imageInput").addEventListener("change", function() {
+        const file = this.files[0];
+        const preview = document.getElementById("preview");
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = "none";
+        }
+    });
 
     async function send() {
         const content = document.getElementById("content").value.trim();
         const fileInput = document.getElementById("imageInput");
         const file = fileInput.files[0];
 
-        if (!content&&!file) return;
+        if (!content && !file) return;
 
         const group = document.getElementById("groupId").value;
         const user = document.getElementById("userId").value;
@@ -216,26 +248,12 @@
         formData.append("content", content);
         if (file) formData.append("image", file);
 
-        try {
-            await fetch("/chats/sse/send", {
-                method: "POST",
-                body: formData
-            });
-        } catch (err) {
-            console.error("Send failed", err);
-        }
+        await fetch("/chats/sse/send", { method: "POST", body: formData });
 
-        // fetch("/chats/sse/send", {
-        //     method: "POST",
-        //     headers: {"Content-Type": "application/json"},
-        //     body: JSON.stringify({
-        //         fromUser: Number(user),
-        //         toGroup: Number(group),
-        //         content: content
-        //     })
-        // }).catch(err => console.error("Send failed", err));
-
+        // reset
         document.getElementById("content").value = '';
+        fileInput.value = '';
+        document.getElementById("preview").style.display = "none";
     }
 
     function renderMessage(msg) {
@@ -248,7 +266,7 @@
         if (!isMine) {
             const sender = document.createElement("div");
             sender.className = "message-sender";
-            sender.textContent = msg.userName;
+            sender.innerHTML = `<i class='fa-solid fa-user sender-icon'></i> <span>${msg.userName}</span>`;
             row.appendChild(sender);
         }
 
@@ -263,10 +281,8 @@
 
         if (msg.fileUrl) {
             const img = document.createElement("img");
-            img.src = "/uploads/"+msg.fileUrl;
-            img.style.maxWidth = "200px";
-            img.style.borderRadius = "10px";
-            img.style.marginTop = "5px";
+            img.src = "/uploads/" + msg.fileUrl;
+            img.className = "message-image";
             messageDiv.appendChild(img);
         }
 
@@ -275,7 +291,7 @@
         const timeDiv = document.createElement("div");
         timeDiv.className = "text-muted small mt-1";
         const date = new Date(msg.timestamp);
-        timeDiv.textContent = date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        timeDiv.textContent = date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hour12: false});
         row.appendChild(timeDiv);
 
         chat.appendChild(row);
