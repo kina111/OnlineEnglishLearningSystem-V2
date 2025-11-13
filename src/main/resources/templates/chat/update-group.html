@@ -61,7 +61,7 @@
 
             <!-- Actions -->
             <div class="action-buttons">
-                <button type="button" class="btn btn-secondary" th:onclick="'window.location.href=\'/chats/group/' + ${updatedChat.id} + '\';'">
+                <button type="button" class="btn btn-secondary" th:onclick="history.back()">
                     Hủy bỏ
                 </button>
                 <button type="submit" class="btn btn-primary">Cập nhật nhóm</button>

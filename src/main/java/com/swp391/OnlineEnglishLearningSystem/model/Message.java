@@ -25,15 +25,20 @@ public class Message {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    private String fileURl;
+
+
+
     public Message() {
     }
 
-    public Message(Long id, Chat chat, User sender, String content, LocalDateTime createdAt) {
+    public Message(Long id, Chat chat, User sender, String content, LocalDateTime createdAt, String fileURl) {
         this.id = id;
         this.chat = chat;
         this.sender = sender;
         this.content = content;
         this.createdAt = createdAt;
+        this.fileURl = fileURl;
     }
 
     public Long getId() {
@@ -74,6 +79,14 @@ public class Message {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getFileURl() {
+        return fileURl;
+    }
+
+    public void setFileURl(String fileURl) {
+        this.fileURl = fileURl;
     }
 }
 

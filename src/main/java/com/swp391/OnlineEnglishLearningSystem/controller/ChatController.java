@@ -5,10 +5,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.ChatMember;
 import com.swp391.OnlineEnglishLearningSystem.model.Message;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.MessageDTO;
-import com.swp391.OnlineEnglishLearningSystem.service.ChatMemberService;
-import com.swp391.OnlineEnglishLearningSystem.service.ChatService;
-import com.swp391.OnlineEnglishLearningSystem.service.MessageService;
-import com.swp391.OnlineEnglishLearningSystem.service.UserService;
+import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -22,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
@@ -31,13 +29,15 @@ public class ChatController {
     private final ChatMemberService chatMemberService;
     private final MessageService messageService;
     private final UserService userService;
+    private final UploadService uploadService;
 
 
-    public ChatController(ChatService chatService, ChatMemberService chatMemberService, MessageService messageService, UserService userService) {
+    public ChatController(ChatService chatService, ChatMemberService chatMemberService, MessageService messageService, UserService userService, UploadService uploadService) {
         this.chatService = chatService;
         this.chatMemberService = chatMemberService;
         this.messageService = messageService;
         this.userService = userService;
+        this.uploadService = uploadService;
     }
 
     private User getUserById(HttpSession session){
@@ -58,7 +58,7 @@ public class ChatController {
             Chat chat = chatMember.getChat();
             if(chat.getType() == Chat.ChatType.PRIVATE){
                 for(ChatMember member : chat.getMembers()){
-                    if(member.getUser().getId() != userId){
+                    if(!Objects.equals(member.getUser().getId(), userId)){
                         chat.setName(member.getUser().getFullName());
                         chat.setAvatar(member.getUser().getAvatar());
                     }
@@ -90,6 +90,7 @@ public class ChatController {
     @PostMapping("/create-group")
     public String createChat(@ModelAttribute("chat") Chat chat,
                              @RequestParam("selectedUserIds") List<Long> selectedUserIds,
+                             @RequestParam(value = "avatarFile",required = false)  MultipartFile avatarFile,
                              HttpSession session){
 
         Long userId = (Long) session.getAttribute("currentUserId");
@@ -98,11 +99,17 @@ public class ChatController {
         }
         User user = userService.getUserById(userId);
         // Gán thành viên vào nhóm
+        //Avatar
+        if(avatarFile != null&&!avatarFile.isEmpty()){
+            chat.setAvatar(uploadService.uploadImage(avatarFile, "chats/avatars/"));
+        }
         List<User> members = userService.geUsersById(selectedUserIds);
+        members.remove(user);
         chatService.createGroupChat(chat, members);
         ChatMember chatMember = new ChatMember();
         chatMember.setChat(chat);
         chatMember.setUser(user);
+
         chatMember.setRole(ChatMember.Role.ADMIN);
         chatMemberService.save(chatMember);
         return "redirect:/chats/";
@@ -210,6 +217,9 @@ public class ChatController {
         }
         if(description != null&&!description.isBlank()){
             chat.setDescription(description);
+        }
+        if(avatarFile != null&&!avatarFile.isEmpty()){
+            chat.setAvatar(uploadService.uploadImage(avatarFile, "chats/avatars/"));
         }
         chatService.update(chat);
 //        chatService.updateGroup(updatedChat, avatarFile);

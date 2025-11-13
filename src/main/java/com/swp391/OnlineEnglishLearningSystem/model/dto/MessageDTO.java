@@ -11,6 +11,10 @@ public class MessageDTO {
 
     private String content;
 
+    private String userAvatarUrl;
+
+    private String fileUrl;
+
     private LocalDateTime timestamp = LocalDateTime.now();
 
     public MessageDTO() {
@@ -61,5 +65,21 @@ public class MessageDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getUserAvatarUrl() {
+        return userAvatarUrl;
+    }
+
+    public void setUserAvatarUrl(String userAvatarUrl) {
+        this.userAvatarUrl = userAvatarUrl;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 }
