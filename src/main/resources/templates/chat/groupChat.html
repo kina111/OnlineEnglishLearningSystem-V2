@@ -132,7 +132,7 @@
 </div>
 
 <!-- Debug area (optional) -->
-<div id="chat2"></div>
+<!--<div id="chat2"></div>-->
 
 <!-- Chat content -->
 <div id="chat" class="chat-box">
@@ -171,7 +171,8 @@
         eventSource = new EventSource(`/chats/subscribe/${groupId}/${userId}`);
 
         eventSource.addEventListener("init", e => {
-            document.getElementById("chat2").innerHTML += `<p>✅ ${e.data}</p>`;
+            // document.getElementById("chat2").innerHTML += `<p>✅ ${e.data}</p>`;
+            alert(e.data);
         });
 
         eventSource.addEventListener("message", e => {
@@ -180,7 +181,9 @@
         });
 
         eventSource.onerror = () => {
-            document.getElementById("chat2").innerHTML += `<p style="color:red">❌ Connection lost</p>`;
+            // document.getElementById("chat2").innerHTML += `<p style="color:red">❌ Connection lost</p>`;
+            alert("Connection lost");
+            // eventSource.close();
         };
     }
 

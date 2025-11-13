@@ -53,8 +53,21 @@ public class ChatController {
         }
         User user = userService.getUserById(userId);
         List<ChatMember> chatMembers = chatMemberService.getChatMembersByUserId(userId);
+        List<Chat> chats = new ArrayList<>();
+        for(ChatMember chatMember : chatMembers){
+            Chat chat = chatMember.getChat();
+            if(chat.getType() == Chat.ChatType.PRIVATE){
+                for(ChatMember member : chat.getMembers()){
+                    if(member.getUser().getId() != userId){
+                        chat.setName(member.getUser().getFullName());
+                        chat.setAvatar(member.getUser().getAvatar());
+                    }
+                }
+            }
+            chats.add(chat);
+        }
         model.addAttribute("user", user);
-        model.addAttribute("chatMembers", chatMembers);
+        model.addAttribute("chats", chats);
         return "chat/index";
     }
 
@@ -135,6 +148,14 @@ public class ChatController {
         User user = getUserById(session);
         if(chat == null||user == null||!chatMemberService.isChatMember(groupId, user.getId())){
             return "redirect:/chats/";
+        }
+        if(chat.getType() == Chat.ChatType.PRIVATE){
+            for(ChatMember member : chat.getMembers()){
+                if(member.getUser().getId() != user.getId()){
+                    chat.setName(member.getUser().getFullName());
+                    chat.setAvatar(member.getUser().getAvatar());
+                }
+            }
         }
         model.addAttribute("chat", chat);
         model.addAttribute("user", user);

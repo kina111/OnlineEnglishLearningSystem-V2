@@ -47,8 +47,9 @@
                     <dt>Thành viên:</dt>
                     <dd>
                         <ul>
-                            <li th:each="member : ${chat.members}"
-                                th:text="${member.user.fullName}">Tên thành viên</li>
+                            <li th:each="member : ${chat.members}">
+                                <a th:href="${'/chats/private/' + member.user.id }" th:text="${member.user.fullName}">Tên thành viên></a>
+                            </li>
                         </ul>
                     </dd>
                 </div>

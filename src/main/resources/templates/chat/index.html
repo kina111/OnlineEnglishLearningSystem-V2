@@ -79,25 +79,25 @@
         </a>
     </div>
 
-    <div th:each="c : ${chatMembers}">
-        <a class="chat-item" th:href="@{'/chats/group/' + ${c.chat.id}}">
+    <div th:each="c : ${chats}">
+        <a class="chat-item" th:href="@{'/chats/group/' + ${c.id}}">
             <div class="chat-avatar">
                 <!-- Nếu có avatar thì hiển thị ảnh -->
-                <img th:if="${c.chat.avatar != null}" th:src="@{'/uploads/' + ${c.chat.avatar}}" alt="avatar"
+                <img th:if="${c.avatar != null}" th:src="@{'/uploads/' + ${c.avatar}}" alt="avatar"
                      style="width: 100%; height: 100%; object-fit: cover;">
                 <!-- Nếu không có thì hiển thị icon -->
-                <i th:if="${c.chat.avatar == null}"
-                   th:classappend="${c.chat.type.name() == 'GROUP'} ? 'fa-solid fa-users' : 'fa-solid fa-user'"></i>
+                <i th:if="${c.avatar == null}"
+                   th:classappend="${c.type.name() == 'GROUP'} ? 'fa-solid fa-users' : 'fa-solid fa-user'"></i>
             </div>
 
             <div class="chat-info">
-                <div class="chat-name" th:text="${c.chat.name != null ? c.chat.name : c.user.fullName}">
+                <div class="chat-name" th:text="${c.name}">
                     Tên hội thoại
                 </div>
                 <div class="chat-meta">
-                    <span th:text="${#temporals.format(c.chat.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
-                    <span th:if="${c.chat.type.name() == 'GROUP'}">• Nhóm</span>
-                    <span th:if="${c.chat.type.name() == 'PRIVATE'}">• Riêng tư</span>
+                    <span th:text="${#temporals.format(c.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                    <span th:if="${c.type.name() == 'GROUP'}">• Nhóm</span>
+                    <span th:if="${c.type.name() == 'PRIVATE'}">• Riêng tư</span>
                 </div>
             </div>
         </a>
