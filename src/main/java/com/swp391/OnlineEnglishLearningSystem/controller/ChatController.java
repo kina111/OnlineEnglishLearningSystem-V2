@@ -115,21 +115,6 @@ public class ChatController {
         return "redirect:/chats/";
     }
 
-//    @GetMapping("/create-private")
-//    public String createPrivateChat(HttpSession session,Model model){
-//        Long userId = (Long) session.getAttribute("currentUserId");
-//        if(userId == null){
-//            return "redirect:/";
-//        }
-//        Chat chat = new Chat();
-//        chat.setType(Chat.ChatType.GROUP);
-//        model.addAttribute("chat", chat);
-//        User user = userService.getUserById(userId);
-//        List<User> users = userService.getAllUsers();
-//        model.addAttribute("users", users);
-//        model.addAttribute("user", user);
-//        return "chat/create-private";
-//    }
 
     @GetMapping("/private/{user2Id}")
     public String createPrivateChat(@PathVariable Long user2Id,HttpSession session){
@@ -141,13 +126,6 @@ public class ChatController {
         }
         return "redirect:/chats/";
     }
-//
-//    public String createPrivateChat(Long userId1, Long userId2){
-//        Chat chat = chatService.createChat(userId1, userId2);
-//        chatMemberService.addChatMember(chat.getId(), userId1);
-//        chatMemberService.addChatMember(chat.getId(), userId2);
-//        return "redirect:/chats/";
-//    }
 
     @GetMapping("/group/{groupId}")
     public String groupChat(@PathVariable("groupId") Long groupId, Model model,HttpSession session){

@@ -32,6 +32,12 @@ public class UserLessonServiceImpl implements UserLessonService {
         this.userLessonRepository.save(ul);
     }
 
+    @Override
+    public boolean existsByLessonIdAndUserId(long lessonId, long userId) {
+        UserLesson ul = this.userLessonRepository.findByUserIdAndLessonId(userId, lessonId).orElse(null);
+        return ul==null;
+    }
+
     public UserLesson createNew(User user, Enrollment enrollment, Lesson lesson){
         return this.userLessonRepository.save(new UserLesson(user, lesson, enrollment));
     }
