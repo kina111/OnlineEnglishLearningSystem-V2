@@ -155,20 +155,20 @@
                     <li class="page-item">
                         <span th:if="${coursePage.first}" class="page-link disabled">«</span>
                         <a th:unless="${coursePage.first}" class="page-link"
-                           th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${coursePage.number - 1}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}">«</a>
+                           th:href="@{/courses/admin(expertId=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${coursePage.number - 1}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}">«</a>
                     </li>
 
                     <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, coursePage.totalPages - 1)}">
                         <span th:if="${pageNumber == coursePage.number}" class="page-link active" th:text="${pageNumber + 1}">1</span>
                         <a th:unless="${pageNumber == coursePage.number}" class="page-link"
-                           th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${pageNumber}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}"
+                           th:href="@{/courses/admin(expertId=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${pageNumber}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}"
                            th:text="${pageNumber + 1}">1</a>
                     </li>
 
                     <li class="page-item">
                         <span th:if="${coursePage.last}" class="page-link disabled">»</span>
                         <a th:unless="${coursePage.last}" class="page-link"
-                           th:href="@{/courses/users/{id}(id=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${coursePage.number + 1}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}">»</a>
+                           th:href="@{/courses/admin(expertId=${expertId}, status=${currentStatus}, categoryId=${currentCategoryId}, keyword=${currentKeyword}, page=${coursePage.number + 1}, size=${coursePage.size}, sort=${#strings.arrayJoin(coursePage.sort.toString().split(': '), ',')})}">»</a>
                     </li>
                 </ul>
             </nav>

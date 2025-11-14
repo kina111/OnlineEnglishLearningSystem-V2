@@ -33,13 +33,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/home",
+                        .requestMatchers("/", "/login", "/register", "/home",
                                 "/courses/learner","/courses/{id}/learner",
                                 "/blogs", "/blogs/{id}",
                                 "/css/**", "/js/**",
-                                "/uploads/**").permitAll()
+                                "/uploads/**",
+                                "/chats").permitAll()
                         // --- 2. QUYỀN CỦA EXPERT (Các rule chỉ Expert có) ---
-                        .requestMatchers(HttpMethod.GET, "/courses/users/{expertId}").hasRole("EXPERT")
                         .requestMatchers(HttpMethod.POST, "/courses/{id}/submit-review").hasRole("EXPERT")
 
                         // Gom nhóm các API của Expert
@@ -73,7 +73,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/courses/{id}",
                                 "/courses/create",
-                                "/courses/{id}/update"
+                                "/courses/{id}/update",
+                                "/courses/users/{id}",
+                                "/courses/{courseId}/quizzes/{quizId}/questions/**"
                         ).hasAnyRole("ADMIN", "EXPERT")
 
                         .requestMatchers(HttpMethod.POST,
@@ -89,7 +91,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/{courseId}/toggle-featured").hasRole("ADMIN") // Giả sử là POST/PUT, nếu rõ method thì nên ghi
 
                         // Tất cả các request còn lại đều cần phải xác thực
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
