@@ -202,7 +202,7 @@
 
         .course-meta {
             display: flex;
-            justify-content: space-between;
+            /*justify-content: space-between;*/
             align-items: center;
             font-size: 0.9rem;
             color: var(--text-light);
@@ -373,6 +373,16 @@
             transform: translateY(-2px);
         }
 
+
+        .post-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column
+        }
+        .post-link:hover {
+            opacity: 0.8;
+        }
         /* Footer */
 
     </style>
@@ -430,7 +440,8 @@
                             <h3 class="course-title" th:text="${course.name}">Course Title</h3>
                             <p class="course-tagline" th:text="${course.shortDescription}">Course Tagline</p>
                             <div class="course-meta">
-                                <span><i class="fas fa-star text-warning"></i> 4.8</span>
+                                <i class="fas fa-star text-warning"></i>
+                                <span th:text="${courseFeedbackStatsMap.get(course.id).averageRating}"> 4.8</span>
                             </div>
                         </div>
                     </a>
@@ -447,7 +458,7 @@
                 <h3 class="sidebar-title">Bài Viết Gần Đây</h3>
                 <ul class="latest-posts">
                     <li class="latest-post" th:each="blog : ${latestBlogs}">
-                        <img th:src="'/uploads/' + ${blog.thumbnail}" alt="Mẹo học từ vựng" class="post-small-thumb">
+                        <a th:href="@{'/blogs/' + ${blog.id}}" class="post-link"><img th:src="'/uploads/' + ${blog.thumbnail}" alt="Mẹo học từ vựng" class="post-small-thumb"></a>
                         <div class="post-small-content">
                             <h4 class="post-small-title" th:text="${blog.title}">5 Mẹo Học Từ Vựng Hiệu Quả</h4>
                             <p class="post-small-date" th:text="${#temporals.format(blog.createdAt, 'dd/MM/yyyy')}">30/09/2024</p>

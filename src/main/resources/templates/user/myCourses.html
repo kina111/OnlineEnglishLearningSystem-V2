@@ -458,27 +458,19 @@
 
 
         <!-- ===== SIDEBAR (CỘT BÊN PHẢI) - GIỮ NGUYÊN ===== -->
+        <!-- Sidebar -->
         <aside class="sidebar">
             <!-- Latest Posts -->
             <div class="sidebar-section">
                 <h3 class="sidebar-title">Bài Viết Gần Đây</h3>
                 <ul class="latest-posts">
-                    <!-- Dữ liệu tĩnh như file gốc bạn cung cấp -->
-                    <li class="latest-post">
-                        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%D&auto=format&fit=crop&w=200&q=80" alt="Mẹo học từ vựng" class="post-small-thumb">
+                    <li class="latest-post" th:each="blog : ${latestBlogs}">
+                        <a th:href="@{'/blogs/' + ${blog.id}}" class="post-link"><img th:src="'/uploads/' + ${blog.thumbnail}" alt="Mẹo học từ vựng" class="post-small-thumb"></a>
                         <div class="post-small-content">
-                            <h4 class="post-small-title">5 Mẹo Học Từ Vựng Hiệu Quả</h4>
-                            <p class="post-small-date">30/09/2024</p>
+                            <h4 class="post-small-title" th:text="${blog.title}">5 Mẹo Học Từ Vựng Hiệu Quả</h4>
+                            <p class="post-small-date" th:text="${#temporals.format(blog.createdAt, 'dd/MM/yyyy')}">30/09/2024</p>
                         </div>
                     </li>
-                    <li class="latest-post">
-                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fx8fA%3D%D&auto=format&fit=crop&w=200&q=80" alt="Luyện nghe" class="post-small-thumb">
-                        <div class="post-small-content">
-                            <h4 class="post-small-title">Luyện Nghe Cho Người Mới Bắt Đầu</h4>
-                            <p class="post-small-date">28/09/2024</p>
-                        </div>
-                    </li>
-                    <!-- ... các bài viết tĩnh khác ... -->
                 </ul>
             </div>
 
