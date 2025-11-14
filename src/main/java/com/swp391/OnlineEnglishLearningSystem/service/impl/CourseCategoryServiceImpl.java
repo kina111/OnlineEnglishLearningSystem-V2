@@ -22,7 +22,7 @@ public class CourseCategoryServiceImpl implements CourseCategoryService {
 
     @Override
     public List<CourseCategory> findAll() {
-        return this.courseCategoryRepository.findAll();
+        return this.courseCategoryRepository.findAllByActiveTrue();
     }
 
     @Override

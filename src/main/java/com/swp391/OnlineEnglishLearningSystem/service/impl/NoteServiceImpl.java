@@ -31,7 +31,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteDTO> createDtosByChapterAndEnrollmentId(long enrollmentId, long chapterId, Sort sort) {
+    public List<NoteDTO> createDtosByChapterAndEnrollmentId(long chapterId, long enrollmentId, Sort sort) {
         return this.noteRepository.findNotesByChapterAndEnrollmentId(chapterId, enrollmentId, sort);
     }
 

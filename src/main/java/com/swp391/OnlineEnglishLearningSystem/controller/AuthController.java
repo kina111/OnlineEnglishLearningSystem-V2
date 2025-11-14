@@ -4,6 +4,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.model.Token;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.BlogDTO;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseFeedbackStats;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.UserDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
@@ -18,7 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class AuthController {
@@ -28,13 +31,15 @@ public class AuthController {
     private final EmailService emailService;
     private final CourseService courseService;
     private final BlogService blogService;
+    private final FeedbackService feedbackService;
 
-    public AuthController(UserService userService, TokenService tokenService, EmailService emailService, CourseService courseService, BlogService blogService) {
+    public AuthController(UserService userService, TokenService tokenService, EmailService emailService, CourseService courseService, BlogService blogService, FeedbackService feedbackService) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.emailService = emailService;
         this.courseService = courseService;
         this.blogService = blogService;
+        this.feedbackService = feedbackService;
     }
 
     // ---------------- HOME ----------------
@@ -43,6 +48,14 @@ public class AuthController {
         List<Course> featuredCourses = this.courseService.findFeaturedCourses(6);
         List<BlogDTO> latestBlogs = this.blogService.findLatestBlogs(4);
 
+        Map<Long, CourseFeedbackStats> courseFeedbackStatsMap = new HashMap<>();
+        for (Course course : featuredCourses) {
+            Long courseId = course.getId();
+            CourseFeedbackStats cfs = this.feedbackService.getFeedbackStats(courseId);
+            courseFeedbackStatsMap.put(courseId, cfs);
+        }
+
+        model.addAttribute("courseFeedbackStatsMap", courseFeedbackStatsMap);
         model.addAttribute("latestBlogs", latestBlogs);
         model.addAttribute("featuredCourses", featuredCourses);
         return "home";
