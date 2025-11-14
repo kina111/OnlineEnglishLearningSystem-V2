@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,7 +58,7 @@
 
         <!-- Action -->
         <div class="action-buttons">
-            <a th:href="@{'/chats/group/' + ${chat.id} +'/out'}" class="btn btn-danger">Rời nhóm</a>
+            <a th:if="${chat.type.name()!='PRIVATE'}" th:href="@{'/chats/group/' + ${chat.id} +'/out'}" class="btn btn-danger">Rời nhóm</a>
             <a th:href="@{'/chats/group/' + ${chat.id} +'/edit'}" class="btn btn-secondary">Chỉnh sửa nhóm</a>
             <a th:href="@{'/chats/'}" class="btn btn-primary">Quay về danh sách nhóm</a>
         </div>

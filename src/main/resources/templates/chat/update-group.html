@@ -52,7 +52,9 @@
                         <label>Thành viên trong nhóm:</label>
                         <ul>
                             <li th:each="member : ${updatedChat.members}"
-                                th:text="${member.user.fullName}">Tên thành viên</li>
+                                th:text="${member.user.fullName}">Tên thành viên
+                                <a th:href="${'/chats/group/'+chat.id+'/'+member.user.id+'/remove'}">delete</a>
+                            </li>
                         </ul>
                         <p><a th:href="@{'/chats/' + ${updatedChat.id} + '/invite'}" class="btn btn-sm btn-success">+ Thêm thành viên</a></p>
                     </div>

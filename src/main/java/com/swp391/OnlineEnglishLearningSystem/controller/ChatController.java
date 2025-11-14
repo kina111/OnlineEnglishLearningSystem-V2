@@ -232,7 +232,8 @@ public class ChatController {
     @GetMapping("/group/{id}/out")
     public String leaveGroup(@PathVariable Long id, HttpSession session){
         User user = getUserById(session);
-        if(user == null){
+        Chat chat = chatService.findById(id);
+        if(user == null||chat == null||chat.getType() != Chat.ChatType.GROUP){
             return "redirect:/";
         }
         chatMemberService.removeChatMember(id, user.getId());
@@ -313,6 +314,58 @@ public class ChatController {
         }
 
         return "Message sent to group " + msg.getChat().getId();
+    }
+
+    @GetMapping("/{groupId}/invite")
+    public String inviteMember(@PathVariable Long groupId, HttpSession session, Model model){
+        Long userId = (Long) session.getAttribute("currentUserId");
+        Chat chat = chatService.findById(groupId);
+//        ChatMember chatMember = ;
+        if(chat == null||!chatMemberService.isChatMember(groupId, userId)){
+            return "redirect:/chats/";
+        }
+        List<User> users = new ArrayList<>();
+        for(User user : userService.getAllUsers()){
+            if(!chatMemberService.isChatMember(groupId, user.getId())){
+                users.add(user);
+            }
+        }
+        model.addAttribute("users",users);
+        model.addAttribute("chatMembers", chat.getMembers());
+        model.addAttribute("chatId", chat.getId());
+        model.addAttribute("chat", chat);
+        return "chat/invite-member";
+    }
+
+    @GetMapping("/group/{groupId}/{userId}/remove")
+    public String removeMember(@PathVariable Long groupId,
+                               @PathVariable Long userId){
+        Chat chat = chatService.findById(groupId);
+        if(chat == null||!chatMemberService.isChatMember(groupId, userId)){
+            return "redirect:/chats/";
+        }
+        chatMemberService.removeChatMember(groupId, userId);
+        return "redirect:/chats/group/"+groupId;
+    }
+
+    @PostMapping("/{groupId}/invite")
+    public String inviteMember(@PathVariable Long groupId,
+                               @RequestParam List<Long> selectedUserIds,
+                               HttpSession session){
+        Long currentUserId = (Long) session.getAttribute("currentUserId");
+        Chat chat = chatService.findById(groupId);
+        if(chat != null&&chatMemberService.isChatMember(groupId, currentUserId)){
+            for(Long userId : selectedUserIds){
+                if(!chatMemberService.isChatMember(groupId, userId)){
+                    ChatMember chatMember = new ChatMember();
+                    chatMember.setChat(chat);
+                    chatMember.setUser(userService.getUserById(userId));
+                    chatMember.setRole(ChatMember.Role.MEMBER);
+                    chatMemberService.save(chatMember);
+                }
+            }
+        }
+        return "redirect:/chats/group/"+groupId;
     }
 
 }
