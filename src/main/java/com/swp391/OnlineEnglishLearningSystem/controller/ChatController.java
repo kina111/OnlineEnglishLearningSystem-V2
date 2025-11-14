@@ -135,7 +135,7 @@ public class ChatController {
     public String createPrivateChat(@PathVariable Long user2Id,HttpSession session){
         Long userId = (Long) session.getAttribute("currentUserId");
 
-        if(userId != null&&user2Id != null){
+        if(userId != null&&user2Id != null&&userId != user2Id){
             Chat chat = chatService.getOrCreateChat(userId, user2Id);
             return "redirect:/chats/group/" + chat.getId();
         }
@@ -200,7 +200,19 @@ public class ChatController {
     }
 
     @GetMapping("/group/{id}/edit")
-    public String editGroup(@PathVariable Long id, Model model) {
+    public String editGroup(@PathVariable Long id, Model model,HttpSession session) {
+        Long userId = (Long) session.getAttribute("currentUserId");
+        List<ChatMember> chatMembers = chatMemberService.getChatMembersByUserId(userId);
+        ChatMember chatMember = new ChatMember();
+        for(ChatMember cm : chatMembers){
+            if(cm.getChat().getId() == id){
+                chatMember = cm;
+                break;
+            }
+        }
+        if(chatMember.getRole() != ChatMember.Role.ADMIN){
+            return "redirect:/chats/";
+        }
         Chat chat = chatService.findById(id);
         model.addAttribute("updatedChat", chat);
         return "chat/update-group";
@@ -210,7 +222,20 @@ public class ChatController {
     public String updateGroup(@PathVariable Long id,
                               @RequestParam(required = false) String name,
                               @RequestParam(required = false) String description,
-                              @RequestParam(value = "avatarFile",required = false)  MultipartFile avatarFile) {
+                              @RequestParam(value = "avatarFile",required = false)  MultipartFile avatarFile,
+                              HttpSession session) {
+        Long userId = (Long) session.getAttribute("currentUserId");
+        List<ChatMember> chatMembers = chatMemberService.getChatMembersByUserId(userId);
+        ChatMember chatMember = new ChatMember();
+        for(ChatMember cm : chatMembers){
+            if(cm.getChat().getId() == id){
+                chatMember = cm;
+                break;
+            }
+        }
+        if(chatMember.getRole() != ChatMember.Role.ADMIN){
+            return "redirect:/chats/";
+        }
         Chat chat = chatService.findById(id);
         if(name != null&&!name.isBlank()){
             chat.setName(name);
