@@ -36,13 +36,22 @@ public class ChatMemberServiceImpl implements ChatMemberService {
     @Override
     public void removeChatMember(Long chatId, Long userId) {
         List<ChatMember> chatMembers = chatMemberRepository.findByChatId(chatId);
+        if(chatMembers.size() <= 1){
+            chatRepository.deleteById(chatId);
+            return;
+        }
         for(ChatMember chatMember : chatMembers){
             if(chatMember.getUser().getId() == userId){
                 chatMemberRepository.delete(chatMember);
-                break;
+                if(chatMember.getRole() == ChatMember.Role.ADMIN){
+                    if(chatMemberRepository.findAdmins(chatId).isEmpty()){
+                        ChatMember newAdmin = chatMemberRepository.findMembersOrderByJoinedAt(chatId).getFirst();
+                        newAdmin.setRole(ChatMember.Role.ADMIN);
+                        chatMemberRepository.save(newAdmin);
+                    }
+                }
             }
         }
-//        ChatMember chatMember = chatMemberRepository.findByChatIdAndUserId(chatId, userId).orElseThrow(() -> new IllegalArgumentException("ChatMember not found"));
     }
 
     @Override
