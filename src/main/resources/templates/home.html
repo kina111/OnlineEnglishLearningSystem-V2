@@ -435,7 +435,7 @@
                 <h2 th:text="${slider.title}"></h2>
                 <p th:text="${slider.description}"></p>
 
-                <a th:href="${slider.linkUrl != null ? slider.linkUrl : '#'}">
+                <a th:href="${slider.linkUrl != null ? ('/sliders/view/' + slider.id) : '#'}">
                     <button class="slide-btn">Xem chi tiết</button>
                 </a>
             </div>
@@ -448,6 +448,35 @@
                  th:classappend="${iter.first} ? ' active' : ''"
                  th:onclick="|showSlide(${iter.index})|">
             </div>
+        </div>
+    </div>
+
+    <div class="hero-slider"  th:if="${sliders == null or sliders.isEmpty()}">
+        <div class="slide active">
+            <div class="slide-content">
+                <h2>Học Tiếng Anh Hiệu Quả</h2>
+                <p>Khám phá phương pháp học tập hiện đại với OELS</p>
+                <button class="slide-btn">Bắt đầu ngay</button>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Khóa Học Chất Lượng Cao</h2>
+                <p>Đội ngũ giảng viên giàu kinh nghiệm và phương pháp giảng dạy tiên tiến</p>
+                <button class="slide-btn">Xem khóa học</button>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Cộng Đồng Học Tập</h2>
+                <p>Kết nối và học hỏi cùng hàng ngàn học viên khác</p>
+                <button class="slide-btn">Tham gia ngay</button>
+            </div>
+        </div>
+        <div class="slider-nav">
+            <div class="slider-dot active"></div>
+            <div class="slider-dot"></div>
+            <div class="slider-dot"></div>
         </div>
     </div>
 

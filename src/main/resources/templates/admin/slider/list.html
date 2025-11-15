@@ -294,9 +294,9 @@
 <div class="container">
     <div class="header">
         <h1>🎠 Quản lý Slider</h1>
-        <a href="/admin/sliders/create" class="btn btn-primary">
-            <span>+</span> Thêm slider mới
-        </a>
+<!--        <a href="/admin/sliders/create" class="btn btn-primary">-->
+<!--            <span>+</span> Thêm slider mới-->
+<!--        </a>-->
     </div>
 
     <!-- Flash Messages -->
@@ -383,8 +383,8 @@
                 <td th:text="${#temporals.format(slider.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                 <td>
                     <div class="actions">
-                        <a th:href="@{/admin/sliders/update/{id}(id=${slider.id})}"
-                           class="btn btn-outline btn-sm">✏️ Sửa</a>
+<!--                        <a th:href="@{/admin/sliders/update/{id}(id=${slider.id})}"-->
+<!--                           class="btn btn-outline btn-sm">✏️ Sửa</a>-->
 <!--                        <button th:onclick="'toggleStatus(' + ${slider.id} + ', \'' + (${slider.status} == 'SHOW' ? 'HIDE' : 'SHOW') + '\')'"-->
 <!--                                th:class="'btn btn-sm ' + (${slider.status} == 'SHOW' ? 'btn-danger' : 'btn-success')"-->
 <!--                                th:text="${slider.status == 'SHOW'} ? 'Ẩn' : 'Hiện'">-->

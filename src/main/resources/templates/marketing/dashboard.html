@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketing Dashboard - OELS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         :root {
             --primary-color: #6c63ff;
@@ -435,12 +436,19 @@
                 <div class="title">Xem trang chủ</div>
                 <div class="description">Kiểm tra slider trên trang chủ</div>
             </a>
-            <a th:href="@{/slider-demo}" target="_blank" class="action-button">
+            <a th:href="@{/sliders/demo}" target="_blank" class="action-button">
                 <div class="icon blue">
                     <i class="fas fa-play-circle"></i>
                 </div>
                 <div class="title">Demo Slider</div>
                 <div class="description">Xem demo slider hoạt động</div>
+            </a>
+            <a th:href="@{/chats/}" class="action-button">
+                <div class="icon blue">
+                    <i class="bi bi-chat-right-dots"></i>
+                </div>
+                <div class="title">Xem hội thoại</div>
+                <div class="description">Xem danh sách hội thoại của tôi</div>
             </a>
         </div>
     </div>
