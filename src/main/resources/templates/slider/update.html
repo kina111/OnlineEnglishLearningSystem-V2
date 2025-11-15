@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tạo Slider Mới</title>
+    <title>Chỉnh sửa Slider</title>
     <style>
         :root {
             --primary-color: #6c63ff;
@@ -179,6 +179,26 @@
             border: 2px solid var(--border-color);
         }
 
+        .current-image {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .current-image h4 {
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .current-image img {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: var(--radius);
+            border: 2px solid var(--border-color);
+        }
+
         .form-actions {
             display: flex;
             gap: 15px;
@@ -201,16 +221,30 @@
             border: 1px solid #f5c6cb;
         }
 
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
         .help-text {
             font-size: 12px;
             color: var(--text-light);
             margin-top: 5px;
+        }
+
+        .image-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-options button {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-color);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .image-options button:hover {
+            background: var(--bg-light);
         }
 
         @media (max-width: 768px) {
@@ -227,23 +261,29 @@
                 gap: 20px;
                 align-items: flex-start;
             }
+
+            .image-options {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>🎠 Tạo Slider Mới</h1>
-        <a onclick="window.history.back()" class="btn btn-secondary">
+        <h1>🎠 Chỉnh sửa Slider</h1>
+        <a href="/marketing/sliders" class="btn btn-secondary" sec:authorize="hasRole('ROLE_MARKETING')">
             ← Quay lại Marketing Dashboard
+        </a>
+        <a href="/admin/sliders" class="btn btn-secondary" sec:authorize="hasRole('ROLE_ADMIN')">
+            ← Quay lại danh sách
         </a>
     </div>
 
     <!-- Flash Messages -->
-    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
-    <form th:action="@{/marketing/sliders/create}" th:object="${slider}" method="post" enctype="multipart/form-data">
+    <form th:action="@{/marketing/sliders/update/{id}(id=${sliderId})}" th:object="${slider}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title" class="required">Tiêu đề</label>
             <input type="text"
@@ -264,28 +304,28 @@
             <div class="help-text">Mô tả ngắn gọn về nội dung slider</div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="orderNumber" class="required">Thứ tự hiển thị</label>
-                <input type="number"
-                       id="orderNumber"
-                       th:field="*{orderNumber}"
-                       class="form-control"
-                       placeholder="1"
-                       min="1"
-                       required>
-                <div class="help-text">Số càng nhỏ càng hiển thị trước</div>
-            </div>
+<!--        <div class="form-row">-->
+<!--            <div class="form-group">-->
+<!--                <label for="orderNumber" class="required">Thứ tự hiển thị</label>-->
+<!--                <input type="number"-->
+<!--                       id="orderNumber"-->
+<!--                       th:field="*{orderNumber}"-->
+<!--                       class="form-control"-->
+<!--                       placeholder="1"-->
+<!--                       min="1"-->
+<!--                       required>-->
+<!--                <div class="help-text">Số càng nhỏ càng hiển thị trước</div>-->
+<!--            </div>-->
 
-            <div class="form-group">
-                <label for="status" class="required">Trạng thái</label>
-                <select id="status" th:field="*{status}" class="form-control" required>
-                    <option value="HIDE">Ẩn</option>
-                    <option value="SHOW">Hiển thị</option>
-                </select>
-                <div class="help-text">Chọn trạng thái hiển thị của slider</div>
-            </div>
-        </div>
+<!--            <div class="form-group">-->
+<!--                <label for="status" class="required">Trạng thái</label>-->
+<!--                <select id="status" th:field="*{status}" class="form-control" required>-->
+<!--                    <option value="HIDE">Ẩn</option>-->
+<!--                    <option value="SHOW">Hiển thị</option>-->
+<!--                </select>-->
+<!--                <div class="help-text">Chọn trạng thái hiển thị của slider</div>-->
+<!--            </div>-->
+<!--        </div>-->
 
         <div class="form-group">
             <label for="linkUrl">Link URL</label>
@@ -298,18 +338,29 @@
         </div>
 
         <div class="form-group">
-            <label for="imageFile" class="required">Hình ảnh</label>
-            <div class="file-upload">
+            <label>Hình ảnh</label>
+
+            <!-- Hiển thị hình ảnh hiện tại -->
+            <div th:if="${currentImageUrl}" class="current-image">
+                <h4>Hình ảnh hiện tại:</h4>
+                <img th:src="${currentImageUrl}" alt="Current Image">
+                <div class="image-options">
+                    <button type="button" onclick="showNewImageUpload()">Thay đổi hình ảnh</button>
+                    <button type="button" onclick="keepCurrentImage()">Giữ nguyên</button>
+                </div>
+            </div>
+
+            <!-- Upload hình ảnh mới -->
+            <div class="file-upload" id="newImageUpload" th:style="${currentImageUrl} ? 'display: none;' : 'display: block;'">
                 <input type="file"
                        id="imageFile"
                        th:field="*{imageFile}"
                        accept="image/*"
-                       onchange="previewImage(this)"
-                       required>
+                       onchange="previewImage(this)">
                 <label for="imageFile" class="file-upload-label" id="fileLabel">
                     <div>
                         <div style="font-size: 24px; margin-bottom: 10px;">📷</div>
-                        <div>Click để chọn hình ảnh</div>
+                        <div>Click để chọn hình ảnh mới</div>
                         <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
                             Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB)
                         </div>
@@ -320,13 +371,35 @@
         </div>
 
         <div class="form-actions">
-            <a href="/marketing/sliders" class="btn btn-secondary">Hủy</a>
-            <button type="submit" class="btn btn-primary">Tạo Slider</button>
+            <a th:href="@{/marketing/sliders}" class="btn btn-secondary">Hủy</a>
+            <button type="submit" class="btn btn-primary">Cập nhật Slider</button>
         </div>
     </form>
 </div>
 
 <script>
+    function showNewImageUpload() {
+        document.getElementById('newImageUpload').style.display = 'block';
+        document.getElementById('imageFile').required = true;
+    }
+
+    function keepCurrentImage() {
+        document.getElementById('newImageUpload').style.display = 'none';
+        document.getElementById('imageFile').required = false;
+        document.getElementById('imageFile').value = '';
+        document.getElementById('imagePreview').innerHTML = '';
+        document.getElementById('fileLabel').classList.remove('has-file');
+        document.getElementById('fileLabel').innerHTML = `
+            <div>
+                <div style="font-size: 24px; margin-bottom: 10px;">📷</div>
+                <div>Click để chọn hình ảnh mới</div>
+                <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                    Hỗ trợ: JPG, PNG, GIF (Tối đa 50MB)
+                </div>
+            </div>
+        `;
+    }
+
     function previewImage(input) {
         const fileLabel = document.getElementById('fileLabel');
         const imagePreview = document.getElementById('imagePreview');
@@ -334,8 +407,8 @@
         if (input.files && input.files[0]) {
             const file = input.files[0];
 
-            // Kiểm tra kích thước file (5MB)
-            if (file.size > 5 * 1024 * 1024) {
+            // Kiểm tra kích thước file (50MB)
+            if (file.size > 50 * 1024 * 1024) {
                 alert('File quá lớn! Vui lòng chọn file nhỏ hơn 5MB.');
                 input.value = '';
                 return;
@@ -362,7 +435,7 @@
                 `;
 
                 imagePreview.innerHTML = `
-                    <div style="margin-bottom: 10px; font-weight: 600;">Xem trước:</div>
+                    <div style="margin-bottom: 10px; font-weight: 600;">Xem trước hình ảnh mới:</div>
                     <img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; border: 2px solid var(--border-color);">
                 `;
             };
@@ -372,9 +445,9 @@
             fileLabel.innerHTML = `
                 <div>
                     <div style="font-size: 24px; margin-bottom: 10px;">📷</div>
-                    <div>Click để chọn hình ảnh</div>
+                    <div>Click để chọn hình ảnh mới</div>
                     <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
-                        Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB)
+                        Hỗ trợ: JPG, PNG, GIF (Tối đa 50MB)
                     </div>
                 </div>
             `;
@@ -386,7 +459,7 @@
     document.querySelector('form').addEventListener('submit', function(e) {
         const title = document.getElementById('title').value.trim();
         const orderNumber = document.getElementById('orderNumber').value;
-        const imageFile = document.getElementById('imageFile').files[0];
+        const imageFile = document.getElementById('imageFile');
 
         if (!title) {
             e.preventDefault();
@@ -402,11 +475,20 @@
             return;
         }
 
-        if (!imageFile) {
-            e.preventDefault();
-            alert('Vui lòng chọn hình ảnh!');
-            document.getElementById('imageFile').focus();
-            return;
+        // Kiểm tra file nếu đang upload file mới
+        if (imageFile.style.display !== 'none' && imageFile.files.length > 0) {
+            const file = imageFile.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                e.preventDefault();
+                alert('File quá lớn! Vui lòng chọn file nhỏ hơn 50MB.');
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                e.preventDefault();
+                alert('Vui lòng chọn file hình ảnh!');
+                return;
+            }
         }
     });
 </script>

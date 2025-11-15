@@ -27,16 +27,18 @@ public class QuizController {
     private final UserService userService;
     private final QuizAttemptService quizAttemptService;
     private final UserLessonService userLessonService;
+    private final CourseService courseService;
 
     public QuizController(QuestionService questionService, LessonService lessonService,
                           AnswerOptionService answerOptionService, UserService userService,
-                          QuizAttemptService quizAttemptService, UserLessonService userLessonService) {
+                          QuizAttemptService quizAttemptService, UserLessonService userLessonService, CourseService courseService) {
         this.questionService = questionService;
         this.lessonService = lessonService;
         this.answerOptionService = answerOptionService;
         this.userService = userService;
         this.quizAttemptService = quizAttemptService;
         this.userLessonService = userLessonService;
+        this.courseService = courseService;
     }
 
 
@@ -47,15 +49,10 @@ public class QuizController {
 
     @GetMapping("/{lessonId}/start")
     public String getQuizPage(@PathVariable("lessonId") long lessonId, Model model, HttpSession session) {
-        //Temp hardcode user------------------------------
         Long userId = (Long) session.getAttribute("currentUserId");
-        if(userId == null){
-            return "redirect:/";
-        }
         User user = userService.getUserById(userId);
-        //Get a quiz by lesson id
         Lesson lesson = lessonService.findById(lessonId);
-        if (lesson == null||user == null) {
+        if (lesson == null||user == null||userLessonService.existsByLessonIdAndUserId(lessonId,userId)) {
             return "redirect:/";
         }
         //Start quizAttempt
@@ -67,8 +64,6 @@ public class QuizController {
         session.setAttribute("quizAttemptId", quizAttempt.getId());
 
         model.addAttribute(QUIZ_SESSION,answers);
-        //---check this
-//        model.addAttribute("quiz", quizAttempt.getLesson());
         model.addAttribute("questionIndex",0);
         model.addAttribute("questionCount",quizAttempt.getQuestions().size());
         return QUIZ_PATH + lessonId + "/0";
@@ -91,6 +86,11 @@ public class QuizController {
         }
         QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
         List<QuizAttemptQuestion> questions = quizAttempt.getQuestions();
+
+        if(quizAttempt.getLesson().getId() != quizId){
+            quizAttemptService.finishQuizAttempt(quizAttempt,answers);
+            return QUIZ_PATH + quizId + "/start";
+        }
 
         Question question = questions.get(questionIndex).getQuestion();
 
@@ -189,7 +189,7 @@ public class QuizController {
             return QUIZ_PATH + quizId + "/start";
         }
         QuizAttempt quizAttempt = quizAttemptService.findQuizAttemptById(quizAttemptId);
-        if(quizAttempt.getEndTime() == null){
+        if(quizAttempt.getEndTime() == null||quizAttempt.getLesson().getId()!= quizId){
             return QUIZ_PATH + quizId + "/start";
         }
         quizAttemptService.finishQuizAttempt(quizAttempt,answers);

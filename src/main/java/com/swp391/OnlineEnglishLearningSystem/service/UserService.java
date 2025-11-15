@@ -37,4 +37,6 @@ public interface UserService {
     List<User> getUsersByRoleName(String roleName);
 
     List<User> geUsersById(List<Long> ids);
+
+    User getRandomMarketing();
 }

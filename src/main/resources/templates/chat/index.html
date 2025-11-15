@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Danh sách hội thoại</title>
@@ -74,7 +74,7 @@
 <div class="chat-list-container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="fw-bold">Danh sách hội thoại</h2>
-        <a class="btn btn-success create-btn" th:href="@{/chats/create-group}">
+        <a class="btn btn-success create-btn" th:href="@{/chats/create-group}" sec:authorize="hasRole('ROLE_ADMIN')">
             <i class="fa-solid fa-plus"></i> Tạo nhóm mới
         </a>
     </div>

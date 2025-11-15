@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -201,12 +201,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
         .help-text {
             font-size: 12px;
             color: var(--text-light);
@@ -234,13 +228,15 @@
 <div class="container">
     <div class="header">
         <h1>🎠 Tạo Slider Mới</h1>
-        <a onclick="window.history.back()" class="btn btn-secondary">
+        <a href="/marketing/sliders" class="btn btn-secondary" sec:authorize="hasRole('ROLE_MARKETING')">
             ← Quay lại Marketing Dashboard
+        </a>
+        <a href="/admin/sliders" class="btn btn-secondary" sec:authorize="hasRole('ROLE_ADMIN')">
+            ← Quay lại danh sách
         </a>
     </div>
 
     <!-- Flash Messages -->
-    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
     <form th:action="@{/marketing/sliders/create}" th:object="${slider}" method="post" enctype="multipart/form-data">
@@ -264,28 +260,28 @@
             <div class="help-text">Mô tả ngắn gọn về nội dung slider</div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="orderNumber" class="required">Thứ tự hiển thị</label>
-                <input type="number"
-                       id="orderNumber"
-                       th:field="*{orderNumber}"
-                       class="form-control"
-                       placeholder="1"
-                       min="1"
-                       required>
-                <div class="help-text">Số càng nhỏ càng hiển thị trước</div>
-            </div>
+<!--        <div class="form-row">-->
+<!--            <div class="form-group">-->
+<!--                <label for="orderNumber" class="required">Thứ tự hiển thị</label>-->
+<!--                <input type="number"-->
+<!--                       id="orderNumber"-->
+<!--                       th:field="*{orderNumber}"-->
+<!--                       class="form-control"-->
+<!--                       placeholder="1"-->
+<!--                       min="1"-->
+<!--                       required>-->
+<!--                <div class="help-text">Số càng nhỏ càng hiển thị trước</div>-->
+<!--            </div>-->
 
-            <div class="form-group">
-                <label for="status" class="required">Trạng thái</label>
-                <select id="status" th:field="*{status}" class="form-control" required>
-                    <option value="HIDE">Ẩn</option>
-                    <option value="SHOW">Hiển thị</option>
-                </select>
-                <div class="help-text">Chọn trạng thái hiển thị của slider</div>
-            </div>
-        </div>
+<!--            <div class="form-group">-->
+<!--                <label for="status" class="required">Trạng thái</label>-->
+<!--                <select id="status" th:field="*{status}" class="form-control" required>-->
+<!--                    <option value="HIDE">Ẩn</option>-->
+<!--                    <option value="SHOW">Hiển thị</option>-->
+<!--                </select>-->
+<!--                <div class="help-text">Chọn trạng thái hiển thị của slider</div>-->
+<!--            </div>-->
+<!--        </div>-->
 
         <div class="form-group">
             <label for="linkUrl">Link URL</label>

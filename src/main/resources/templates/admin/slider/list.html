@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quản lý Slider</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+
     <style>
         :root {
             --primary-color: #6c63ff;
@@ -293,10 +295,10 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>🎠 Quản lý Slider</h1>
-        <a href="/admin/sliders/create" class="btn btn-primary">
-            <span>+</span> Thêm slider mới
-        </a>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+            <li class="breadcrumb-item active">Quản lí Slider</li>
+        </ol>
     </div>
 
     <!-- Flash Messages -->
@@ -310,6 +312,7 @@
                 <option value="">Tất cả trạng thái</option>
                 <option value="SHOW" th:selected="${status == 'SHOW'}">Hiển thị</option>
                 <option value="HIDE" th:selected="${status == 'HIDE'}">Ẩn</option>
+                <option value="PENDING" th:selected="${status == 'PENDING'}">Chờ duyệt</option>
             </select>
         </div>
 
@@ -352,7 +355,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="slider : ${sliderPage.content}" th:unless="${sliderPage.content.empty}">
+            <tr th:each="slider : ${sliderPage}" th:unless="${sliderPage.isEmpty()}">
                 <td th:text="${slider.id}"></td>
                 <td>
                     <img th:if="${slider.imageUrl}"
@@ -365,8 +368,9 @@
                 <td th:text="${slider.description}"></td>
                 <td th:text="${slider.orderNumber}"></td>
                 <td>
-                    <span th:if="${slider.status == 'SHOW'}" class="status-show">Hiển thị</span>
-                    <span th:unless="${slider.status == 'SHOW'}" class="status-hide">Ẩn</span>
+                    <span th:if="${slider.status == 'SHOW'}" th:text="${slider.status}" class="status-show">Hiển thị</span>
+                    <span th:if="${slider.status == 'HIDE'}"  th:text="${slider.status}" class="status-hide">Ẩn</span>
+                    <span th:if="${slider.status == 'PENDING'}" th:text="${slider.status}" class="status-hide">Pending</span>
                 </td>
                 <td>
                     <a th:if="${slider.linkUrl}"
@@ -381,18 +385,21 @@
                 <td th:text="${#temporals.format(slider.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                 <td>
                     <div class="actions">
-                        <a th:href="@{/admin/sliders/update/{id}(id=${slider.id})}"
-                           class="btn btn-outline btn-sm">✏️ Sửa</a>
-                        <button th:onclick="'toggleStatus(' + ${slider.id} + ', \'' + (${slider.status} == 'SHOW' ? 'HIDE' : 'SHOW') + '\')'"
-                                th:class="'btn btn-sm ' + (${slider.status} == 'SHOW' ? 'btn-danger' : 'btn-success')"
-                                th:text="${slider.status == 'SHOW'} ? 'Ẩn' : 'Hiện'">
-                        </button>
-                        <button th:onclick="'deleteSlider(' + ${slider.id} + ')'"
-                                class="btn btn-danger btn-sm">🗑️ Xóa</button>
+<!--                        <a th:href="@{/admin/sliders/update/{id}(id=${slider.id})}"-->
+<!--                           class="btn btn-outline btn-sm">✏️ Sửa</a>-->
+<!--                        <button th:onclick="'toggleStatus(' + ${slider.id} + ', \'' + (${slider.status} == 'SHOW' ? 'HIDE' : 'SHOW') + '\')'"-->
+<!--                                th:class="'btn btn-sm ' + (${slider.status} == 'SHOW' ? 'btn-danger' : 'btn-success')"-->
+<!--                                th:text="${slider.status == 'SHOW'} ? 'Ẩn' : 'Hiện'">-->
+<!--                        </button>-->
+                        <a class="btn btn-outline btn-sm" th:href="@{/admin/sliders/approve/{id}(id=${slider.id})}">Approve</a>
+                        <a class="btn btn-outline btn-sm" th:href="@{/admin/sliders/reject/{id}(id=${slider.id})}">Reject</a>
+                        <a class="btn btn-outline btn-sm" th:href="@{/admin/sliders/takeDown/{id}(id=${slider.id})}">Take Down</a>
+<!--                        <button th:onclick="'deleteSlider(' + ${slider.id} + ')'"-->
+<!--                                class="btn btn-danger btn-sm">🗑️ Xóa</button>-->
                     </div>
                 </td>
             </tr>
-            <tr th:if="${sliderPage.content.empty}">
+            <tr th:if="${sliderPage.isEmpty()}">
                 <td colspan="10" class="no-data">
                     📝 Không tìm thấy slider nào
                 </td>
@@ -454,7 +461,7 @@
         if (confirm('Bạn có chắc chắn muốn xóa slider này? Hành động này không thể hoàn tác!')) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `/admin/sliders/delete/${id}`;
+            form.action = `/marketing/sliders/delete/${id}`;
             document.body.appendChild(form);
             form.submit();
         }

@@ -198,4 +198,9 @@ public class OrderServiceImpl implements OrderService {
 //        Pageable pageable = PageRequest.of(page, size, sort);
         return orderRepository.findAll(spec, sort);
     }
+
+    @Override
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id).orElse(null);
+    }
 }
