@@ -18,4 +18,7 @@ public interface SliderService {
     void deleteSlider(Long id);
     void incrementViewCount(Long id);
     Slider save(Slider slider);
+    void approveSlider(Long id);
+    void rejectSlider(Long id);
+    void takedownSlider(Long id);
 }

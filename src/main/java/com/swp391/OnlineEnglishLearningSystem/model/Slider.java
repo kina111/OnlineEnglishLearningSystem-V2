@@ -16,7 +16,7 @@ public class Slider {
     @JoinColumn(name = "user_id", nullable = false)  // liên kết với khóa ngoại users.id
     private User user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
     private String title;
 
     @Column(columnDefinition = "NVARCHAR(MAX)")
@@ -25,7 +25,7 @@ public class Slider {
     @Column(name = "order_number", nullable = false)
     private Integer orderNumber = 1;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(10)")
     private String status; //  ("ACTIVE", "INACTIVE")
 
     @Column(name = "image_url")

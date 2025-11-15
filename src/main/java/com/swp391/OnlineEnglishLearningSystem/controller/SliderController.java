@@ -56,8 +56,7 @@ public class SliderController {
     public String approveSlider(@PathVariable Long sliderId){
         Slider slider = sliderService.getSliderById(sliderId);
         if(slider!=null&&slider.getStatus().equals("PENDING")){
-            slider.setStatus("SHOW");
-            sliderService.save(slider);
+            sliderService.approveSlider(sliderId);
         }
         return "redirect:/admin/sliders";
     }
@@ -65,8 +64,16 @@ public class SliderController {
     public String rejectSlider(@PathVariable Long sliderId){
         Slider slider = sliderService.getSliderById(sliderId);
         if(slider!=null&&slider.getStatus().equals("PENDING")){
-            slider.setStatus("HIDE");
-            sliderService.save(slider);
+            sliderService.rejectSlider(sliderId);
+        }
+        return "redirect:/admin/sliders";
+    }
+
+    @GetMapping("/takeDown/{sliderId}")
+    public String takeDownSlider(@PathVariable Long sliderId){
+        Slider slider = sliderService.getSliderById(sliderId);
+        if(slider!=null&&slider.getStatus().equals("SHOW")){
+            sliderService.takedownSlider(sliderId);
         }
         return "redirect:/admin/sliders";
     }

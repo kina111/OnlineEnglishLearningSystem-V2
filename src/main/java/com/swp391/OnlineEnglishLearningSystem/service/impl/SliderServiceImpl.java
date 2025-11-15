@@ -144,6 +144,42 @@ public class SliderServiceImpl implements SliderService {
         return sliderRepository.save(slider);
     }
 
+    @Override
+    public void approveSlider(Long id) {
+        Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
+        slider.setStatus("SHOW");
+        slider.setUpdatedAt(LocalDateTime.now());
+        slider.setOrderNumber(getActiveSliders().size() + 1);
+        sliderRepository.save(slider);
+    }
+
+    @Override
+    public void rejectSlider(Long id) {
+        Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
+        slider.setStatus("HIDE");
+        slider.setUpdatedAt(LocalDateTime.now());
+        sliderRepository.save(slider);
+    }
+
+    @Override
+    public void takedownSlider(Long id) {
+        Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
+        slider.setStatus("HIDE");
+        slider.setOrderNumber(1);
+        slider.setUpdatedAt(LocalDateTime.now());
+        sliderRepository.save(slider);
+        reOrderSliders();
+    }
+
+
+    private void reOrderSliders() {
+        List<Slider> sliders = sliderRepository.findByStatusOrderByOrderNumberAsc("SHOW");
+        for (int i = 0; i < sliders.size(); i++) {
+            sliders.get(i).setOrderNumber(i + 1);
+        }
+        sliderRepository.saveAll(sliders);
+    }
+
     private String saveImageFile(MultipartFile file) {
         try {
             // Tạo thư mục upload nếu chưa tồn tại
