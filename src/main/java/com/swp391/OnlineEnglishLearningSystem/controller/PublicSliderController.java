@@ -35,12 +35,6 @@ public class PublicSliderController {
         return "slider-demo";
     }
 
-//    // API endpoint để lấy slider data cho AJAX
-//    @GetMapping("/api/public/sliders")
-//    public org.springframework.http.ResponseEntity<List<Slider>> getPublicSlidersApi() {
-//        List<Slider> sliders = sliderService.getActiveSliders();
-//        return org.springframework.http.ResponseEntity.ok(sliders);
-//    }
     @GetMapping("/view/{id}")
     public String getSliderById(@PathVariable("id") Long id) {
         Slider slider = sliderService.getSliderById(id);
