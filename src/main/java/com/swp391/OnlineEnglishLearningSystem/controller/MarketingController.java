@@ -2,17 +2,18 @@ package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Slider;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
+import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderCreateUpdateDto;
 import com.swp391.OnlineEnglishLearningSystem.service.SliderService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
@@ -63,11 +64,9 @@ public class MarketingController {
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            Model model, 
-            Principal principal,
+            Model model,
             HttpSession session) {
         try {
-//            User currentUser = userService.findByEmailAndEnabledTrue(principal.getName()).orElseThrow();
             Long userId = (Long) session.getAttribute("currentUserId");
             User currentUser = userService.getUserById(userId);
             model.addAttribute("currentUser", currentUser);
@@ -105,4 +104,74 @@ public class MarketingController {
         return "redirect:/marketing/sliders";
     }
 
+    // Hiển thị form tạo slider mới
+    @GetMapping("/sliders/create")
+    public String createSliderForm(Model model) {
+        model.addAttribute("slider", new SliderCreateUpdateDto());
+        return "slider/create";
+    }
+
+    // Xử lý tạo slider mới
+    @PostMapping("/sliders/create")
+    public String createSlider(@ModelAttribute SliderCreateUpdateDto dto, RedirectAttributes redirectAttributes) {
+        try {
+            sliderService.createSlider(dto);
+            redirectAttributes.addFlashAttribute("success", "Tạo slider thành công!");
+
+            // Redirect về dashboard phù hợp dựa trên role
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            if (authentication != null && authentication.getAuthorities().stream()
+//                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_MARKETING"))) {
+//                return "redirect:/marketing/sliders";
+//            } else {
+//                return "redirect:/admin/sliders";
+//            }
+            return "redirect:/marketing/sliders";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi tạo slider: " + e.getMessage());
+            return "redirect:/marketing/create";
+        }
+    }
+
+    @GetMapping("/sliders/update/{id}")
+    public String updateSliderForm(@PathVariable Long id, Model model) {
+        try {
+            Slider slider = sliderService.getSliderById(id);
+            SliderCreateUpdateDto dto = new SliderCreateUpdateDto();
+            dto.setTitle(slider.getTitle());
+            dto.setDescription(slider.getDescription());
+            dto.setOrderNumber(slider.getOrderNumber());
+            dto.setStatus(slider.getStatus());
+            dto.setLinkUrl(slider.getLinkUrl());
+
+            model.addAttribute("slider", dto);
+            model.addAttribute("sliderId", id);
+            model.addAttribute("currentImageUrl", slider.getImageUrl());
+            return "slider/update";
+        } catch (Exception e) {
+            return "redirect:/marketing/sliders?error=" + e.getMessage();
+        }
+    }
+
+    // Xử lý cập nhật slider
+    @PostMapping("/sliders/update/{id}")
+    public String updateSlider(@PathVariable Long id, @ModelAttribute SliderCreateUpdateDto dto, RedirectAttributes redirectAttributes) {
+        try {
+            sliderService.updateSliderWithFile(id, dto);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật slider thành công!");
+
+            // Redirect về dashboard phù hợp dựa trên role
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            if (authentication != null && authentication.getAuthorities().stream()
+//                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_MARKETING"))) {
+//                return "redirect:/marketing/sliders";
+//            } else {
+//                return "redirect:/admin/sliders";
+//            }
+            return "redirect:/marketing/sliders";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật slider: " + e.getMessage());
+            return "redirect:/marketing/sliders/update/" + id;
+        }
+    }
 }

@@ -421,7 +421,7 @@
                 <div class="title">Quản lý Slider</div>
                 <div class="description">Thêm, sửa, xóa slider</div>
             </a>
-            <a th:href="@{/admin/sliders/create}" class="action-button">
+            <a th:href="@{/marketing/sliders/create}" class="action-button">
                 <div class="icon blue">
                     <i class="fas fa-plus"></i>
                 </div>
@@ -465,7 +465,7 @@
         </div>
         
         <div th:if="${sliders == null or sliders.isEmpty()}" class="content">
-            <p>Chưa có slider nào. <a class="btn" th:href="@{/admin/sliders/create}">Tạo slider đầu tiên</a></p>
+            <p>Chưa có slider nào. <a class="btn" th:href="@{/marketing/sliders/create}">Tạo slider đầu tiên</a></p>
             <a th:href="@{/marketing/sliders}" class="view-all-btn">Xem tất cả slider</a>
         </div>
     </div>
