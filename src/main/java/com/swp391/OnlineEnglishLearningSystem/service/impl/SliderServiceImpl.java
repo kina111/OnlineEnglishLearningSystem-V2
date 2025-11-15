@@ -6,6 +6,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderCreateUpdateDto;
 import com.swp391.OnlineEnglishLearningSystem.repository.SliderRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.SliderService;
+import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,10 +29,15 @@ import java.util.UUID;
 @Service
 public class SliderServiceImpl implements SliderService {
 
-    @Autowired
-    private SliderRepository sliderRepository;
+    private final SliderRepository sliderRepository;
+    private final UploadService uploadService;
 
     private static final String UPLOAD_DIR = "uploads/sliders/";
+
+    public SliderServiceImpl(SliderRepository sliderRepository, UploadService uploadService) {
+        this.sliderRepository = sliderRepository;
+        this.uploadService = uploadService;
+    }
 
     @Override
     public Page<Slider> getSliders(String keyword, String status, int page, int size) {
@@ -99,8 +105,8 @@ public class SliderServiceImpl implements SliderService {
         slider.setTitle(dto.getTitle());
         slider.setDescription(dto.getDescription());
         slider.setOrderNumber(dto.getOrderNumber());
-        slider.setStatus(dto.getStatus());
-        slider.setLinkUrl(dto.getLinkUrl());
+        slider.setOrderNumber(dto.getOrderNumber() != null ? dto.getOrderNumber() : 1);
+        slider.setStatus(dto.getStatus() != null ? dto.getStatus() : "HIDE");
         slider.setUpdatedAt(LocalDateTime.now());
 
         // Xử lý upload file mới nếu có

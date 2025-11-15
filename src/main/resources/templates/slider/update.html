@@ -394,7 +394,7 @@
                 <div style="font-size: 24px; margin-bottom: 10px;">📷</div>
                 <div>Click để chọn hình ảnh mới</div>
                 <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
-                    Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB)
+                    Hỗ trợ: JPG, PNG, GIF (Tối đa 50MB)
                 </div>
             </div>
         `;
@@ -407,8 +407,8 @@
         if (input.files && input.files[0]) {
             const file = input.files[0];
 
-            // Kiểm tra kích thước file (5MB)
-            if (file.size > 5 * 1024 * 1024) {
+            // Kiểm tra kích thước file (50MB)
+            if (file.size > 50 * 1024 * 1024) {
                 alert('File quá lớn! Vui lòng chọn file nhỏ hơn 5MB.');
                 input.value = '';
                 return;
