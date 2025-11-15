@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -120,6 +121,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> geUsersById(List<Long> ids) {
         return userRepository.findAllById(ids);
+    }
+
+    @Override
+    public User getRandomMarketing() {
+        List<User> users = getUsersByRoleName("ROLE_MARKETING");
+        if (users == null || users.isEmpty()) {
+            return null;
+        }
+
+        Random rand = new Random();
+        return users.get(rand.nextInt(users.size()));
     }
 
 }

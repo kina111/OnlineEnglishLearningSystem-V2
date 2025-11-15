@@ -368,4 +368,12 @@ public class ChatController {
         return "redirect:/chats/group/"+groupId;
     }
 
+    @GetMapping("/consultant")
+    public String consultant(HttpSession session){
+        User consultant = userService.getRandomMarketing();
+        if(consultant == null) return "redirect:/";
+        else
+            return "redirect:/chats/private/"+consultant.getId();
+    }
+
 }
