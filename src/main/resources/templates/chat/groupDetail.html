@@ -6,6 +6,36 @@
     <title>Thông tin nhóm chat</title>
     <link rel="stylesheet" th:href="@{/css/userProfile.css}">
 </head>
+<style>
+    .toggle-members-btn {
+        padding: 6px 12px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-bottom: 8px;
+    }
+
+    .toggle-members-btn:hover {
+        background: #2980b9;
+    }
+
+    .member-list.hidden {
+        display: none;
+    }
+
+    .member-list li {
+        margin: 6px 0;
+    }
+
+    .member-role {
+        color: #777;
+        font-size: 0.9em;
+        margin-left: 4px;
+    }
+
+</style>
 <body>
 
 <!-- Header -->
@@ -46,13 +76,29 @@
                 <div class="info-row">
                     <dt>Thành viên:</dt>
                     <dd>
-                        <ul>
+
+                        <!-- Nút mở rộng -->
+                        <button type="button" class="toggle-members-btn" onclick="toggleMembers()">
+                            Xem danh sách thành viên
+                        </button>
+
+                        <!-- Danh sách thành viên -->
+                        <ul id="memberList" class="member-list hidden">
                             <li th:each="member : ${chat.members}">
-                                <a th:href="${'/chats/private/' + member.user.id }" th:text="${member.user.fullName}">Tên thành viên></a>
+                                <a th:href="@{'/chats/private/' + ${member.user.id}}">
+                                    <span th:text="${member.user.fullName}"></span>
+                                </a>
+
+                                <!-- Hiển thị role -->
+                                <span class="member-role"
+                                      th:text="${member.role.name()}">}">
+                </span>
                             </li>
                         </ul>
+
                     </dd>
                 </div>
+
             </dl>
         </div>
 
@@ -64,6 +110,12 @@
         </div>
     </div>
 </div>
+<script>
+    function toggleMembers() {
+        const list = document.getElementById("memberList");
+        list.classList.toggle("hidden");
+    }
+</script>
 
 <!-- Footer -->
 <div th:replace="~{components/footer :: footer}"></div>

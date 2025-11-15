@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chỉnh sửa thông tin nhóm</title>
     <link rel="stylesheet" th:href="@{/css/userProfile.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
 <div th:replace="~{components/header :: header}"></div>
@@ -47,18 +48,28 @@
                     </div>
                 </div>
 
-                <div class="info-row">
-                    <div class="info-field full-width">
-                        <label>Thành viên trong nhóm:</label>
-                        <ul>
-                            <li th:each="member : ${updatedChat.members}"
-                                th:text="${member.user.fullName}">Tên thành viên
-                                <a th:href="${'/chats/group/'+chat.id+'/'+member.user.id+'/remove'}">delete</a>
-                            </li>
-                        </ul>
-                        <p><a th:href="@{'/chats/' + ${updatedChat.id} + '/invite'}" class="btn btn-sm btn-success">+ Thêm thành viên</a></p>
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Thành viên trong nhóm:</label>
+
+                    <ul class="list-group mb-2">
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                            th:each="member : ${updatedChat.members}">
+
+                            <span th:text="${member.user.fullName}"></span>
+
+                            <a th:href="@{'/chats/group/' + ${updatedChat.id} + '/' + ${member.user.id} + '/remove'}"
+                               class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x-lg"></i> Xóa
+                            </a>
+                        </li>
+                    </ul>
+
+                    <a th:href="@{'/chats/' + ${updatedChat.id} + '/invite'}"
+                       class="btn btn-success btn-sm">
+                        <i class="bi bi-person-plus"></i> Thêm thành viên
+                    </a>
                 </div>
+
             </div>
 
             <!-- Actions -->
