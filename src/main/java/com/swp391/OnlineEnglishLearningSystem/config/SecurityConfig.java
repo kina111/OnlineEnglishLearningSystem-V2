@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 "/css/**", "/js/**",
                                 "/uploads/**",
                                 "/chats").permitAll()
+                        .requestMatchers("/marketing/**").hasRole("MARKETING")
                         // --- 2. QUYỀN CỦA EXPERT (Các rule chỉ Expert có) ---
                         .requestMatchers(HttpMethod.POST, "/courses/{id}/submit-review").hasRole("EXPERT")
 

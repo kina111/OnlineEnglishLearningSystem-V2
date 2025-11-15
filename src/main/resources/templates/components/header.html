@@ -15,6 +15,10 @@
                     <i class="fas fa-user"></i>
                     Thông tin cá nhân
                 </a>
+                <a href="/marketing" class="dropdown-item" sec:authorize="hasRole('ROLE_MARKETING')">
+                    <i class="fas fa-user"></i>
+                    Quản lí slide
+                </a>
                 <a href="/admin" class="dropdown-item" sec:authorize="hasRole('ROLE_ADMIN')">
                     <i class="fas fa-book"></i>
                     Trang quản lí
