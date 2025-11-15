@@ -26,8 +26,8 @@ public class SliderController {
     // Hiển thị danh sách slider (Admin UI)
     @GetMapping("")
     public String getSliders(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false,defaultValue = "") String keyword,
+            @RequestParam(required = false,defaultValue = "") String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model
@@ -133,6 +133,25 @@ public class SliderController {
         return "redirect:/admin/sliders";
     }
 
+    @GetMapping("/approve/{sliderId}")
+    public String approveSlider(@PathVariable Long sliderId){
+        Slider slider = sliderService.getSliderById(sliderId);
+        if(slider!=null&&slider.getStatus().equals("PENDING")){
+            slider.setStatus("SHOW");
+            sliderService.save(slider);
+        }
+        return "redirect:/admin/sliders";
+    }
+    @GetMapping("/reject/{sliderId}")
+    public String rejectSlider(@PathVariable Long sliderId){
+        Slider slider = sliderService.getSliderById(sliderId);
+        if(slider!=null&&slider.getStatus().equals("PENDING")){
+            slider.setStatus("HIDE");
+            sliderService.save(slider);
+        }
+        return "redirect:/admin/sliders";
+    }
+
     // Xem tất cả slider (public view)
     @GetMapping("/view-all")
     public String viewAllSliders(Model model) {
@@ -142,47 +161,48 @@ public class SliderController {
     }
 
     // API endpoints cho AJAX calls
-    @RestController
-    @RequestMapping("/api/sliders")
-    public static class SliderApiController {
-
-        @Autowired
-        private SliderService sliderService;
-
-        // Lấy danh sách slider có phân trang, lọc, tìm kiếm
-        @GetMapping
-        public ResponseEntity<Page<Slider>> getSliders(
-                @RequestParam(required = false) String keyword,
-                @RequestParam(required = false) String status,
-                @RequestParam(defaultValue = "0") int page,
-                @RequestParam(defaultValue = "10") int size
-        ) {
-            return ResponseEntity.ok(sliderService.getSliders(keyword, status, page, size));
-        }
-
-        // Lấy slider theo ID
-        @GetMapping("/{id}")
-        public ResponseEntity<Slider> getSliderById(@PathVariable Long id) {
-            return ResponseEntity.ok(sliderService.getSliderById(id));
-        }
-
-        // Chỉnh sửa slider
-        @PutMapping("/{id}")
-        public ResponseEntity<Slider> updateSlider(@PathVariable Long id, @RequestBody SliderDTO dto) {
-            return ResponseEntity.ok(sliderService.updateSlider(id, dto));
-        }
-
-        // Ẩn/Hiện slider
-        @PatchMapping("/{id}/status")
-        public ResponseEntity<Slider> toggleStatus(@PathVariable Long id, @RequestParam String status) {
-            return ResponseEntity.ok(sliderService.toggleStatus(id, status));
-        }
-
-        // Tăng lượt xem slider
-        @PostMapping("/{id}/view")
-        public ResponseEntity<Void> incrementViewCount(@PathVariable Long id) {
-            sliderService.incrementViewCount(id);
-            return ResponseEntity.ok().build();
-        }
-    }
+//    @RestController
+//    @RequestMapping("/api/sliders")
+//    public static class SliderApiController {
+//
+//        @Autowired
+//        private SliderService sliderService;
+//
+//        // Lấy danh sách slider có phân trang, lọc, tìm kiếm
+//        @GetMapping
+//        public ResponseEntity<Page<Slider>> getSliders(
+//                @RequestParam(required = false) String keyword,
+//                @RequestParam(required = false) String status,
+//                @RequestParam(defaultValue = "0") int page,
+//                @RequestParam(defaultValue = "10") int size
+//        ) {
+//            return ResponseEntity.ok(sliderService.getSliders(keyword, status, page, size));
+//        }
+//
+//        // Lấy slider theo ID
+//        @GetMapping("/{id}")
+//        public ResponseEntity<Slider> getSliderById(@PathVariable Long id) {
+//            return ResponseEntity.ok(sliderService.getSliderById(id));
+//        }
+//
+//        // Chỉnh sửa slider
+//        @PutMapping("/{id}")
+//        public ResponseEntity<Slider> updateSlider(@PathVariable Long id, @RequestBody SliderDTO dto) {
+//            return ResponseEntity.ok(sliderService.updateSlider(id, dto));
+//        }
+//
+//        // Ẩn/Hiện slider
+//        @PatchMapping("/{id}/status")
+//        public ResponseEntity<Slider> toggleStatus(@PathVariable Long id, @RequestParam String status) {
+//            return ResponseEntity.ok(sliderService.toggleStatus(id, status));
+//        }
+//
+//        // Tăng lượt xem slider
+//        @PostMapping("/{id}/view")
+//        public ResponseEntity<Void> incrementViewCount(@PathVariable Long id) {
+//            sliderService.incrementViewCount(id);
+//            return ResponseEntity.ok().build();
+//        }
+//
+//    }
 }

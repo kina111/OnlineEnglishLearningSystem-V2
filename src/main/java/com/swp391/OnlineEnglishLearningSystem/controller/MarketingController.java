@@ -117,15 +117,6 @@ public class MarketingController {
         try {
             sliderService.createSlider(dto);
             redirectAttributes.addFlashAttribute("success", "Tạo slider thành công!");
-
-            // Redirect về dashboard phù hợp dựa trên role
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            if (authentication != null && authentication.getAuthorities().stream()
-//                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_MARKETING"))) {
-//                return "redirect:/marketing/sliders";
-//            } else {
-//                return "redirect:/admin/sliders";
-//            }
             return "redirect:/marketing/sliders";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi tạo slider: " + e.getMessage());
@@ -159,19 +150,20 @@ public class MarketingController {
         try {
             sliderService.updateSliderWithFile(id, dto);
             redirectAttributes.addFlashAttribute("success", "Cập nhật slider thành công!");
-
-            // Redirect về dashboard phù hợp dựa trên role
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            if (authentication != null && authentication.getAuthorities().stream()
-//                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_MARKETING"))) {
-//                return "redirect:/marketing/sliders";
-//            } else {
-//                return "redirect:/admin/sliders";
-//            }
             return "redirect:/marketing/sliders";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật slider: " + e.getMessage());
             return "redirect:/marketing/sliders/update/" + id;
         }
     }
+    @GetMapping("/sliders/sendApprove/{sliderId}")
+    public String sendApproveRequest(@PathVariable Long sliderId){
+        Slider slider = sliderService.getSliderById(sliderId);
+        if(slider!=null&&slider.getStatus().equals("HIDE")){
+        slider.setStatus("PENDING");
+        sliderService.save(slider);
+        }
+        return "redirect:/marketing/sliders";
+    }
+
 }

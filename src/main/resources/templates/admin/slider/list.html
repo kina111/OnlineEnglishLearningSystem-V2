@@ -310,6 +310,7 @@
                 <option value="">Tất cả trạng thái</option>
                 <option value="SHOW" th:selected="${status == 'SHOW'}">Hiển thị</option>
                 <option value="HIDE" th:selected="${status == 'HIDE'}">Ẩn</option>
+                <option value="PENDING" th:selected="${status == 'PENDING'}">Chờ duyệt</option>
             </select>
         </div>
 
@@ -365,8 +366,9 @@
                 <td th:text="${slider.description}"></td>
                 <td th:text="${slider.orderNumber}"></td>
                 <td>
-                    <span th:if="${slider.status == 'SHOW'}" class="status-show">Hiển thị</span>
-                    <span th:unless="${slider.status == 'SHOW'}" class="status-hide">Ẩn</span>
+                    <span th:if="${slider.status == 'SHOW'}" th:text="${slider.status}" class="status-show">Hiển thị</span>
+                    <span th:if="${slider.status == 'HIDE'}"  th:text="${slider.status}" class="status-hide">Ẩn</span>
+                    <span th:if="${slider.status == 'PENDING'}" th:text="${slider.status}" class="status-hide">Pending</span>
                 </td>
                 <td>
                     <a th:if="${slider.linkUrl}"
@@ -387,6 +389,8 @@
 <!--                                th:class="'btn btn-sm ' + (${slider.status} == 'SHOW' ? 'btn-danger' : 'btn-success')"-->
 <!--                                th:text="${slider.status == 'SHOW'} ? 'Ẩn' : 'Hiện'">-->
 <!--                        </button>-->
+                        <a class="btn btn-outline btn-sm" th:href="@{/admin/sliders/approve/{id}(id=${slider.id})}">Approve</a>
+                        <a class="btn btn-outline btn-sm" th:href="@{/admin/sliders/reject/{id}(id=${slider.id})}">Reject</a>
 <!--                        <button th:onclick="'deleteSlider(' + ${slider.id} + ')'"-->
 <!--                                class="btn btn-danger btn-sm">🗑️ Xóa</button>-->
                     </div>
@@ -454,7 +458,7 @@
         if (confirm('Bạn có chắc chắn muốn xóa slider này? Hành động này không thể hoàn tác!')) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `/admin/sliders/delete/${id}`;
+            form.action = `/marketing/sliders/delete/${id}`;
             document.body.appendChild(form);
             form.submit();
         }

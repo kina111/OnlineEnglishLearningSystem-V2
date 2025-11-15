@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slider Management - Marketing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         :root {
             --primary-color: #007bff;
@@ -345,6 +346,7 @@
                         <option value="">All Status</option>
                         <option value="SHOW" th:selected="${status == 'SHOW'}">VISIBLE</option>
                         <option value="HIDE" th:selected="${status == 'HIDE'}">HIDDEN</option>
+                        <option value="PENDING" th:selected="${status == 'PENDING'}">PENDING</option>
                     </select>
                 </div>
                 <div class="filter-group" style="flex: 2;">
@@ -364,7 +366,7 @@
                         <button type="button" onclick="resetFilters()" class="btn btn-secondary">
                             <i class="fas fa-redo"></i> Reset
                         </button>
-                        <a th:href="@{/admin/sliders/create}" class="btn btn-success">
+                        <a th:href="@{/marketing/sliders/create}" class="btn btn-success">
                             <i class="fas fa-plus"></i> Create Slider
                         </a>
                     </div>
@@ -411,22 +413,27 @@
                 </td>
                 <td>
                     <div class="actions">
-                        <button class="btn btn-success btn-sm btn-icon"
-                                th:if="${slider.status == 'HIDE'}"
-                                th:onclick="'toggleSlider(' + ${slider.id} + ', \SHOW\')'"
-                                title="Show">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm btn-icon"
-                                th:if="${slider.status == 'SHOW'}"
-                                th:onclick="'toggleSlider(' + ${slider.id} + ', \HIDE\')'"
-                                title="Hide">
-                            <i class="fas fa-eye-slash"></i>
-                        </button>
+<!--                        <button class="btn btn-success btn-sm btn-icon"-->
+<!--                                th:if="${slider.status == 'HIDE'}"-->
+<!--                                th:onclick="'toggleSlider(' + ${slider.id} + ', \SHOW\')'"-->
+<!--                                title="Show">-->
+<!--                            <i class="fas fa-eye"></i>-->
+<!--                        </button>-->
+<!--                        <button class="btn btn-danger btn-sm btn-icon"-->
+<!--                                th:if="${slider.status == 'SHOW'}"-->
+<!--                                th:onclick="'toggleSlider(' + ${slider.id} + ', \HIDE\')'"-->
+<!--                                title="Hide">-->
+<!--                            <i class="fas fa-eye-slash"></i>-->
+<!--                        </button>-->
                         <a th:href="@{/marketing/sliders/update/{id}(id=${slider.id})}"
                            class="btn btn-primary btn-sm btn-icon"
                            title="Edit">
                             <i class="fas fa-pencil-alt"></i>
+                        </a>
+                        <a th:href="@{/marketing/sliders/sendApprove/{id}(id=${slider.id})}"
+                           class="btn btn-warning btn-sm btn-icon"
+                           title="Send">
+                            <i class="bi bi-send"></i>
                         </a>
                         <a class="btn btn-danger btn-sm btn-icon"
                                 th:href="@{/marketing/sliders/delete/{id}(id=${slider.id})}"
@@ -466,9 +473,9 @@
             <i class="fas fa-images"></i>
             <h3>No sliders found</h3>
             <p>Create your first slider to get started</p>
-            <a th:href="@{/admin/sliders/create}" class="btn btn-success" style="margin-top: 20px;">
-                <i class="fas fa-plus btn"></i> Create Slider
-            </a>
+<!--            <a th:href="@{/marketing/sliders/create}" class="btn btn-success" style="margin-top: 20px;">-->
+<!--                <i class="fas fa-plus btn"></i> Create Slider-->
+<!--            </a>-->
         </div>
     </div>
 </div>

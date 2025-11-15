@@ -36,7 +36,9 @@ public class SliderServiceImpl implements SliderService {
     @Override
     public Page<Slider> getSliders(String keyword, String status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("orderNumber").ascending());
-        return sliderRepository.searchSliders(keyword == null ? "" : keyword, status, pageable);
+        keyword = keyword == null ? "" : keyword;
+        if(status!=null) status = status.isBlank()?null:status;
+        return sliderRepository.searchSliders(keyword,status, pageable);
     }
 
     @Override
@@ -129,6 +131,11 @@ public class SliderServiceImpl implements SliderService {
         Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
         slider.setViewCount(slider.getViewCount() + 1);
         sliderRepository.save(slider);
+    }
+
+    @Override
+    public Slider save(Slider slider) {
+        return sliderRepository.save(slider);
     }
 
     private String saveImageFile(MultipartFile file) {
