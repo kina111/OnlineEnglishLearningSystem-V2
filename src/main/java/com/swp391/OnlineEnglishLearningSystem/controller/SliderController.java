@@ -24,7 +24,7 @@ public class SliderController {
     private SliderService sliderService;
 
     // Hiển thị danh sách slider (Admin UI)
-    @GetMapping
+    @GetMapping("")
     public String getSliders(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status,

@@ -26,7 +26,7 @@ public class Slider {
     private Integer orderNumber = 1;
 
     @Column(nullable = false)
-    private String status; // ví dụ: "ACTIVE", "INACTIVE"
+    private String status; //  ("ACTIVE", "INACTIVE")
 
     @Column(name = "image_url")
     private String imageUrl;

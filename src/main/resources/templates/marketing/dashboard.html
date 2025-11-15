@@ -454,7 +454,7 @@
                 <img th:src="${slider.imageUrl}" th:alt="${slider.title}" class="slider-image">
                 <div class="slider-info">
                     <div class="slider-title" th:text="${slider.title}">Slider Title</div>
-                    <div class="slider-status"
+                    <div class="slider-status btn"
                          th:classappend="${slider.status == 'SHOW'} ? 'active' : 'inactive'"
                          th:text="${slider.status == 'SHOW'} ? 'Đang hiển thị' : 'Đã ẩn'">
                         Status
@@ -464,8 +464,8 @@
             <a th:href="@{/marketing/sliders}" class="view-all-btn">Xem tất cả slider</a>
         </div>
         
-        <div th:if="${sliders == null or sliders.empty}" class="content">
-            <p>Chưa có slider nào. <a th:href="@{/admin/sliders/create}">Tạo slider đầu tiên</a></p>
+        <div th:if="${sliders == null or sliders.isEmpty()}" class="content">
+            <p>Chưa có slider nào. <a class="btn" th:href="@{/admin/sliders/create}">Tạo slider đầu tiên</a></p>
             <a th:href="@{/marketing/sliders}" class="view-all-btn">Xem tất cả slider</a>
         </div>
     </div>
