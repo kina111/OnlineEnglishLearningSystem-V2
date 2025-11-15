@@ -1,5 +1,6 @@
 package com.swp391.OnlineEnglishLearningSystem.model;
 
+import com.swp391.OnlineEnglishLearningSystem.util.ValidEmail;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -35,7 +36,7 @@ public class User extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email(message = "Email không hợp lệ")
+    @ValidEmail(message = "Email không hợp lệ")
     @Column(nullable = false, unique = true)
     private String email;
 

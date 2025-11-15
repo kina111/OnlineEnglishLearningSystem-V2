@@ -1,5 +1,6 @@
 package com.swp391.OnlineEnglishLearningSystem.service;
 
+import com.swp391.OnlineEnglishLearningSystem.model.Enrollment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -36,6 +37,18 @@ public class EmailService {
         sendEmail(to, subject, text);
     }
 
+    @Async
+    public void sendPurchasedNotification(String to, Enrollment enrollment) {
+        String subject = EmailType.PURCHASED_COURSE.getSubject();
+        String text = String.format("""
+                Purchased date: %s
+                Course name: %s
+                Course description: %s
+                Course price: %.1f
+        """, enrollment.getEnrolledAt().toString(), enrollment.getCourse().getName(), enrollment.getCourse().getDescription(), enrollment.getCourse().getPrice());
+        sendEmail(to, subject, text);
+    }
+
     public String buildEmailContent(String password) {
         String url = "http://localhost:8080/login";
         return String.format("""
@@ -55,6 +68,7 @@ public class EmailService {
         String url = switch (type) {
             case REGISTER -> "http://localhost:8080/confirmToken?token=" + token;
             case FORGOT_PASSWORD -> "http://localhost:8080/resetPassword?token=" + token;
+            case PURCHASED_COURSE -> null;
         };
 
         return String.format("""
@@ -72,7 +86,8 @@ public class EmailService {
     // Enum để tránh hard-code string
     public enum EmailType {
         REGISTER("Welcome to Online English Learning System!"),
-        FORGOT_PASSWORD("Reset Password");
+        FORGOT_PASSWORD("Reset Password"),
+        PURCHASED_COURSE("Purchasing course successfully!");
 
         private final String subject;
 

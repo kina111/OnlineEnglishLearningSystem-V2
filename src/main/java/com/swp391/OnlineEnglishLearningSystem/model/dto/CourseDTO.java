@@ -12,19 +12,19 @@ public class CourseDTO {
     private String name;
 
     @NotBlank(message = "Vui lòng nhập mô tả ngắn")
-    @Size(min = 10, message = "Mô tả ngắn phải từ 10-200 kí tự")
+    @Size(min = 10, max = 200, message = "Mô tả ngắn phải từ 10-200 kí tự")
     private String shortDescription;
 
     @NotBlank(message = "Vui lòng nhập mô tả")
-    @Size(min = 10, message = "Description must be between 10-1000 characters")
+    @Size(min = 10, message = "Mô tả chi tiết phải từ 10 kí tự")
     private String description;
 
     @NotBlank(message = "Vui lòng nhập yêu cầu tiên quyết")
-    @Size(min = 10, message = "Prerequisite must be between 10-10000 characters")
+    //@Size(min = 10, message = "Prerequisite must be between 10-10000 characters")
     private String prerequisite;
 
     @NotNull(message = "Vui lòng nhập giá")
-    @DecimalMin(value = "0.0", message = "Price must be positive")
+    @DecimalMin(value = "1.0", message = "Giá tiền phải là số dương")
     private Double price;
 
     @NotNull(message = "Vui lòng nhập giảm giá")

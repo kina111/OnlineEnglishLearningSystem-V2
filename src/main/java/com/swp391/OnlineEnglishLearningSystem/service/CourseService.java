@@ -30,4 +30,6 @@ public interface CourseService {
     void updateFeaturedStatus(Long courseId, Boolean featured);
 
     List<Course> findFeaturedCourses(int quantity);
+
+    void cancelReview(Long courseId);
 }

@@ -179,7 +179,7 @@
             <p><strong>Thời gian:</strong> <span th:text="${quiz.timeLimitInMinutes} + ' phút'">30 phút</span></p>
             <p><strong>Số câu hỏi:</strong> <span th:text="${quiz.numberOfQuestions}">15</span></p>
             <hr style="border: 1px solid var(--border-color); margin: 1.5rem 0;">
-            <p style="font-size: 1.25rem;"><strong>Tổng số câu hỏi:</strong> <span th:text="${#lists.size(quiz.questions)}">0</span></p>
+            <p style="font-size: 1.25rem;"><strong>Tổng số câu hỏi:</strong> <span th:text="${questions.size()}">0</span></p>
         </div>
 
         <div class="card action-links">

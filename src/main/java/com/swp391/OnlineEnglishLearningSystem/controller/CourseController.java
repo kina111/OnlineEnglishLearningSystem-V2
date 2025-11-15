@@ -238,6 +238,18 @@ public class CourseController {
         return "redirect:/courses/users/" + session.getAttribute("currentUserId");
     }
 
+    @PostMapping("/{courseId}/cancel-review")
+    public String cancleReview(@PathVariable("courseId") Long courseId,
+                                   Model model,
+                                   HttpSession session, RedirectAttributes redirectAttributes){
+        try{
+            this.courseService.cancelReview(courseId);
+            redirectAttributes.addFlashAttribute("message", "Cancel review success!");
+        }catch (Exception e){
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/courses/users/" + session.getAttribute("currentUserId");
+    }
     @PostMapping("/{courseId}/delete")
     public String deleteCourse(@PathVariable("courseId") Long courseId,
                                HttpSession session,

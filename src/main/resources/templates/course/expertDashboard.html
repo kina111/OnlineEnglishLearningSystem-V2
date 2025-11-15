@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -218,9 +218,10 @@
                 <td th:text="${#temporals.format(course.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
                 <td th:text="${#temporals.format(course.updatedAt, 'dd/MM/yyyy HH:mm')}">Date</td>
                 <td>
-                    <div class="d-flex gap-2 mb-2"> <a th:href="@{'/courses/' + ${course.id} + '/update'}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem thông tin">
-                        <i class="fas fa-eye"></i> Thông tin
-                    </a>
+                    <div class="d-flex gap-2 mb-2">
+                        <a th:href="@{'/courses/' + ${course.id} + '/update'}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem thông tin">
+                            <i class="fas fa-eye"></i> Thông tin
+                        </a>
                         <a th:if="${course.status.name() == 'DRAFT'}" th:href="@{'/courses/' + ${course.id}}" class="btn btn-sm btn-outline-primary flex-fill" title="Xem nội dung">
                             <i class="fas fa-list-alt"></i> Nội dung
                         </a>
@@ -237,6 +238,11 @@
                     <form th:action="@{'/courses/' + ${course.id} + '/delete'}" method="post"
                           onsubmit="return confirm('Khóa học sẽ bị xóa vĩnh viễn. Bạn có chắc chắn xóa khóa học này không?');" class="d-grid">
                         <button type="submit" class="btn btn-sm btn-danger w-100"> <i class="fas fa-paper-plane"></i> Xóa
+                        </button>
+                    </form>
+                    <form th:action="@{'/courses/' + ${course.id} + '/cancel-review'}" method="post"
+                          onsubmit="return confirm('Khóa học sẽ được lưu lại ở trạng thái đang sửa?');" class="d-grid">
+                        <button type="submit" class="btn btn-sm btn-info w-100"> <i class="fas fa-paper-plane"></i> Hủy duyệt
                         </button>
                     </form>
                 </td>

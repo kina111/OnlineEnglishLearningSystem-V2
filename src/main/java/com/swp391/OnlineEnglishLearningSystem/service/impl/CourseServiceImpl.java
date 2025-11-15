@@ -92,8 +92,32 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void sendSubmitReview(Long courseId) {
         Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("Course not found"));
-        if (course.getStatus() != Course.CourseStatus.DRAFT) throw new IllegalArgumentException("Course is not in draft status");
-        course.setStatus(Course.CourseStatus.PENDING);
+        switch (course.getStatus()) {
+            case DRAFT:
+                course.setStatus(Course.CourseStatus.PENDING);
+                break;
+            case PENDING:
+                throw new IllegalArgumentException("Course is already pending");
+            case PUBLISHED:
+                throw new IllegalArgumentException("Course is already published");
+            default:
+        }
+        this.courseRepository.save(course);
+    }
+
+    @Override
+    public void cancelReview(Long courseId) {
+        Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("Course not found"));
+        switch (course.getStatus()) {
+            case DRAFT:
+                throw new IllegalArgumentException("Course is not in draft status");
+            case PENDING:
+                course.setStatus(Course.CourseStatus.DRAFT);
+                break;
+            case PUBLISHED:
+                throw new IllegalArgumentException("Course is already published");
+            default:
+        }
         this.courseRepository.save(course);
     }
 

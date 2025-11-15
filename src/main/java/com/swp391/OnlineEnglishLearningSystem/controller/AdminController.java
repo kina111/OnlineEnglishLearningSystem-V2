@@ -3,6 +3,7 @@ package com.swp391.OnlineEnglishLearningSystem.controller;
 import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
 import com.swp391.OnlineEnglishLearningSystem.model.Order;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
+import com.swp391.OnlineEnglishLearningSystem.model.UserRole;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.OrderFilter;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.management.relation.Role;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -111,7 +113,9 @@ public class AdminController {
     public String createUserForm(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("genders", User.Gender.values());
-        model.addAttribute("roles", roleService.findAll());
+        List<UserRole> roles = roleService.findAll();
+        roles.removeIf(role -> role.getName().equals("ROLE_USER"));
+        model.addAttribute("roles", roles);
         return "admin/createUser";
     }
 
@@ -124,7 +128,9 @@ public class AdminController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("genders", User.Gender.values());
-            model.addAttribute("roles", roleService.findAll());
+            List<UserRole> roles = roleService.findAll();
+            roles.removeIf(role -> role.getName().equals("ROLE_USER"));
+            model.addAttribute("roles", roles);
             return "admin/createUser";
         }
 
@@ -170,7 +176,9 @@ public class AdminController {
         try{
             User user = this.userService.getUserById(id);
             model.addAttribute("user", user);
-            model.addAttribute("roles", roleService.findAll());
+            List<UserRole> roles = roleService.findAll();
+            roles.removeIf(role -> role.getName().equals("ROLE_USER"));
+            model.addAttribute("roles", roles);
             return "admin/updateUser";
         }catch(Exception e){
             return "redirect:/admin/users";

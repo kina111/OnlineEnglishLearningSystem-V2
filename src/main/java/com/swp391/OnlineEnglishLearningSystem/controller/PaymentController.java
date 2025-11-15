@@ -26,14 +26,16 @@ public class PaymentController {
     private final CourseService courseService;
     private final EnrollmentService enrollmentService;
     private final UserLessonService userLessonService;
+    private final EmailService emailService;
 
-    public PaymentController(VNPayService vnPayService, OrderService orderService, UserService userService, CourseService courseService, EnrollmentService enrollmentService, UserLessonService userLessonService) {
+    public PaymentController(VNPayService vnPayService, OrderService orderService, UserService userService, CourseService courseService, EnrollmentService enrollmentService, UserLessonService userLessonService, EmailService emailService) {
         this.vnPayService = vnPayService;
         this.orderService = orderService;
         this.userService = userService;
         this.courseService = courseService;
         this.enrollmentService = enrollmentService;
         this.userLessonService = userLessonService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/payment/checkout/{courseId}")
@@ -136,6 +138,7 @@ public class PaymentController {
                 //tạo 1 list các userLesson mới cho enrollment đó
                 this.userLessonService.createFullUserLesson(newEnrollment);
                 redirectAttributes.addAttribute("status", "success");
+                emailService.sendPurchasedNotification(newEnrollment.getUser().getEmail(), newEnrollment);
             } else {
                 redirectAttributes.addAttribute("status", "failed");
             }

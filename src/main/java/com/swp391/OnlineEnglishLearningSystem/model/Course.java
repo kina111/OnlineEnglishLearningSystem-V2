@@ -38,7 +38,7 @@ public class    Course extends BaseEntity{
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
     @NotBlank(message = "Mô tả chi tiết không được để trống.")
-    @Size(min = 10, max = 1000, message = "Mô tả chi tiết phải có độ dài từ 10 đến 1000 ký tự.")
+    @Size(min = 10, message = "Mô tả chi tiết phải có độ dài từ 10 ký tự.")
     private String description;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
