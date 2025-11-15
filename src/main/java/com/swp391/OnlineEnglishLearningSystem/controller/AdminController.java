@@ -355,4 +355,14 @@ public class AdminController {
         model.addAttribute("monthTotals", monthTotals);
         return "admin/orderDashboard";
     }
+
+    @GetMapping("/orders/{orderId}")
+    public String orderDetail(@PathVariable Long orderId, Model model){
+        Order order = orderService.getOrderById(orderId);
+        if(order == null){
+            return "redirect:/admin/orders";
+        }
+        model.addAttribute("order", order);
+        return "admin/orderDetail";
+    }
 }

@@ -6,17 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/sliders")
 public class PublicSliderController {
 
     @Autowired
     private SliderService sliderService;
 
     // Hiển thị slider cho trang chủ
-    @GetMapping("/sliders")
+    @GetMapping("")
     public String getPublicSliders(Model model) {
         // Lấy tất cả slider có status = SHOW, sắp xếp theo orderNumber
         List<Slider> sliders = sliderService.getActiveSliders();
@@ -25,18 +28,23 @@ public class PublicSliderController {
     }
 
     // Trang demo slider
-    @GetMapping("/slider-demo")
+    @GetMapping("/demo")
     public String sliderDemo(Model model) {
         List<Slider> sliders = sliderService.getActiveSliders();
         model.addAttribute("sliders", sliders);
         return "slider-demo";
     }
 
-    // API endpoint để lấy slider data cho AJAX
-    @GetMapping("/api/public/sliders")
-    public org.springframework.http.ResponseEntity<List<Slider>> getPublicSlidersApi() {
-        List<Slider> sliders = sliderService.getActiveSliders();
-        return org.springframework.http.ResponseEntity.ok(sliders);
+    @GetMapping("/view/{id}")
+    public String getSliderById(@PathVariable("id") Long id) {
+        Slider slider = sliderService.getSliderById(id);
+        if (slider != null) {
+            sliderService.incrementViewCount(id);
+            if(slider.getLinkUrl()!=null&&!slider.getLinkUrl().isBlank()){
+                return "redirect:" + slider.getLinkUrl();
+            }
+        }
+        return "redirect:/";
     }
 }
 

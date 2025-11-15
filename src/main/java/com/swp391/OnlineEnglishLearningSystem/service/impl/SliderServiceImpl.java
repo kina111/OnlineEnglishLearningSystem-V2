@@ -6,6 +6,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderCreateUpdateDto;
 import com.swp391.OnlineEnglishLearningSystem.repository.SliderRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.SliderService;
+import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,15 +29,22 @@ import java.util.UUID;
 @Service
 public class SliderServiceImpl implements SliderService {
 
-    @Autowired
-    private SliderRepository sliderRepository;
+    private final SliderRepository sliderRepository;
+    private final UploadService uploadService;
 
     private static final String UPLOAD_DIR = "uploads/sliders/";
+
+    public SliderServiceImpl(SliderRepository sliderRepository, UploadService uploadService) {
+        this.sliderRepository = sliderRepository;
+        this.uploadService = uploadService;
+    }
 
     @Override
     public Page<Slider> getSliders(String keyword, String status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("orderNumber").ascending());
-        return sliderRepository.searchSliders(keyword == null ? "" : keyword, status, pageable);
+        keyword = keyword == null ? "" : keyword;
+        if(status!=null) status = status.isBlank()?null:status;
+        return sliderRepository.searchSliders(keyword,status, pageable);
     }
 
     @Override
@@ -97,8 +105,8 @@ public class SliderServiceImpl implements SliderService {
         slider.setTitle(dto.getTitle());
         slider.setDescription(dto.getDescription());
         slider.setOrderNumber(dto.getOrderNumber());
-        slider.setStatus(dto.getStatus());
-        slider.setLinkUrl(dto.getLinkUrl());
+        slider.setOrderNumber(dto.getOrderNumber() != null ? dto.getOrderNumber() : 1);
+        slider.setStatus(dto.getStatus() != null ? dto.getStatus() : "HIDE");
         slider.setUpdatedAt(LocalDateTime.now());
 
         // Xử lý upload file mới nếu có
@@ -129,6 +137,47 @@ public class SliderServiceImpl implements SliderService {
         Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
         slider.setViewCount(slider.getViewCount() + 1);
         sliderRepository.save(slider);
+    }
+
+    @Override
+    public Slider save(Slider slider) {
+        return sliderRepository.save(slider);
+    }
+
+    @Override
+    public void approveSlider(Long id) {
+        Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
+        slider.setStatus("SHOW");
+        slider.setUpdatedAt(LocalDateTime.now());
+        slider.setOrderNumber(getActiveSliders().size() + 1);
+        sliderRepository.save(slider);
+    }
+
+    @Override
+    public void rejectSlider(Long id) {
+        Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
+        slider.setStatus("HIDE");
+        slider.setUpdatedAt(LocalDateTime.now());
+        sliderRepository.save(slider);
+    }
+
+    @Override
+    public void takedownSlider(Long id) {
+        Slider slider = sliderRepository.findById(id).orElseThrow(() -> new RuntimeException("Slider not found"));
+        slider.setStatus("HIDE");
+        slider.setOrderNumber(1);
+        slider.setUpdatedAt(LocalDateTime.now());
+        sliderRepository.save(slider);
+        reOrderSliders();
+    }
+
+
+    private void reOrderSliders() {
+        List<Slider> sliders = sliderRepository.findByStatusOrderByOrderNumberAsc("SHOW");
+        for (int i = 0; i < sliders.size(); i++) {
+            sliders.get(i).setOrderNumber(i + 1);
+        }
+        sliderRepository.saveAll(sliders);
     }
 
     private String saveImageFile(MultipartFile file) {

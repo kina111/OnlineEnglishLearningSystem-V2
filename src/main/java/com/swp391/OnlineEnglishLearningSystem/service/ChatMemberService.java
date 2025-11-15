@@ -11,4 +11,5 @@ public interface ChatMemberService {
     public List<ChatMember> getChatMembers();
     public List<ChatMember> getChatMembersByUserId(Long userId);
     public ChatMember save(ChatMember chatMember);
+
 }

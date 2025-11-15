@@ -1,6 +1,7 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
+import com.swp391.OnlineEnglishLearningSystem.model.Slider;
 import com.swp391.OnlineEnglishLearningSystem.model.Token;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.BlogDTO;
@@ -32,14 +33,16 @@ public class AuthController {
     private final CourseService courseService;
     private final BlogService blogService;
     private final FeedbackService feedbackService;
+    private final SliderService sliderService;
 
-    public AuthController(UserService userService, TokenService tokenService, EmailService emailService, CourseService courseService, BlogService blogService, FeedbackService feedbackService) {
+    public AuthController(UserService userService, TokenService tokenService, EmailService emailService, CourseService courseService, BlogService blogService, FeedbackService feedbackService, SliderService sliderService) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.emailService = emailService;
         this.courseService = courseService;
         this.blogService = blogService;
         this.feedbackService = feedbackService;
+        this.sliderService = sliderService;
     }
 
     // ---------------- HOME ----------------
@@ -47,6 +50,7 @@ public class AuthController {
     public String home(Model model) {
         List<Course> featuredCourses = this.courseService.findFeaturedCourses(6);
         List<BlogDTO> latestBlogs = this.blogService.findLatestBlogs(4);
+        List<Slider> activeSlider = sliderService.getActiveSliders();
 
         Map<Long, CourseFeedbackStats> courseFeedbackStatsMap = new HashMap<>();
         for (Course course : featuredCourses) {
@@ -55,6 +59,7 @@ public class AuthController {
             courseFeedbackStatsMap.put(courseId, cfs);
         }
 
+        model.addAttribute("sliders", activeSlider);
         model.addAttribute("courseFeedbackStatsMap", courseFeedbackStatsMap);
         model.addAttribute("latestBlogs", latestBlogs);
         model.addAttribute("featuredCourses", featuredCourses);

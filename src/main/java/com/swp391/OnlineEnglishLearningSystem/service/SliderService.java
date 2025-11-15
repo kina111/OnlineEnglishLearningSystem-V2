@@ -17,4 +17,8 @@ public interface SliderService {
     Slider toggleStatus(Long id, String status);
     void deleteSlider(Long id);
     void incrementViewCount(Long id);
+    Slider save(Slider slider);
+    void approveSlider(Long id);
+    void rejectSlider(Long id);
+    void takedownSlider(Long id);
 }

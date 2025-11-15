@@ -20,4 +20,5 @@ public interface OrderService {
     Order update(Map fields);
     List<Order> getAllOrders();
     List<Order> getOrdersWithSpecs(OrderFilter filter);
+    Order getOrderById(Long id);
 }

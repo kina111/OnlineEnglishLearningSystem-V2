@@ -11,4 +11,6 @@ public interface UserLessonService {
     void createFullUserLesson(Enrollment enrollment);
 
     void updateIsCompleted(long userId, long lessonId);
+
+    boolean existsByLessonIdAndUserId(long lessonId, long userId);
 }
