@@ -78,7 +78,7 @@
                         <img th:if="${slider.imageUrl}"
                              th:src="${slider.imageUrl}"
                              class="slider-image"
-                             alt="Slider Image">
+                             alt="Slider Image" style="max-width: 200px; object-fit: cover;">
                         <span th:unless="${slider.imageUrl}" style="color: var(--text-light);">Chưa có ảnh</span>
                     </td>
                     <td th:text="${slider.title}"></td>

@@ -135,6 +135,7 @@ public class CourseServiceImpl implements CourseService {
         switch (respondToPublish) {
             case "true":
                 if (course.getStatus() == Course.CourseStatus.PUBLISHED) throw new IllegalArgumentException("Course is already published");
+                else if (course.getStatus() == Course.CourseStatus.DRAFT) throw new IllegalArgumentException("Course is already draft");
                 course.setStatus(Course.CourseStatus.PUBLISHED);
                 return this.courseRepository.save(course);
             case "false":

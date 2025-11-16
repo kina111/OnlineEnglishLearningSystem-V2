@@ -39,7 +39,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> findByQuizIdWithSpecs(Long id, String type) {
-        Specification<Question> specs = QuestionSpecs.findByType(type);
+        Specification<Question> specs = QuestionSpecs.findByQuizId(id).and(QuestionSpecs.findByType(type));
         return this.questionRepository.findAll(specs);
     }
 }

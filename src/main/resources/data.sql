@@ -39,14 +39,14 @@ INSERT INTO courses (id, name, short_description, description, prerequisite, thu
                                                                                                                                                                                (2, N'Giao tiếp tự tin nơi công sở', N'Khóa học giúp bạn tự tin sử dụng tiếng Anh trong môi trường làm việc chuyên nghiệp.', N'Bạn sẽ học cách:\n     * Viết email chuyên nghiệp...', N' * Trình độ tiếng Anh cơ bản...', 'courses/thumbnails/business_english.png', 1500000.0, 10.0, 0, 'PUBLISHED', 3, 2, GETDATE(), GETDATE()),
                                                                                                                                                                                (3, N'Phát âm chuẩn Anh-Mỹ cho người mới bắt đầu', N'Xây dựng nền tảng phát âm vững chắc với 44 âm IPA...', N'Khóa học này sẽ giúp bạn nói tiếng Anh rõ ràng và tự nhiên hơn...', N' * Không yêu cầu đầu vào...', 'courses/thumbnails/pronunciation.png', 1200000.0, 0.0, 1, 'PUBLISHED', 1, 2, GETDATE(), GETDATE()),
                                                                                                                                                                                (4, N'Từ vựng IELTS theo chủ đề', N'Học 1000+ từ vựng học thuật quan trọng cho IELTS.', N'Phân loại từ vựng theo các chủ đề thường gặp trong IELTS như Environment, Technology, Education...', N'Trình độ IELTS 4.5+', 'courses/thumbnails/6195519.jpg', 1800000.0, 20.0, 0, 'PUBLISHED', 2, 2, GETDATE(), GETDATE()),
-                                                                                                                                                                               (5, N'Ngữ pháp Tiếng Anh nâng cao', N'Ôn tập và nâng cao các cấu trúc ngữ pháp phức tạp.', N'Đi sâu vào các điểm ngữ pháp khó như Mệnh đề quan hệ, Câu điều kiện, Thể bị động nâng cao...', N'Trình độ Intermediate trở lên', 'courses/thumbnails/6734768.jpg', 1600000.0, 5.0, 1, 'PUBLISHED', 1, 2, GETDATE(), GETDATE()),
-                                                                                                                                                                               (6, N'Thuyết trình Tiếng Anh chuyên nghiệp', N'Kỹ năng chuẩn bị và thực hiện bài thuyết trình ấn tượng.', N'Học cách xây dựng cấu trúc, sử dụng ngôn ngữ cơ thể, và trả lời câu hỏi Q&A.', N'Trình độ Upper-Intermediate', 'courses/thumbnails/6743349.jpg', 1700000.0, 0.0, 0, 'PUBLISHED', 3, 2, GETDATE(), GETDATE()),
-                                                                                                                                                                               (7, N'Luyện nghe IELTS Listening Max Score', N'Chiến thuật làm bài và luyện tập các dạng câu hỏi Listening.', N'Phân tích các dạng bài Map, Multiple Choice, Form Completion... và mẹo tránh bẫy.', N'Trình độ IELTS 5.0+', 'courses/thumbnails/7420258.jpg', 1900000.0, 10.0, 1, 'PUBLISHED', 2, 5, GETDATE(), GETDATE()),
-                                                                                                                                                                               (8, N'Tiếng Anh du lịch cho người Việt', N'Các mẫu câu và từ vựng cần thiết khi đi du lịch nước ngoài.', N'Bao gồm các tình huống tại sân bay, khách sạn, nhà hàng, hỏi đường...', N'Trình độ Basic', 'courses/thumbnails/10019196.jpg', 900000.0, 0.0, 0, 'PUBLISHED', 1, 5, GETDATE(), GETDATE()),
-                                                                                                                                                                               (9, N'Viết luận IELTS Writing Task 2', N'Hướng dẫn viết các dạng bài luận Agree/Disagree, Discussion, Problem/Solution.', N'Phân tích đề, lập dàn ý, sử dụng từ nối và cấu trúc câu hiệu quả.', N'Trình độ IELTS 5.5+', 'courses/thumbnails/ielts_writing2.png', 2100000.0, 15.0, 1, 'PUBLISHED', 2, 5, GETDATE(), GETDATE()),
-                                                                                                                                                                               (10, N'Tiếng Anh phỏng vấn xin việc', N'Chuẩn bị cho các câu hỏi phỏng vấn tiếng Anh phổ biến.', N'Cách giới thiệu bản thân, trả lời về điểm mạnh/yếu, kinh nghiệm làm việc...', N'Trình độ Intermediate', 'courses/thumbnails/job_interview.png', 1300000.0, 5.0, 0, 'PUBLISHED', 3, 6, GETDATE(), GETDATE()),
-                                                                                                                                                                               (11, N'Luyện đọc IELTS Reading Intensive', N'Kỹ năng Skimming, Scanning và làm các dạng bài True/False/NG, Matching Headings.', N'Thực hành với các bài đọc học thuật đa dạng.', N'Trình độ IELTS 5.0+', 'courses/thumbnails/ielts_reading.png', 1800000.0, 10.0, 0, 'PUBLISHED', 2, 6, GETDATE(), GETDATE()),
-                                                                                                                                                                               (12, N'Tiếng Anh giao tiếp hàng ngày (Nâng cao)', N'Mở rộng vốn từ lóng, thành ngữ và cách diễn đạt tự nhiên.', N'Thảo luận các chủ đề phức tạp hơn, luyện phản xạ nghe nói.', N'Trình độ Upper-Intermediate', 'courses/thumbnails/daily_english_adv.png', 1400000.0, 0.0, 1, 'PUBLISHED', 1, 6, GETDATE(), GETDATE());
+                                                                                                                                                                               (5, N'Ngữ pháp Tiếng Anh nâng cao', N'Ôn tập và nâng cao các cấu trúc ngữ pháp phức tạp.', N'Đi sâu vào các điểm ngữ pháp khó như Mệnh đề quan hệ, Câu điều kiện, Thể bị động nâng cao...', N'Trình độ Intermediate trở lên', 'courses/thumbnails/6734768.jpg', 1600000.0, 5.0, 1, 'DRAFT', 1, 2, GETDATE(), GETDATE()),
+                                                                                                                                                                               (6, N'Thuyết trình Tiếng Anh chuyên nghiệp', N'Kỹ năng chuẩn bị và thực hiện bài thuyết trình ấn tượng.', N'Học cách xây dựng cấu trúc, sử dụng ngôn ngữ cơ thể, và trả lời câu hỏi Q&A.', N'Trình độ Upper-Intermediate', 'courses/thumbnails/6743349.jpg', 1700000.0, 0.0, 0, 'DRAFT', 3, 2, GETDATE(), GETDATE()),
+                                                                                                                                                                               (7, N'Luyện nghe IELTS Listening Max Score', N'Chiến thuật làm bài và luyện tập các dạng câu hỏi Listening.', N'Phân tích các dạng bài Map, Multiple Choice, Form Completion... và mẹo tránh bẫy.', N'Trình độ IELTS 5.0+', 'courses/thumbnails/7420258.jpg', 1900000.0, 10.0, 1, 'DRAFT', 2, 5, GETDATE(), GETDATE()),
+                                                                                                                                                                               (8, N'Tiếng Anh du lịch cho người Việt', N'Các mẫu câu và từ vựng cần thiết khi đi du lịch nước ngoài.', N'Bao gồm các tình huống tại sân bay, khách sạn, nhà hàng, hỏi đường...', N'Trình độ Basic', 'courses/thumbnails/10019196.jpg', 900000.0, 0.0, 0, 'DRAFT', 1, 5, GETDATE(), GETDATE()),
+                                                                                                                                                                               (9, N'Viết luận IELTS Writing Task 2', N'Hướng dẫn viết các dạng bài luận Agree/Disagree, Discussion, Problem/Solution.', N'Phân tích đề, lập dàn ý, sử dụng từ nối và cấu trúc câu hiệu quả.', N'Trình độ IELTS 5.5+', 'courses/thumbnails/ielts_writing2.png', 2100000.0, 15.0, 1, 'DRAFT', 2, 5, GETDATE(), GETDATE()),
+                                                                                                                                                                               (10, N'Tiếng Anh phỏng vấn xin việc', N'Chuẩn bị cho các câu hỏi phỏng vấn tiếng Anh phổ biến.', N'Cách giới thiệu bản thân, trả lời về điểm mạnh/yếu, kinh nghiệm làm việc...', N'Trình độ Intermediate', 'courses/thumbnails/job_interview.png', 1300000.0, 5.0, 0, 'DRAFT', 3, 6, GETDATE(), GETDATE()),
+                                                                                                                                                                               (11, N'Luyện đọc IELTS Reading Intensive', N'Kỹ năng Skimming, Scanning và làm các dạng bài True/False/NG, Matching Headings.', N'Thực hành với các bài đọc học thuật đa dạng.', N'Trình độ IELTS 5.0+', 'courses/thumbnails/ielts_reading.png', 1800000.0, 10.0, 0, 'DRAFT', 2, 6, GETDATE(), GETDATE()),
+                                                                                                                                                                               (12, N'Tiếng Anh giao tiếp hàng ngày (Nâng cao)', N'Mở rộng vốn từ lóng, thành ngữ và cách diễn đạt tự nhiên.', N'Thảo luận các chủ đề phức tạp hơn, luyện phản xạ nghe nói.', N'Trình độ Upper-Intermediate', 'courses/thumbnails/daily_english_adv.png', 1400000.0, 0.0, 1, 'DRAFT', 1, 6, GETDATE(), GETDATE());
 SET IDENTITY_INSERT courses OFF;
 
 -- 5. Bảng CHAPTERS (Phụ thuộc vào COURSES)
@@ -116,7 +116,7 @@ INSERT INTO lessons (
 -- *** SỬA LỖI: Cập nhật LECTURE: pass_rate, time_limit, video_url -> NULL. Thêm duration ***
       (16, N'Video: Tổng quan về bài thi Speaking', 1, 'LECTURE', 20, NULL, NULL, N'<p>Nội dung bài giảng video...</p>', 'lectures/videos/6006989891083.mp4', 1, NULL, 20),
       (17, N'Video: Kỹ thuật trả lời Part 1', 1, 'LECTURE', 25, NULL, NULL, N'<p>Nội dung bài giảng video...</p>', 'lectures/videos/6006989894583.mp4', 2, NULL, 25),
-      (18, N'Video: Phát triển ý tưởng Part 2', 1, 'LECTURE', 30, NULL, NULL, N'<p>Nội dung bài giảng video...</p>', 'lectures/videos/6006989906962.mp4', 3, NULL, 30),
+      (18, N'Video: Phát triển ý tưởng Part 2', 1, 'LECTURE', 30, NULL, NULL, N'<p>Nội dung bài giảng video...</p>', 'lectures/videos/6006989913221.mp4', 3, NULL, 30),
       (19, N'Video: Cách viết Email trang trọng', 1, 'LECTURE', 15, NULL, NULL, N'<p>Nội dung bài giảng video...</p>', 'lectures/videos/6006989913221.mp4', 4, NULL, 15),
       (20, N'Video: Thuật ngữ trong cuộc họp', 1, 'LECTURE', 20, NULL, NULL, N'<p>Nội dung bài giảng video...</p>', NULL, 5, NULL, 20),
       (21, N'Video: Từ vựng chủ đề Môi trường', 1, 'LECTURE', 15, NULL, NULL, N'<p>Nội dung bài giảng video...</p>', NULL, 6, NULL, 15),
@@ -151,7 +151,7 @@ SET IDENTITY_INSERT user_lesson_progress ON;
 INSERT INTO user_lesson_progress (id, user_id, lesson_id, enrollment_id, is_completed, completion_date) VALUES
 -- User 4 (Alice) - Enrollment 1 (Course 1: IELTS Speaking - Gồm 6 lessons: 16, 1, 17, 2, 18, 3)
 -- Giả sử đã học xong Chapter 1 (Lesson 16, 1). Progress 2/6 = 33%
-(1, 4, 16, 1, 1, DATEADD(day, -8, GETDATE())), -- Chapter 1 - Lecture 1 (Completed)
+(1, 4, 16, 1, 0, DATEADD(day, -8, GETDATE())), -- Chapter 1 - Lecture 1 (Completed)
 (2, 4, 1, 1, 0, DATEADD(day, -7, GETDATE())),  -- Chapter 1 - Quiz 1 (Completed)
 (3, 4, 17, 1, 0, NULL),                        -- Chapter 2 - Lecture 2 (Not completed)
 (4, 4, 2, 1, 0, NULL),                         -- Chapter 2 - Quiz 2 (Not completed)
@@ -160,9 +160,9 @@ INSERT INTO user_lesson_progress (id, user_id, lesson_id, enrollment_id, is_comp
 
 -- User 4 (Alice) - Enrollment 2 (Course 3: Phát âm - Gồm 4 lessons: 31, 32, 33, 34)
 -- Giả sử đã học 3/4 lessons. Progress 3/4 = 75%
-(7, 4, 31, 2, 1, DATEADD(day, -4, GETDATE())), -- Chapter 16 - Lecture 1 (Completed)
-(8, 4, 32, 2, 1, DATEADD(day, -3, GETDATE())), -- Chapter 16 - Quiz 1 (Completed)
-(9, 4, 33, 2, 1, DATEADD(day, -2, GETDATE())), -- Chapter 17 - Lecture 2 (Completed)
+(7, 4, 31, 2, 0, DATEADD(day, -4, GETDATE())), -- Chapter 16 - Lecture 1 (Completed)
+(8, 4, 32, 2, 0, DATEADD(day, -3, GETDATE())), -- Chapter 16 - Quiz 1 (Completed)
+(9, 4, 33, 2, 0, DATEADD(day, -2, GETDATE())), -- Chapter 17 - Lecture 2 (Completed)
 (10, 4, 34, 2, 0, NULL);                       -- Chapter 17 - Quiz 2 (Not completed)
 SET IDENTITY_INSERT user_lesson_progress OFF;
 
@@ -462,3 +462,175 @@ Tóm lại, muốn làm tốt IELTS Reading, bạn cần hiểu cấu trúc bài
 (19, N'Thuật ngữ Tiếng Anh trong cuộc họp (Meeting Vocabulary)', 'blogs/meeting-vocabulary.png', N'Các cụm từ dùng để bắt đầu cuộc họp, đưa ra ý kiến, ngắt lời và chốt vấn đề.', N'Nội dung chi... (agenda, minutes, consensus)...', 4, 6, 'PUBLISHED', GETDATE(), GETDATE()),
 (20, N'Giao tiếp qua điện thoại (Telephoning) nơi công sở', 'blogs/telephoning-skills.png', N'Các mẫu câu nghe, gọi, và để lại lời nhắn một cách chuyên nghiệp.', N'Nội dung chi tiết về telephoning...', 4, 6, 'DRAFT', GETDATE(), GETDATE());
 SET IDENTITY_INSERT blogs OFF;
+
+
+-- ===================================================================
+-- BỔ SUNG DỮ LIỆU MẪU (PHẦN 3)
+-- ===================================================================
+-- Thêm dữ liệu đa dạng hơn cho các khóa học khác (không chỉ khóa 1)
+-- và bổ sung nội dung cho các quiz còn trống.
+
+-- 11. Bảng ENROLLMENTS (Bổ sung cho các khóa học khác)
+-- Ghi danh cho các user 7, 8, 9, 10 vào các khóa 2, 4, 7, 9
+SET IDENTITY_INSERT enrollments ON;
+INSERT INTO enrollments (id, user_id, course_id, enrolled_at, status) VALUES
+-- Binh Le (user 7) đăng ký Khóa 2 (Giao tiếp công sở)
+(22, 7, 2, DATEADD(day, -20, GETDATE()), 'ENROLLED'),
+-- Chi Phan (user 8) đăng ký Khóa 4 (Từ vựng IELTS)
+(23, 8, 4, DATEADD(day, -15, GETDATE()), 'ENROLLED'),
+-- Dung Tran (user 9) đăng ký Khóa 7 (Luyện nghe IELTS)
+(24, 9, 7, DATEADD(day, -10, GETDATE()), 'ENROLLED'),
+-- Giang Hoang (user 10) đăng ký Khóa 9 (Viết luận IELTS)
+(25, 10, 9, DATEADD(day, -5, GETDATE()), 'ENROLLED');
+SET IDENTITY_INSERT enrollments OFF;
+
+-- 12. Bảng FEEDBACKS (Bổ sung cho các khóa học 2, 4, 7, 9)
+-- Thêm feedback cho các enrollment 22, 23, 24, 25
+SET IDENTITY_INSERT feedbacks ON;
+INSERT INTO feedbacks (id, rating, review, status, helpful_count, not_helpful_count, enrollment_id) VALUES
+-- Feedback cho Enrollment 22 (Khóa 2)
+(41, 5, N'Khóa học Giao tiếp công sở rất thực tế. Các mẫu email (Chương 4) rất hữu ích cho công việc của mình.', 'APPROVED', 8, 0, 22),
+-- Feedback cho Enrollment 23 (Khóa 4)
+(42, 4, N'Nội dung từ vựng IELTS (Khóa 4) tốt, nhưng file video của Chương 7 (Technology) thỉnh thoảng bị giật.', 'APPROVED', 3, 0, 23),
+-- Feedback cho Enrollment 24 (Khóa 7)
+(43, 5, N'Thầy Michael Chen (author_id 5) dạy khóa Listening (Khóa 7) rất hay, mẹo làm bài Multiple Choice (Chương 10) rất đỉnh.', 'APPROVED', 12, 0, 24),
+-- Feedback cho Enrollment 25 (Khóa 9)
+(44, 4, N'Mình đã hiểu rõ hơn về cách viết bài Agree/Disagree (Chương 12) sau khóa Writing (Khóa 9). Cảm ơn OELS.', 'APPROVED', 7, 0, 25);
+SET IDENTITY_INSERT feedbacks OFF;
+
+-- 13. Bảng QUESTIONS (Bổ sung cho Quiz: Environment Vocabulary, lesson_id = 6)
+-- Thêm câu hỏi cho quiz của Khóa 4
+SET IDENTITY_INSERT questions ON;
+INSERT INTO questions (id, content, question_type, media_type, media_url, lesson_id, created_at, updated_at)
+VALUES
+    (17, N'Từ nào sau đây đồng nghĩa với "global warming"?', 'MULTIPLE_CHOICE', 'NONE', NULL, 6, GETDATE(), GETDATE()),
+    (18, N'"Deforestation" có nghĩa là gì?', 'MULTIPLE_CHOICE', 'NONE', NULL, 6, GETDATE(), GETDATE()),
+    (19, N'Năng lượng "sustainable" là năng lượng...', 'MULTIPLE_CHOICE', 'NONE', NULL, 6, GETDATE(), GETDATE()),
+    (20, N'Chất thải "biodegradable" là chất thải...', 'MULTIPLE_CHOICE', 'NONE', NULL, 6, GETDATE(), GETDATE());
+SET IDENTITY_INSERT questions OFF;
+
+-- 14. Bảng ANSWER_OPTIONS (Cho các câu hỏi 17, 18, 19, 20)
+SET IDENTITY_INSERT answer_options ON;
+INSERT INTO answer_options (id, content, correct, explanation, question_id, created_at, updated_at)
+VALUES
+-- Q17
+(43, N'Climate change', 1, N'"Global warming" (sự nóng lên toàn cầu) thường được dùng thay thế cho "climate change" (biến đổi khí hậu).', 17, GETDATE(), GETDATE()),
+(44, N'Pollution', 0, N'Pollution (ô nhiễm) là một nguyên nhân, không phải từ đồng nghĩa.', 17, GETDATE(), GETDATE()),
+(45, N'Biodiversity', 0, N'Biodiversity là đa dạng sinh học.', 17, GETDATE(), GETDATE()),
+(46, N'Soil erosion', 0, N'Soil erosion là xói mòn đất.', 17, GETDATE(), GETDATE()),
+-- Q18
+(47, N'Nạn phá rừng', 1, N'Deforestation là hành động chặt phá rừng trên diện rộng.', 18, GETDATE(), GETDATE()),
+(48, N'Trồng cây gây rừng', 0, N'Trồng cây là "afforestation" hoặc "reforestation".', 18, GETDATE(), GETDATE()),
+(49, N'Ô nhiễm nguồn nước', 0, N'Đây là "water pollution".', 18, GETDATE(), GETDATE()),
+(50, N'Hiệu ứng nhà kính', 0, N'Đây là "greenhouse effect".', 18, GETDATE(), GETDATE()),
+-- Q19
+(51, N'Bền vững, có thể tái tạo (như gió, mặt trời)', 1, N'Sustainable energy là năng lượng bền vững, không cạn kiệt.', 19, GETDATE(), GETDATE()),
+(52, N'Hóa thạch (như than, dầu)', 0, N'Đây là "fossil fuels".', 19, GETDATE(), GETDATE()),
+(53, N'Hạt nhân', 0, N'Đây là "nuclear energy".', 19, GETDATE(), GETDATE()),
+(54, N'Gây ô nhiễm', 0, N'Năng lượng bền vững thường sạch và ít ô nhiễm.', 19, GETDATE(), GETDATE()),
+-- Q20
+(55, N'Có thể phân hủy sinh học', 1, N'Biodegradable có nghĩa là có thể bị phân hủy tự nhiên bởi vi sinh vật.', 20, GETDATE(), GETDATE()),
+(56, N'Độc hại', 0, N'Độc hại là "toxic" hoặc "hazardous".', 20, GETDATE(), GETDATE()),
+(57, N'Tái chế được', 0, N'Tái chế được là "recyclable".', 20, GETDATE(), GETDATE()),
+(58, N'Không tan trong nước', 0, N'Đây là "insoluble".', 20, GETDATE(), GETDATE());
+SET IDENTITY_INSERT answer_options OFF;
+
+-- 15. Bảng WISHLIST (Bổ sung cho user 7 và 8)
+SET IDENTITY_INSERT wishlist ON;
+INSERT INTO wishlist (id, user_id, course_id, added_date) VALUES
+-- User 7 (Binh Le) quan tâm Khóa 11 (Reading) và Khóa 12 (Giao tiếp nâng cao)
+(3, 7, 11, DATEADD(day, -3, GETDATE())),
+(4, 7, 12, DATEADD(day, -2, GETDATE())),
+-- User 8 (Chi Phan) quan tâm Khóa 5 (Ngữ pháp)
+(5, 8, 5, DATEADD(day, -1, GETDATE()));
+SET IDENTITY_INSERT wishlist OFF;
+
+-- 16. Bảng USER_LESSON_PROGRESS (Bổ sung cho Enrollment 23)
+-- User 8 (Chi Phan) - Enrollment 23 (Course 4: Từ vựng IELTS - Gồm 4 lessons: 21, 6, 22, 7)
+-- Giả sử đã học 1/4 lessons.
+SET IDENTITY_INSERT user_lesson_progress ON;
+INSERT INTO user_lesson_progress (id, user_id, lesson_id, enrollment_id, is_completed, completion_date) VALUES
+                                                                                                            (11, 8, 21, 23, 1, DATEADD(day, -10, GETDATE())), -- Chapter 6 - Lecture (Completed)
+                                                                                                            (12, 8, 6, 23, 0, NULL),                          -- Chapter 6 - Quiz (Not completed)
+                                                                                                            (13, 8, 22, 23, 0, NULL),                          -- Chapter 7 - Lecture (Not completed)
+                                                                                                            (14, 8, 7, 23, 0, NULL);                         -- Chapter 7 - Quiz (Not completed)
+SET IDENTITY_INSERT user_lesson_progress OFF;
+
+-- 17. Bảng NOTES (Bổ sung cho UserLessonID 11)
+-- Ghi chú cho User 8 khi học Lesson 21 (Video: Từ vựng chủ đề Môi trường)
+SET IDENTITY_INSERT notes ON;
+INSERT INTO notes (id, time_at_lesson, content, user_lesson_id) VALUES
+-- Ghi chú cho UserLessonID 11 (Lesson 21: Video: Từ vựng chủ đề Môi trường)
+(21, '02:15', N'Note lại từ "biodegradable" - có thể phân hủy sinh học.', 11),
+(22, '07:30', N'Phân biệt "climate change" (biến đổi khí hậu) và "global warming" (nóng lên toàn cầu).', 11),
+(23, '11:00', N'Học cụm "carbon footprint" - dấu chân carbon.', 11);
+SET IDENTITY_INSERT notes OFF;
+
+-- 18. Bảng ORDERS (Bổ sung cho các enrollment 22, 23, 24, 25)
+-- (Giả sử các đơn hàng này đã được thanh toán và liên kết với enrollment)
+INSERT INTO orders (
+    order_code,
+    amount,
+    order_info,
+    status,
+    vnp_response_code,
+    vnp_transaction_no,
+    user_id,
+    course_id,
+    created_at,
+    updated_at
+) VALUES
+      ('ORD007', 1350000.0, N'Thanh toán khóa học Giao tiếp tự tin nơi công sở', 'PAID', '00', '123456793', 7, 2, DATEADD(day, -20, GETDATE()), DATEADD(day, -20, GETDATE())),
+      ('ORD008', 1440000.0, N'Thanh toán khóa học Từ vựng IELTS theo chủ đề', 'PAID', '00', '123456794', 8, 4, DATEADD(day, -15, GETDATE()), DATEADD(day, -15, GETDATE())),
+      ('ORD009', 1710000.0, N'Thanh toán khóa học Luyện nghe IELTS Listening Max Score', 'PAID', '00', '123456795', 9, 7, DATEADD(day, -10, GETDATE()), DATEADD(day, -10, GETDATE())),
+      ('ORD010', 1785000.0, N'Thanh toán khóa học Viết luận IELTS Writing Task 2', 'PAID', '00', '123456796', 10, 9, DATEADD(day, -5, GETDATE()), DATEADD(day, -5, GETDATE()));
+
+-- 5.1. Bảng SLIDERS
+-- (Phụ thuộc vào user_id từ bảng USERS)
+-- user_id = 1 (Admin)
+-- user_id = 3 (Marketing)
+-- link_url thường trỏ tới /courses/{id} hoặc /blogs/{id}
+-- ===================================================================
+
+SET IDENTITY_INSERT sliders ON;
+INSERT INTO sliders (
+    id, user_id, title, description, order_number,
+    status, image_url, link_url,
+    created_at, updated_at, view_count
+) VALUES
+      (
+          1, 3, -- Jane Smith (Marketing)
+          N'IELTS Speaking Masterclass 8.0+',
+          N'Giảm giá 15% cho 100 lượt đăng ký đầu tiên. Chinh phục band điểm 8.0+ cùng chuyên gia John Doe.',
+          1, 'SHOW', '/uploads/sliders/6578012.jpg', 'https://www.youtube.com/results?search_query=business+flow+diagram',
+          GETDATE(), GETDATE(), 1520
+      ),
+      (
+          2, 1, -- Admin Manager
+          N'Luyện nghe IELTS Max Score',
+          N'Khóa học mới ra mắt! Chiến thuật làm bài và luyện tập các dạng câu hỏi Listening.',
+          2, 'SHOW', '/uploads/sliders/6692555.jpg', 'https://www.youtube.com/results?search_query=business+flow+diagram',
+          GETDATE(), GETDATE(), 890
+      ),
+      (
+          3, 3, -- Jane Smith (Marketing)
+          N'Phát âm chuẩn Anh-Mỹ',
+          N'Xây dựng nền tảng phát âm vững chắc với 44 âm IPA. Dành cho người mới bắt đầu.',
+          3, 'SHOW', '/uploads/sliders/6718245.jpg', 'https://www.youtube.com/results?search_query=business+flow+diagram',
+          GETDATE(), GETDATE(), 1105
+      ),
+      (
+          4, 1, -- Admin Manager
+          N'Thông báo: Nâng cấp hệ thống OELS 2.0',
+          N'Hệ thống OELS sẽ được nâng cấp lên phiên bản 2.0 với nhiều tính năng hấp dẫn.',
+          4, 'SHOW', '/uploads/sliders/slider_announcement.png', 'https://www.youtube.com/results?search_query=business+flow+diagram',
+          GETDATE(), GETDATE(), 530
+      ),
+      (
+          5, 3, -- Jane Smith (Marketing)
+          N'Giảm giá hè 2024 (ĐÃ HẾT HẠN)',
+          N'Chương trình giảm giá mùa hè đã kết thúc.',
+          5, 'HIDE', '/uploads/sliders/slider_summer_promo_old.png', '#',
+          DATEADD(day, -60, GETDATE()), DATEADD(day, -30, GETDATE()), 2500
+      );
+SET IDENTITY_INSERT sliders OFF;
