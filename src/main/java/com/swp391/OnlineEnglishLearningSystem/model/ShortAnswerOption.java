@@ -3,7 +3,13 @@ package com.swp391.OnlineEnglishLearningSystem.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "short_answer_options")
 public class ShortAnswerOption {
@@ -20,36 +26,8 @@ public class ShortAnswerOption {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    public ShortAnswerOption() {
-        super();
-    }
-
     public ShortAnswerOption(String solutionText, Question question) {
         this.solutionText = solutionText;
-        this.question = question;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getSolutionText() {
-        return solutionText;
-    }
-
-    public void setSolutionText(String solutionText) {
-        this.solutionText = solutionText;
-    }
-
-    public Question getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(Question question) {
         this.question = question;
     }
 }

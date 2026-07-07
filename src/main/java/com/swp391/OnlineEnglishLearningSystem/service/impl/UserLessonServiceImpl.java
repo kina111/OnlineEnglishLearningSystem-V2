@@ -1,19 +1,18 @@
 package com.swp391.OnlineEnglishLearningSystem.service.impl;
 
 import com.swp391.OnlineEnglishLearningSystem.model.*;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.UserLessonLearningDTO;
 import com.swp391.OnlineEnglishLearningSystem.repository.UserLessonRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.UserLessonService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserLessonServiceImpl implements UserLessonService {
     private final UserLessonRepository userLessonRepository;
-
-    public UserLessonServiceImpl(UserLessonRepository userLessonRepository) {
-        this.userLessonRepository = userLessonRepository;
-    }
 
     @Override
     public void createFullUserLesson(Enrollment enrollment) {
@@ -21,7 +20,7 @@ public class UserLessonServiceImpl implements UserLessonService {
         Course currentCourse = enrollment.getCourse();
         List<Lesson> lessons = currentCourse.getChapters().stream().flatMap(c -> c.getLessons().stream()).toList();
         for (Lesson l : lessons) {
-            UserLesson current = createNew(currentUser, enrollment, l);
+            createNew(currentUser, enrollment, l);
         }
     }
 

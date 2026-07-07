@@ -2,7 +2,6 @@ package com.swp391.OnlineEnglishLearningSystem;
 
 import com.swp391.OnlineEnglishLearningSystem.config.StorageProperties;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
-import com.swp391.OnlineEnglishLearningSystem.model.UserRole;
 import com.swp391.OnlineEnglishLearningSystem.repository.RoleRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;

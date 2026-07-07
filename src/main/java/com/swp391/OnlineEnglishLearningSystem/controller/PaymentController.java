@@ -5,6 +5,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.*;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class PaymentController {
 
     private final VNPayService vnPayService;
@@ -27,16 +30,6 @@ public class PaymentController {
     private final EnrollmentService enrollmentService;
     private final UserLessonService userLessonService;
     private final EmailService emailService;
-
-    public PaymentController(VNPayService vnPayService, OrderService orderService, UserService userService, CourseService courseService, EnrollmentService enrollmentService, UserLessonService userLessonService, EmailService emailService) {
-        this.vnPayService = vnPayService;
-        this.orderService = orderService;
-        this.userService = userService;
-        this.courseService = courseService;
-        this.enrollmentService = enrollmentService;
-        this.userLessonService = userLessonService;
-        this.emailService = emailService;
-    }
 
     @GetMapping("/payment/checkout/{courseId}")
     public String showCheckoutPage(@PathVariable("courseId") Long courseId,

@@ -3,20 +3,17 @@ package com.swp391.OnlineEnglishLearningSystem.service.impl;
 import com.swp391.OnlineEnglishLearningSystem.model.Message;
 import com.swp391.OnlineEnglishLearningSystem.repository.MessageRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
+@RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
-
-    @Autowired
-    public MessageServiceImpl(MessageRepository messageRepository) {
-        this.messageRepository = messageRepository;
-    }
-
 
     @Override
     public void save(Message message) {

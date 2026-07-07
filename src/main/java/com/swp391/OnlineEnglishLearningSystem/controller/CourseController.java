@@ -8,11 +8,12 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseFeedbackStats;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.FeedbackDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.UpdateCourseDTO;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.*;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import com.swp391.OnlineEnglishLearningSystem.service.impl.EnrollmentServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/courses")
+@RequiredArgsConstructor
 public class CourseController {
 
     private final CourseCategoryService courseCategoryService;
@@ -39,15 +41,6 @@ public class CourseController {
     private final EnrollmentServiceImpl enrollmentService;
     private final WishlistService wishlistService;
     private final FeedbackService feedbackService;
-
-    public CourseController(CourseCategoryService courseCategoryService, CourseService courseService, UserService userService, EnrollmentServiceImpl enrollmentService, WishlistService wishlistService, FeedbackService feedbackService) {
-        this.courseCategoryService = courseCategoryService;
-        this.courseService = courseService;
-        this.userService = userService;
-        this.enrollmentService = enrollmentService;
-        this.wishlistService = wishlistService;
-        this.feedbackService = feedbackService;
-    }
 
     // ===================== GET COURSES =========================
     @GetMapping("/learner")
@@ -255,7 +248,7 @@ public class CourseController {
                                HttpSession session,
                                RedirectAttributes redirectAttributes){
         try{
-            Course courseToDelete = this.courseService.deleteById(courseId);
+            this.courseService.deleteById(courseId);
             redirectAttributes.addFlashAttribute("message", "Delete course success!");
         }catch (Exception e){
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -268,7 +261,7 @@ public class CourseController {
                                      @RequestParam("admin-respond") String respondToPublish,
                                      RedirectAttributes redirectAttributes){
         try{
-            Course courseToHandle = this.courseService.handleChangingCourseStatus(courseId, respondToPublish);
+            this.courseService.handleChangingCourseStatus(courseId, respondToPublish);
             redirectAttributes.addFlashAttribute("message", "Handle course status success!");
             return "redirect:/courses/admin";
         }catch (Exception e){

@@ -7,6 +7,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.MessageDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,21 +26,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequestMapping("/chats")
+@RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
     private final ChatMemberService chatMemberService;
     private final MessageService messageService;
     private final UserService userService;
     private final UploadService uploadService;
-
-
-    public ChatController(ChatService chatService, ChatMemberService chatMemberService, MessageService messageService, UserService userService, UploadService uploadService) {
-        this.chatService = chatService;
-        this.chatMemberService = chatMemberService;
-        this.messageService = messageService;
-        this.userService = userService;
-        this.uploadService = uploadService;
-    }
 
     private User getUserById(HttpSession session){
         Long userId = (Long) session.getAttribute("currentUserId");

@@ -2,8 +2,14 @@ package com.swp391.OnlineEnglishLearningSystem.model.dto;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class UpdateCourseDTO {
     @NotBlank(message = "Vui lòng nhập tên khóa học.")
     @Size(min = 5, max = 100, message = "Tên khóa học phải từ 5 đến 100 ký tự.")
@@ -34,15 +40,10 @@ public class UpdateCourseDTO {
     private Long categoryId;
 
     private MultipartFile thumbnailFile;
-
     private String currentThumbnailUrl;
-
     private Course.CourseStatus status;
 
-    public UpdateCourseDTO() {
-        super();
-    }
-
+    // Giữ constructor mapping từ Course entity
     public UpdateCourseDTO(Course course) {
         this.name = course.getName();
         this.shortDescription = course.getShortDescription();
@@ -54,85 +55,5 @@ public class UpdateCourseDTO {
         this.thumbnailFile = null;
         this.currentThumbnailUrl = course.getThumbnail();
         this.status = course.getStatus();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getPrerequisite() {
-        return prerequisite;
-    }
-
-    public void setPrerequisite(String prerequisite) {
-        this.prerequisite = prerequisite;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Double getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(Double discount) {
-        this.discount = discount;
-    }
-
-    public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public MultipartFile getThumbnailFile() {
-        return thumbnailFile;
-    }
-
-    public void setThumbnailFile(MultipartFile thumbnailFile) {
-        this.thumbnailFile = thumbnailFile;
-    }
-
-    public String getCurrentThumbnailUrl() {
-        return currentThumbnailUrl;
-    }
-
-    public void setCurrentThumbnailUrl(String currentThumbnailUrl) {
-        this.currentThumbnailUrl = currentThumbnailUrl;
-    }
-
-    public Course.CourseStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(Course.CourseStatus status) {
-        this.status = status;
     }
 }

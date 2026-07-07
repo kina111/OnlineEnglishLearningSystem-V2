@@ -2,7 +2,6 @@ package com.swp391.OnlineEnglishLearningSystem.service.impl;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Chapter;
 import com.swp391.OnlineEnglishLearningSystem.model.Lesson;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.AnsweredOption;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CreateLectureRequest;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CreateQuizRequest;
 import com.swp391.OnlineEnglishLearningSystem.repository.ChapterRepository;
@@ -10,23 +9,20 @@ import com.swp391.OnlineEnglishLearningSystem.repository.LessonRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.LessonService;
 import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
 import com.swp391.OnlineEnglishLearningSystem.util.VideoDuration;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
     private final ChapterRepository chapterRepository;
     private final UploadService uploadService;
-
-    public LessonServiceImpl(LessonRepository lessonRepository, ChapterRepository chapterRepository, UploadService uploadService) {
-        this.lessonRepository = lessonRepository;
-        this.chapterRepository = chapterRepository;
-        this.uploadService = uploadService;
-    }
-
     @Override
     public void save(Lesson newLecture) {
         this.lessonRepository.save(newLecture);

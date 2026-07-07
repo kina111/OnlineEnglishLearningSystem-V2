@@ -8,6 +8,8 @@ import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ChapterController {
 
     private final ChapterService chapterService;
     private final CourseService courseService;
-
-    public ChapterController(ChapterService chapterService, CourseService courseService) {
-        this.chapterService = chapterService;
-        this.courseService = courseService;
-    }
 
     public static class CreateChapterRequest {
         @NotBlank(message = "Vui lòng nhập tên chương")

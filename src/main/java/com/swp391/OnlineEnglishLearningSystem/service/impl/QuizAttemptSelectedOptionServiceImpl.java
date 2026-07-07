@@ -3,17 +3,18 @@ package com.swp391.OnlineEnglishLearningSystem.service.impl;
 import com.swp391.OnlineEnglishLearningSystem.model.QuizAttemptSelectedOption;
 import com.swp391.OnlineEnglishLearningSystem.repository.QuizAttemptSelectedOptionRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.QuizAttemptSelectedOptionService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
+@RequiredArgsConstructor
 public class QuizAttemptSelectedOptionServiceImpl implements QuizAttemptSelectedOptionService {
-    @Autowired
-    private QuizAttemptSelectedOptionRepository quizAttemptSelectedOptionRepository;
-    public QuizAttemptSelectedOptionServiceImpl(QuizAttemptSelectedOptionRepository quizAttemptSelectedOptionRepository) {
-        this.quizAttemptSelectedOptionRepository = quizAttemptSelectedOptionRepository;
-    }
+    private final QuizAttemptSelectedOptionRepository quizAttemptSelectedOptionRepository;
+
     @Override
     public void save(QuizAttemptSelectedOption quizAttemptSelectedOption) {
         quizAttemptSelectedOptionRepository.save(quizAttemptSelectedOption);

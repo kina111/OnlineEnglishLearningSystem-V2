@@ -7,6 +7,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.UserRole;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.OrderFilter;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,9 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.management.relation.Role;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +27,7 @@ import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
     private final UserService userService;
@@ -36,16 +37,6 @@ public class AdminController {
     private final EmailService emailService;
     private final CourseCategoryService courseCategoryService;
     private final OrderService orderService;
-
-    public AdminController(UserService userService, UploadService uploadService, RoleService roleService, PasswordEncoder passwordEncoder, EmailService emailService, CourseCategoryService courseCategoryService, OrderService orderService) {
-        this.userService = userService;
-        this.uploadService = uploadService;
-        this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
-        this.courseCategoryService = courseCategoryService;
-        this.orderService = orderService;
-    }
 
     //===================== DASHBOARD ========================
     @GetMapping("")
@@ -333,8 +324,6 @@ public class AdminController {
                 .mapToDouble(Order::getAmount)
                 .sum();
 
-        // 4️⃣ Tính doanh thu theo tháng (YearMonth)
-        double filteredAmount = ordersPage.stream().mapToDouble(Order::getAmount).sum();
         Map<YearMonth, Double> revenueByMonth = orders.stream()
                 .collect(Collectors.groupingBy(
                         order -> YearMonth.from(order.getUpdatedAt()), // group theo tháng-năm của updatedAt

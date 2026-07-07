@@ -7,6 +7,9 @@ import com.swp391.OnlineEnglishLearningSystem.repository.EnrollmentRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.UserLessonRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.UserRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.LearningService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,17 +22,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class LearningServiceImpl implements LearningService {
     private final EnrollmentRepository enrollmentRepository;
     private final UserLessonRepository userLessonRepository;
     private final UserRepository userRepository;
-
-    public LearningServiceImpl(EnrollmentRepository enrollmentRepository, UserLessonRepository userLessonRepository, UserRepository userRepository) {
-        this.enrollmentRepository = enrollmentRepository;
-        this.userLessonRepository = userLessonRepository;
-        this.userRepository = userRepository;
-    }
-
 
     @Transactional(readOnly = true)
     public List<ChapterLearningDTO> prepareLearningViewData(long userId, long enrollmentId) {

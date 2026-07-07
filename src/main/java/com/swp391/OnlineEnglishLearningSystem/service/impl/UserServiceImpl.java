@@ -7,6 +7,9 @@ import com.swp391.OnlineEnglishLearningSystem.repository.RoleRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.UserRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
 import com.swp391.OnlineEnglishLearningSystem.service.specification.UserSpecs;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,16 +23,11 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public void ensureEmailNotExists(String email) {
         userRepository.findByEmail(email)

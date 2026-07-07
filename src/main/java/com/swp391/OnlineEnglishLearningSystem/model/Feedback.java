@@ -5,10 +5,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
-@Table(name = "feedbacks") // Hoặc "reviews"
-public class Feedback extends BaseEntity{
+@Table(name = "feedbacks")
+public class Feedback extends BaseEntity {
 
     public enum FeedbackStatus {
         PENDING,    // Chờ duyệt
@@ -47,6 +51,7 @@ public class Feedback extends BaseEntity{
     @JoinColumn(name = "enrollment_id", nullable = false, unique = true)
     private Enrollment enrollment;
 
+    // Giữ no-args constructor: có logic init status = APPROVED
     public Feedback() {
         this.status = FeedbackStatus.APPROVED; // Mặc định là duyệt
     }
@@ -57,69 +62,12 @@ public class Feedback extends BaseEntity{
         this.enrollment = enrollment;
         this.status = FeedbackStatus.APPROVED;
     }
+
     public Feedback(Integer rating, String review, Enrollment enrollment) {
         this.rating = rating;
         this.review = review;
         this.enrollment = enrollment;
         this.status = FeedbackStatus.APPROVED;
-    }
-
-    // --- Getters and Setters ---
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public String getReview() {
-        return review;
-    }
-
-    public void setReview(String review) {
-        this.review = review;
-    }
-
-    public Enrollment getEnrollment() {
-        return enrollment;
-    }
-
-    public void setEnrollment(Enrollment enrollment) {
-        this.enrollment = enrollment;
-    }
-
-    public FeedbackStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(FeedbackStatus status) {
-        this.status = status;
-    }
-
-    public int getHelpfulCount() {
-        return helpfulCount;
-    }
-
-    public void setHelpfulCount(int helpfulCount) {
-        this.helpfulCount = helpfulCount;
-    }
-
-    public int getNotHelpfulCount() {
-        return notHelpfulCount;
-    }
-
-    public void setNotHelpfulCount(int notHelpfulCount) {
-        this.notHelpfulCount = notHelpfulCount;
     }
 
     // (Đừng quên thêm equals() và hashCode() dựa trên ID!)

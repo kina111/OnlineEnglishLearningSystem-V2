@@ -6,6 +6,7 @@ import com.swp391.OnlineEnglishLearningSystem.model.Course;
 import com.swp391.OnlineEnglishLearningSystem.repository.ChapterRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.CourseRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.ChapterService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,18 +15,15 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ChapterServiceImpl implements ChapterService {
     private final CourseRepository courseRepository;
     private final ChapterRepository chapterRepository;
 
-    public ChapterServiceImpl(CourseRepository courseRepository, ChapterRepository chapterRepository) {
-        this.courseRepository = courseRepository;
-        this.chapterRepository = chapterRepository;
-    }
-
     @Override
     public Chapter createChapterForCourse(Long courseId, ChapterController.CreateChapterRequest createChapterRequest) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("Course not found"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("Course not found"));
 
         Chapter newChapter = new Chapter();
         int orderNumber = course.getChapters().size() + 1;
@@ -40,7 +38,8 @@ public class ChapterServiceImpl implements ChapterService {
 
     @Override
     public Optional<Chapter> findById(Long chapterId) {
-        return Optional.ofNullable(chapterRepository.findById(chapterId).orElseThrow(() -> new IllegalArgumentException("Chapter not found")));
+        return Optional.ofNullable(chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new IllegalArgumentException("Chapter not found")));
     }
 
     @Override
@@ -70,7 +69,8 @@ public class ChapterServiceImpl implements ChapterService {
 
     @Override
     public Chapter updateChapter(Long chapterId, ChapterController.CreateChapterRequest chapter) {
-        Chapter updateChapter = this.findById(chapterId).orElseThrow(() -> new IllegalArgumentException("Chapter not found"));
+        Chapter updateChapter = this.findById(chapterId)
+                .orElseThrow(() -> new IllegalArgumentException("Chapter not found"));
         updateChapter.setName(chapter.getName());
         updateChapter.setShortDescription(chapter.getShortDescription());
         return this.chapterRepository.save(updateChapter);

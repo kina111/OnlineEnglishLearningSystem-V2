@@ -4,19 +4,19 @@ import com.swp391.OnlineEnglishLearningSystem.model.Token;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.repository.TokenRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.TokenService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
-
-    public TokenServiceImpl(TokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
-    }
 
     @Override
     public Token create(User newUser) {

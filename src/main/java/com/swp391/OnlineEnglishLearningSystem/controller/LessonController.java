@@ -4,6 +4,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.*;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.*;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class LessonController {
 
     private final ChapterService chapterService;
@@ -23,15 +26,6 @@ public class LessonController {
     private final QuestionService questionService;
     private final AnswerOptionService answerOptionService;
     private final ShortAnswerOptionService shortAnswerOptionService;
-
-    public LessonController(ChapterService chapterService, UploadService uploadService, LessonService lessonService, QuestionService questionService, AnswerOptionService answerOptionService, ShortAnswerOptionService shortAnswerOptionService) {
-        this.chapterService = chapterService;
-        this.uploadService = uploadService;
-        this.lessonService = lessonService;
-        this.questionService = questionService;
-        this.answerOptionService = answerOptionService;
-        this.shortAnswerOptionService = shortAnswerOptionService;
-    }
     //=========================================== Xử lí Lesson ===================================================
     //--- GET LESSONS ---
     @GetMapping("/api/chapters/{chapterId}/lessons")

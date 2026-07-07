@@ -1,25 +1,18 @@
 package com.swp391.OnlineEnglishLearningSystem.service.impl;
 
-import com.swp391.OnlineEnglishLearningSystem.model.Lesson;
-import com.swp391.OnlineEnglishLearningSystem.model.Question;
 import com.swp391.OnlineEnglishLearningSystem.model.QuizAttemptQuestion;
-import com.swp391.OnlineEnglishLearningSystem.model.QuizAttemptSelectedOption;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.AnsweredOption;
 import com.swp391.OnlineEnglishLearningSystem.repository.QuizAttemptQuestionRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.QuizAttemptQuestionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class QuizAttemptQuestionServiceImpl implements QuizAttemptQuestionService {
-    @Autowired
-    private QuizAttemptQuestionRepository quizAttemptQuestionRepository;
-    public QuizAttemptQuestionServiceImpl(QuizAttemptQuestionRepository quizAttemptQuestionRepository) {
-        this.quizAttemptQuestionRepository = quizAttemptQuestionRepository;
-    }
+    private final QuizAttemptQuestionRepository quizAttemptQuestionRepository;
 
     @Override
     public List<QuizAttemptQuestion> findAll() {

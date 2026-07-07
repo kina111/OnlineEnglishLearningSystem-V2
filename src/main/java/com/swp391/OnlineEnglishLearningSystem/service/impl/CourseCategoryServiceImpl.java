@@ -4,6 +4,9 @@ import com.swp391.OnlineEnglishLearningSystem.model.CourseCategory;
 import com.swp391.OnlineEnglishLearningSystem.repository.CourseCategoryRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.CourseCategoryService;
 import com.swp391.OnlineEnglishLearningSystem.service.specification.CourseCategorySpecs;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,13 +15,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CourseCategoryServiceImpl implements CourseCategoryService {
 
     private final CourseCategoryRepository courseCategoryRepository;
-
-    public CourseCategoryServiceImpl(CourseCategoryRepository courseCategoryRepository) {
-        this.courseCategoryRepository = courseCategoryRepository;
-    }
 
     @Override
     public List<CourseCategory> findAll() {

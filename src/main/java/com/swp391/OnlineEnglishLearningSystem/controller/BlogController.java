@@ -4,7 +4,9 @@ import com.swp391.OnlineEnglishLearningSystem.model.BlogCategory;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.BlogDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.BlogCategoryService;
 import com.swp391.OnlineEnglishLearningSystem.service.BlogService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,12 +22,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/blogs")
+@RequiredArgsConstructor
 public class BlogController {
 
-    @Autowired
-    private BlogService blogService;
-    @Autowired
-    private BlogCategoryService blogCategoryService;
+    private final BlogService blogService;
+    private final BlogCategoryService blogCategoryService;
 
     @GetMapping("")
     public String getBlogs(@RequestParam(value = "page", defaultValue = "1") Integer page,

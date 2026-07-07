@@ -4,6 +4,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.*;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.AnsweredOption;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,30 +18,16 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/quiz")
+@RequiredArgsConstructor
 public class QuizController {
 
     private static final String QUIZ_SESSION = "quizAnswers";
     private static final String QUIZ_PATH = "redirect:/quiz/";
     
-    private final QuestionService questionService;
     private final LessonService lessonService;
-    private final AnswerOptionService answerOptionService;
     private final UserService userService;
     private final QuizAttemptService quizAttemptService;
     private final UserLessonService userLessonService;
-    private final CourseService courseService;
-
-    public QuizController(QuestionService questionService, LessonService lessonService,
-                          AnswerOptionService answerOptionService, UserService userService,
-                          QuizAttemptService quizAttemptService, UserLessonService userLessonService, CourseService courseService) {
-        this.questionService = questionService;
-        this.lessonService = lessonService;
-        this.answerOptionService = answerOptionService;
-        this.userService = userService;
-        this.quizAttemptService = quizAttemptService;
-        this.userLessonService = userLessonService;
-        this.courseService = courseService;
-    }
 
 
     @GetMapping("/")

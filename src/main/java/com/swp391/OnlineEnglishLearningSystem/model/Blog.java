@@ -3,13 +3,20 @@ package com.swp391.OnlineEnglishLearningSystem.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "blogs")
-public class Blog extends BaseEntity{
-    public enum BlogStatus{
+public class Blog extends BaseEntity {
+    public enum BlogStatus {
         PUBLISHED, DRAFT, CANCELLED
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,11 +30,11 @@ public class Blog extends BaseEntity{
     private String thumbnail;
 
     @Column(name = "short_description", columnDefinition = "NVARCHAR(255)")
-    @Size(min=10, max=200, message = "Mô tả ngắn phải có độ dài từ 10 đến 200 ký tự.")
+    @Size(min = 10, max = 200, message = "Mô tả ngắn phải có độ dài từ 10 đến 200 ký tự.")
     private String shortDescription;
 
     @Column(name = "content", columnDefinition = "NVARCHAR(MAX)")
-    @Size(min=10, message = "Nội dung bài viết tối thiểu 10 kí tự.")
+    @Size(min = 10, message = "Nội dung bài viết tối thiểu 10 kí tự.")
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -44,12 +51,8 @@ public class Blog extends BaseEntity{
     @JoinColumn(name = "author_id") // Tên cột Foreign Key trong CSDL
     private User author;
 
-    public Blog() {
-        super();
-    }
-
-    public Blog(Long id, String title, String thumbnail, String shortDescription, String content, BlogCategory blogCategory, User author) {
-        super();
+    public Blog(Long id, String title, String thumbnail, String shortDescription, String content,
+                BlogCategory blogCategory, User author) {
         this.id = id;
         this.title = title;
         this.thumbnail = thumbnail;
@@ -57,69 +60,5 @@ public class Blog extends BaseEntity{
         this.content = content;
         this.blogCategory = blogCategory;
         this.author = author;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public BlogCategory getBlogCategory() {
-        return blogCategory;
-    }
-
-    public void setBlogCategory(BlogCategory blogCategory) {
-        this.blogCategory = blogCategory;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public BlogStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(BlogStatus status) {
-        this.status = status;
     }
 }

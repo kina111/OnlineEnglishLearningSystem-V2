@@ -2,7 +2,6 @@ package com.swp391.OnlineEnglishLearningSystem.service;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Enrollment;
 import com.swp391.OnlineEnglishLearningSystem.model.Order;
-import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.EnrollmentInfoDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.EnrollmentLearningDTO;
 

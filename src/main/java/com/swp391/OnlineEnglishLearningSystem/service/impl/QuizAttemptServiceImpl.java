@@ -2,27 +2,21 @@ package com.swp391.OnlineEnglishLearningSystem.service.impl;
 
 import com.swp391.OnlineEnglishLearningSystem.model.*;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.AnsweredOption;
-import com.swp391.OnlineEnglishLearningSystem.repository.QuestionRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.QuizAttemptRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.QuizAttemptService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class QuizAttemptServiceImpl implements QuizAttemptService {
-    @Autowired
-    private QuizAttemptRepository quizAttemptRepository;
-    private final QuestionRepository questionRepository;
-
-    public QuizAttemptServiceImpl(QuizAttemptRepository quizAttemptRepository, QuestionRepository questionRepository) {
-        this.quizAttemptRepository = quizAttemptRepository;
-        this.questionRepository = questionRepository;
-    }
+    private final QuizAttemptRepository quizAttemptRepository;
 
 //    @Override
 //    public QuizAttempt findQuizAttemptByQuizIdAndUserId(Lesson lesson, User user) {

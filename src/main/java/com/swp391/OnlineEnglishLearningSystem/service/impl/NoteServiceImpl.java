@@ -7,22 +7,19 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.NoteRequest;
 import com.swp391.OnlineEnglishLearningSystem.repository.NoteRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.UserLessonRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.NoteService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class NoteServiceImpl implements NoteService {
     private final NoteRepository noteRepository;
     private final UserLessonRepository userLessonRepository;
-
-    public NoteServiceImpl(NoteRepository noteRepository, UserLessonRepository userLessonRepository) {
-        this.noteRepository = noteRepository;
-        this.userLessonRepository = userLessonRepository;
-    }
-
 
     @Override
     public Note createNew(Long userId, long lessonId, NoteRequest noteRequest) {
