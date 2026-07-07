@@ -7,22 +7,20 @@ import com.swp391.OnlineEnglishLearningSystem.repository.CourseRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.UserRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.WishlistRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.WishlistService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class WishlistServiceImpl implements WishlistService {
     private final WishlistRepository wishlistRepository;
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
-
-    public WishlistServiceImpl(WishlistRepository wishlistRepository, UserRepository userRepository, CourseRepository courseRepository) {
-        this.wishlistRepository = wishlistRepository;
-        this.userRepository = userRepository;
-        this.courseRepository = courseRepository;
-    }
 
     @Override
     public Wishlist createNew(Long userId, Long courseId) {

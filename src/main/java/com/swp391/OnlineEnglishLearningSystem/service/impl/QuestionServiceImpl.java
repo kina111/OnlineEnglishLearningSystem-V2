@@ -4,18 +4,18 @@ import com.swp391.OnlineEnglishLearningSystem.model.Question;
 import com.swp391.OnlineEnglishLearningSystem.repository.QuestionRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.QuestionService;
 import com.swp391.OnlineEnglishLearningSystem.service.specification.QuestionSpecs;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
-
-    public QuestionServiceImpl(QuestionRepository questionRepository) {
-        this.questionRepository = questionRepository;
-    }
 
     @Override
     public void save(Question newQuestion) {

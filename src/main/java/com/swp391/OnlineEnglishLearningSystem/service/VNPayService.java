@@ -3,11 +3,9 @@ package com.swp391.OnlineEnglishLearningSystem.service;
 import com.swp391.OnlineEnglishLearningSystem.config.VNPayConfig;
 import com.swp391.OnlineEnglishLearningSystem.model.Order; // Import Order
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -15,13 +13,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class VNPayService {
 
     private final OrderService orderService;
-
-    public VNPayService(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     public String createVNPayPaymentUrl(Order newOrder, HttpServletRequest req) throws UnsupportedEncodingException {
 

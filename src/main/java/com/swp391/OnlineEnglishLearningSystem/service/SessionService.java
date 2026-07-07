@@ -3,17 +3,18 @@ package com.swp391.OnlineEnglishLearningSystem.service;
 import com.swp391.OnlineEnglishLearningSystem.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SessionService {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     public void storeUserInSession(HttpServletRequest request, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {

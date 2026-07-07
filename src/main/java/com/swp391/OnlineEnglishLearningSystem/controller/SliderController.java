@@ -1,27 +1,22 @@
 package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Slider;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderDTO;
-import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderCreateUpdateDto;
 import com.swp391.OnlineEnglishLearningSystem.service.SliderService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
 @Controller
 @RequestMapping("/admin/sliders")
+@RequiredArgsConstructor
 public class SliderController {
 
-    @Autowired
-    private SliderService sliderService;
+    private final SliderService sliderService;
 
     // Hiển thị danh sách slider (Admin UI)
     @GetMapping("")

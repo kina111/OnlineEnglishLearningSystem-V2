@@ -8,11 +8,12 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.FeedbackRequest;
 import com.swp391.OnlineEnglishLearningSystem.repository.EnrollmentRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.FeedbackRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.FeedbackService;
-import com.swp391.OnlineEnglishLearningSystem.service.specification.FeedbackSpecs;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,16 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class FeedbackServiceImpl implements FeedbackService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final FeedbackRepository feedbackRepository;
-
-    public FeedbackServiceImpl(EnrollmentRepository enrollmentRepository, FeedbackRepository feedbackRepository) {
-        this.enrollmentRepository = enrollmentRepository;
-        this.feedbackRepository = feedbackRepository;
-    }
-
 
     @Override
     public void handleSave(long enrollmentId, FeedbackRequest feedbackRequest) {

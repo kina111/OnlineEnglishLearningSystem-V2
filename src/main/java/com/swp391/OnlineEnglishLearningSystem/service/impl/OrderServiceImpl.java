@@ -8,9 +8,9 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.OrderFilter;
 import com.swp391.OnlineEnglishLearningSystem.repository.OrderRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.OrderService;
 import com.swp391.OnlineEnglishLearningSystem.service.specification.OrderSpecs;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -18,15 +18,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
-
-    public OrderServiceImpl(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     @Override
     public Order createNewOrder(User currentUser, Course currentCourse) {

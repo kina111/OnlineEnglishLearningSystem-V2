@@ -3,10 +3,14 @@ package com.swp391.OnlineEnglishLearningSystem.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "course_categories")
-public class CourseCategory extends BaseEntity{
+public class CourseCategory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +28,7 @@ public class CourseCategory extends BaseEntity{
     @Column(nullable = false, name = "active")
     private boolean active;
 
+    // Giữ no-args constructor vì có logic init: active = false
     public CourseCategory() {
         active = false;
     }
@@ -31,38 +36,6 @@ public class CourseCategory extends BaseEntity{
     public CourseCategory(String name, String description, boolean active) {
         this.name = name;
         this.description = description;
-        this.active = active;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
         this.active = active;
     }
 }

@@ -10,6 +10,9 @@ import com.swp391.OnlineEnglishLearningSystem.service.CourseService;
 import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
 import com.swp391.OnlineEnglishLearningSystem.service.specification.CourseSpecs;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,19 +21,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
     private CourseCategoryRepository courseCategoryRepository;
     private final CourseRepository courseRepository;
     private final UploadService uploadService;
     private final UserService userService;
-
-    public CourseServiceImpl(CourseCategoryRepository courseCategoryRepository, CourseRepository courseRepository, UploadService uploadService, UserService userService) {
-        this.courseCategoryRepository = courseCategoryRepository;
-        this.courseRepository = courseRepository;
-        this.uploadService = uploadService;
-        this.userService = userService;
-    }
 
     @Override
     public Course buildNewCourse(CourseDTO courseDTO, Long authorId) {

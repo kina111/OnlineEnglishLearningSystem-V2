@@ -1,6 +1,5 @@
 package com.swp391.OnlineEnglishLearningSystem.service;
 
-import com.swp391.OnlineEnglishLearningSystem.model.Feedback;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseFeedbackStats;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.FeedbackDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.FeedbackRequest;
@@ -8,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface FeedbackService {
     void handleSave(long enrollmentId, FeedbackRequest feedbackRequest);

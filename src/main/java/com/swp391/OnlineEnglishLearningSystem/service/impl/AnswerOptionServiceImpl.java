@@ -4,16 +4,15 @@ import com.swp391.OnlineEnglishLearningSystem.model.AnswerOption;
 import com.swp391.OnlineEnglishLearningSystem.model.Question;
 import com.swp391.OnlineEnglishLearningSystem.repository.AnswerOptionRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.AnswerOptionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AnswerOptionServiceImpl implements AnswerOptionService {
     private final AnswerOptionRepository answerOptionRepository;
-
-    public AnswerOptionServiceImpl(AnswerOptionRepository answerOptionRepository) {
-        this.answerOptionRepository = answerOptionRepository;
-    }
 
     @Override
     public void save(AnswerOption answerOption) {
@@ -28,8 +27,7 @@ public class AnswerOptionServiceImpl implements AnswerOptionService {
 
     @Override
     public AnswerOption findByAnswerOptionId(Long answerOptionId) {
-        return answerOptionRepository.findById(answerOptionId).orElseThrow(() -> new IllegalArgumentException("Answer option not found"));
+        return answerOptionRepository.findById(answerOptionId)
+                .orElseThrow(() -> new IllegalArgumentException("Answer option not found"));
     }
-
-
 }

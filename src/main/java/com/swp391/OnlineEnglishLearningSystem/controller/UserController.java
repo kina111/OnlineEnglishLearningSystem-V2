@@ -5,6 +5,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.*;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Controller
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
@@ -27,28 +30,12 @@ public class UserController {
     private final CourseService courseSerive;
     private final WishlistService wishlistService;
     private final EnrollmentService enrollmentService;
-    private final WishlistService wishlistServiceImpl;
     private final UserLessonService userLessonService;
     private final LearningService learningService;
     private final LessonService lessonService;
     private final NoteService noteService;
     private final FeedbackService feedbackService;
     private final BlogService blogService;
-
-    public UserController(UserService userService, UploadService uploadService, CourseService courseSerive, WishlistService wishlistService, EnrollmentService enrollmentService, WishlistService wishlistServiceImpl, UserLessonService userLessonService, LearningService learningService, LessonService lessonService, NoteService noteService, FeedbackService feedbackService, BlogService blogService) {
-        this.userService = userService;
-        this.uploadService = uploadService;
-        this.courseSerive = courseSerive;
-        this.wishlistService = wishlistService;
-        this.enrollmentService = enrollmentService;
-        this.wishlistServiceImpl = wishlistServiceImpl;
-        this.learningService = learningService;
-        this.userLessonService = userLessonService;
-        this.lessonService = lessonService;
-        this.noteService = noteService;
-        this.feedbackService = feedbackService;
-        this.blogService = blogService;
-    }
 
     //================================== Profile Management ================================//
     @GetMapping("/viewProfile")

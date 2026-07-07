@@ -9,6 +9,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.CourseFeedbackStats;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.UserDTO;
 import com.swp391.OnlineEnglishLearningSystem.service.*;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class AuthController {
 
     private final UserService userService;
@@ -34,16 +37,6 @@ public class AuthController {
     private final BlogService blogService;
     private final FeedbackService feedbackService;
     private final SliderService sliderService;
-
-    public AuthController(UserService userService, TokenService tokenService, EmailService emailService, CourseService courseService, BlogService blogService, FeedbackService feedbackService, SliderService sliderService) {
-        this.userService = userService;
-        this.tokenService = tokenService;
-        this.emailService = emailService;
-        this.courseService = courseService;
-        this.blogService = blogService;
-        this.feedbackService = feedbackService;
-        this.sliderService = sliderService;
-    }
 
     // ---------------- HOME ----------------
     @GetMapping("/")

@@ -6,8 +6,9 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderDTO;
 import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderCreateUpdateDto;
 import com.swp391.OnlineEnglishLearningSystem.repository.SliderRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.SliderService;
-import com.swp391.OnlineEnglishLearningSystem.service.UploadService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,17 +28,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class SliderServiceImpl implements SliderService {
 
     private final SliderRepository sliderRepository;
-    private final UploadService uploadService;
 
     private static final String UPLOAD_DIR = "uploads/sliders/";
-
-    public SliderServiceImpl(SliderRepository sliderRepository, UploadService uploadService) {
-        this.sliderRepository = sliderRepository;
-        this.uploadService = uploadService;
-    }
 
     @Override
     public Page<Slider> getSliders(String keyword, String status, int page, int size) {

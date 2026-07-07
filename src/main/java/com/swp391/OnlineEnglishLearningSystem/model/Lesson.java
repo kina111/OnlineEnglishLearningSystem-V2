@@ -2,25 +2,32 @@ package com.swp391.OnlineEnglishLearningSystem.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "lessons")
-public class Lesson extends BaseEntity{
+public class Lesson extends BaseEntity {
     public enum LessonType {
         LECTURE("Bài giảng"),
         QUIZ("Bài kiểm tra");
 
         private final String displayName;
+
         LessonType(String displayName) {
             this.displayName = displayName;
         }
+
         public String getDisplayName() {
             return displayName;
         }
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -75,7 +82,8 @@ public class Lesson extends BaseEntity{
         super();
     }
 
-    public Lesson(String title, Integer orderNumber, LessonType lessonType, Integer estimatedTime, Integer passRate, Integer timeLimitInMinutes, Integer numberOfQuestions) {
+    public Lesson(String title, Integer orderNumber, LessonType lessonType, Integer estimatedTime,
+                  Integer passRate, Integer timeLimitInMinutes, Integer numberOfQuestions) {
         this.title = title;
         this.orderNumber = orderNumber;
         this.lessonType = lessonType;
@@ -85,7 +93,8 @@ public class Lesson extends BaseEntity{
         this.numberOfQuestions = numberOfQuestions;
     }
 
-    public Lesson(String title, Integer orderNumber, LessonType lessonType, Integer estimatedTime, Integer passRate, Integer timeLimitInMinutes, List<Question> questions, Chapter chapter) {
+    public Lesson(String title, Integer orderNumber, LessonType lessonType, Integer estimatedTime,
+                  Integer passRate, Integer timeLimitInMinutes, List<Question> questions, Chapter chapter) {
         this.title = title;
         this.orderNumber = orderNumber;
         this.lessonType = lessonType;
@@ -94,110 +103,5 @@ public class Lesson extends BaseEntity{
         this.timeLimitInMinutes = timeLimitInMinutes;
         this.questions = questions;
         this.chapter = chapter;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Integer getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(Integer orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
-    public LessonType getLessonType() {
-        return lessonType;
-    }
-
-    public void setLessonType(LessonType lessonType) {
-        this.lessonType = lessonType;
-    }
-
-    public Integer getEstimatedTime() {
-        return estimatedTime;
-    }
-
-    public void setEstimatedTime(Integer estimatedTime) {
-        this.estimatedTime = estimatedTime;
-    }
-
-    public Integer getPassRate() {
-        return passRate;
-    }
-
-    public void setPassRate(Integer passRate) {
-        this.passRate = passRate;
-    }
-
-    public Integer getTimeLimitInMinutes() {
-        return timeLimitInMinutes;
-    }
-
-    public void setTimeLimitInMinutes(Integer timeLimitInMinutes) {
-        this.timeLimitInMinutes = timeLimitInMinutes;
-    }
-
-    public List<Question> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
-    }
-
-    public Chapter getChapter() {
-        return chapter;
-    }
-
-    public void setChapter(Chapter chapter) {
-        this.chapter = chapter;
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public String getHtmlContent() {
-        return htmlContent;
-    }
-
-    public void setHtmlContent(String htmlContent) {
-        this.htmlContent = htmlContent;
-    }
-
-    public Integer getNumberOfQuestions() {
-        return numberOfQuestions;
-    }
-
-    public void setNumberOfQuestions(Integer numberOfQuestions) {
-        this.numberOfQuestions = numberOfQuestions;
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
     }
 }

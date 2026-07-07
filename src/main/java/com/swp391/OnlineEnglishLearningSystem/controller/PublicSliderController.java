@@ -2,7 +2,9 @@ package com.swp391.OnlineEnglishLearningSystem.controller;
 
 import com.swp391.OnlineEnglishLearningSystem.model.Slider;
 import com.swp391.OnlineEnglishLearningSystem.service.SliderService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +15,10 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/sliders")
+@RequiredArgsConstructor
 public class PublicSliderController {
 
-    @Autowired
-    private SliderService sliderService;
+    private final SliderService sliderService;
 
     // Hiển thị slider cho trang chủ
     @GetMapping("")

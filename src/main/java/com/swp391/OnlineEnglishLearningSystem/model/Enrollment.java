@@ -4,12 +4,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "enrollments", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "course_id"})
@@ -19,16 +25,19 @@ public class Enrollment {
     public enum EnrollmentStatus {
         ENROLLED("Đã đăng kí"),
         COMPLETED("Hoàn thành"),
-        CANCELLED("Hủy đăng kí")
-        ;
+        CANCELLED("Hủy đăng kí");
+
         private final String displayName;
+
         EnrollmentStatus(String displayName) {
             this.displayName = displayName;
         }
+
         public String getDisplayName() {
             return displayName;
         }
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -59,76 +68,10 @@ public class Enrollment {
     @Column(nullable = false)
     private EnrollmentStatus status;
 
-    public Enrollment() {
-    }
-
+    // Giữ nguyên constructor: có logic tự set status = ENROLLED
     public Enrollment(User user, Course course) {
         this.user = user;
         this.course = course;
         this.status = EnrollmentStatus.ENROLLED;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public LocalDateTime getEnrolledAt() {
-        return enrolledAt;
-    }
-
-    public void setEnrolledAt(LocalDateTime enrolledAt) {
-        this.enrolledAt = enrolledAt;
-    }
-
-    public LocalDateTime getCompletedAt() {
-        return completedAt;
-    }
-
-    public void setCompletedAt(LocalDateTime completedAt) {
-        this.completedAt = completedAt;
-    }
-
-    public LocalDateTime getLastAccessAt() {
-        return lastAccessAt;
-    }
-
-    public void setLastAccessAt(LocalDateTime lastAccessAt) {
-        this.lastAccessAt = lastAccessAt;
-    }
-
-    public EnrollmentStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(EnrollmentStatus status) {
-        this.status = status;
-    }
-
-    public List<UserLesson> getUserLessons() {
-        return userLessons;
-    }
-
-    public void setUserLessons(List<UserLesson> userLessons) {
-        this.userLessons = userLessons;
     }
 }

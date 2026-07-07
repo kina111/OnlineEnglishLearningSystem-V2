@@ -6,9 +6,8 @@ import com.swp391.OnlineEnglishLearningSystem.model.dto.SliderCreateUpdateDto;
 import com.swp391.OnlineEnglishLearningSystem.service.SliderService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
@@ -19,17 +18,13 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/marketing")
 public class MarketingController {
 
     private final SliderService sliderService;
 
     private final UserService userService;
-
-    public MarketingController(SliderService sliderService, UserService userService) {
-        this.sliderService = sliderService;
-        this.userService = userService;
-    }
 
     @GetMapping("")
     public String marketingDashboard(Model model, Principal principal, HttpSession session) {

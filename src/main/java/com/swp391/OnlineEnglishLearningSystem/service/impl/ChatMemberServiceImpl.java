@@ -1,29 +1,24 @@
 package com.swp391.OnlineEnglishLearningSystem.service.impl;
 
 import com.swp391.OnlineEnglishLearningSystem.model.ChatMember;
-import com.swp391.OnlineEnglishLearningSystem.model.User;
 import com.swp391.OnlineEnglishLearningSystem.repository.ChatMemberRepository;
 import com.swp391.OnlineEnglishLearningSystem.repository.ChatRepository;
 import com.swp391.OnlineEnglishLearningSystem.service.ChatMemberService;
 import com.swp391.OnlineEnglishLearningSystem.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ChatMemberServiceImpl implements ChatMemberService {
     private final ChatMemberRepository chatMemberRepository;
     private final ChatRepository chatRepository;
     private final UserService userService;
-
-    @Autowired
-    public ChatMemberServiceImpl(ChatMemberRepository chatMemberRepository, ChatRepository chatRepository, UserService userService) {
-        this.chatMemberRepository = chatMemberRepository;
-        this.chatRepository = chatRepository;
-        this.userService = userService;
-    }
 
     @Override
     public void addChatMember(Long chatId, Long userId) {
